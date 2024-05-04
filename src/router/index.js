@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import VueCookies from 'vue-cookies';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,43 +18,113 @@ const router = createRouter({
     {
       path: '/dataumum',
       name: 'dataumum',
-      component: () => import('../views/DataUmum.vue')
+      component: () => import('../views/DataUmum.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
     },
 
     {
       path: '/DataKepemilikanObat',
       name: 'DataKepemilikanObat',
-      component: () => import('../views/DataKepemilikanObat.vue')
+      component: () => import('../views/DataKepemilikanObat.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
     },
 
     {
       path: '/DataKesehatan',
       name: 'DataKesehatan',
-      component: () => import('../views/DataKesehatan.vue')
+      component: () => import('../views/DataKesehatan.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
     },
 
     {
       path: '/DataRumahSakit',
       name: 'DataRumahSakit',
-      component: () => import('../views/DataRumahSakit.vue')
+      component: () => import('../views/DataRumahSakit.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
     },
 
     {
       path: '/DataTreatment',
       name: 'DataTreatment',
-      component: () => import('../views/DataTreatment.vue')
+      component: () => import('../views/DataTreatment.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
+    },
+
+    {
+      path: '/editpengurus/:id',
+      name: 'EditPengurus',
+      component: () => import('../views/EditPengurus.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
     },
 
     {
       path: '/KelolaAkun',
       name: 'KelolaAkun',
-      component: () => import('../views/KelolaAkun.vue')
+      component: () => import('../views/KelolaAkun.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
     },
 
     {
       path: '/VerifikasiDokter',
       name: 'VerifikasiDokter',
-      component: () => import('../views/VerifikasiDokter.vue')
+      component: () => import('../views/VerifikasiDokter.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
     },
   ]
 })

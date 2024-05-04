@@ -1,22 +1,23 @@
 <script>
+import axios from 'axios'
+import VueCookies from 'vue-cookies'
 export default {
     data() { 
-        // return {
-        //     email: '',
-        //     password: '',
-        //     error: '',
-        //     rememberMe: false,
-        //     rememberedUsername: '',
-        //     rememberedPassword: '',
-        //     profiledata: '',
-        // }
+        return {
+            username: [],
+            password: [],
+            error: '',
+            rememberMe: false,
+            rememberedUsername: '',
+            rememberedPassword: ''
+        }
     },
     methods: {
         async login() {
             try {
-                const url = 'https://elgeka-mobile-production.up.railway.app/api/user/login_website'
+                const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/pengurus/login'
                 const response = await axios.post(url, {
-                    email: this.email,
+                    username: this.username,
                     password: this.password
                 },
                 )
@@ -27,24 +28,26 @@ export default {
                     // VueCookies.set('Message', response.data.Message)
                     // const token = ('Authentication', response.data.Token);
                     // this.setTokenCookie(token);
-                    // this.$router.push('/')
+                    VueCookies.set('TokenAuthorization',response.data.result.token)
+                    this.$router.push('/dataumum')
+                    console.log(response)
                 }
             } catch (error) {
                 this.error = 'ada kesalahan dari sistem, mohon coba lagi'
             }
         },
-        setTokenCookie(token) {
-            const expirationDate = new Date();
-            expirationDate.setDate(expirationDate.getDate() + 30);
-            // Mengatur cookie dengan nama "token" dan nilai token yang diberikan bersama dengan tanggal kedaluwarsa 30 hari dari saat ini
-            Cookies.set('token', token, { expires: expirationDate });
-        }
+        // setTokenCookie(token) {
+        //     const expirationDate = new Date();
+        //     expirationDate.setDate(expirationDate.getDate() + 30);
+        //     // Mengatur cookie dengan nama "token" dan nilai token yang diberikan bersama dengan tanggal kedaluwarsa 30 hari dari saat ini
+        //     Cookies.set('token', token, { expires: expirationDate });
+        // }
     },
     mounted() {
         const rememberedUsername = localStorage.getItem('rememberedUsername');
         const rememberedPassword = localStorage.getItem('rememberedPassword');
         if (rememberedUsername && rememberedPassword) {
-            this.email = rememberedUsername; // Perbaikan disini
+            this.username = rememberedUsername; // Perbaikan disini
             this.password = rememberedPassword;
             this.rememberMe = true;
         }
@@ -67,11 +70,11 @@ export default {
             <form @submit.prevent="login">
                 <!-- Email Input -->
                 <div class="mb-4">
-                    <label for="Email"
-                        class="block font-verdana font-normal text-[14px] text-[#344054] mb-2">Email</label>
-                    <input type="email" id="Email" name="Email" v-model="email"
+                    <label for="username"
+                        class="block font-verdana font-normal text-[14px] text-[#344054] mb-2">Username</label>
+                    <input type="text" id="username" name="username" v-model="username"
                         class="w-full border border-lightgrayish rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 placeholder:text-bluegray placeholder:text-verdana placeholder:leading-5 placeholder:text-[14px]"
-                        autocomplete="off" placeholder="Enter your mail address">
+                        autocomplete="off" placeholder="Enter your Username">
                 </div>
                 <!-- Password Input -->
                 <div class="mb-4">
@@ -94,13 +97,13 @@ export default {
                 <div class="flex items-center flex-col">
                     <button type="submit"
                         class="bg-orange text-white font-semibold rounded-md py-2 px-4 w-full">Login</button>
-                    <div class="mt-6 text-blue-500">
+                    <!-- <div class="mt-6 text-blue-500">
                         <router-link>
                             <a target="_blank"
                                 class="hover:underline font-verdana font-normal text-[14px] text-[#4D4D4F]">Forgot
                                 Password?</a>
                         </router-link>
-                    </div>
+                    </div> -->
                 </div>
 
             </form>
