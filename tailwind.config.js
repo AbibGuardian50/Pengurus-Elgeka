@@ -11,6 +11,9 @@ export default {
       'verdana': ['Verdana', 'SansSerif']
     },
     extend: {
+      backgroundImage: {
+        'hospital' : "url('/src/assets/hospital-alternate.jpg')"
+      },
       colors: {
         'orange': '#FF914C',
         'bluegray': '#667085',

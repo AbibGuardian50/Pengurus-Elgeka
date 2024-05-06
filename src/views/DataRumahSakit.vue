@@ -1,9 +1,29 @@
 <script>
 import Sidebar from "../components/Sidebar.vue"
+import axios from 'axios'
 
 export default {
+    async created() {
+        try {
+            const response = await axios.get('https://elgeka-web-api-production.up.railway.app/api/v1/infoRS');
+            this.InfoRS = response.data.result.data;
+            this.InfoRS.sort((x, y) => x.id - y.id)
+            this.InfoRS.forEach((item, index) => {
+                item.no = index + 1;
+            });
+            console.log(this.InfoRS)
+        } catch (error) {
+            console.error(error);
+        }
+    },
     components: {
         Sidebar
+    },
+    data() {
+        return {
+            InfoRS: [],
+            url: 'https://elgeka-web-api-production.up.railway.app/',
+        }
     }
 }
 </script>
@@ -26,7 +46,8 @@ export default {
 
             <p class="ml-8 font-normal text-[20px] leading-7 text-blueblack mt-4">Data Rumah Sakit</p>
 
-            <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
+            <table 
+                class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
                 <thead class="bg-gray-50">
                     <tr class="border-b-[0.5px] border-b-orange">
                         <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
@@ -39,49 +60,43 @@ export default {
                             Alamat
                         </th>
                         <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
-                            Email
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
                             Kontak
                         </th>
                         <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
-                            Link Google
+                            Link Google Maps
                         </th>
                         <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
                             Gambar
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody v-for="data in InfoRS" :key="data.id" class="bg-white divide-y divide-gray-200">
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap  font-normal  text-sulfurblack text-base">
-                            1
+                            {{ data.no }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="">
                                     <div class=" font-normal text-sulfurblack text-base">
-                                        RS Bandung
+                                        {{ data.nama_rs }}
                                     </div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 min-w-[300px] max-w-[301px]">
-                            <p class=" font-normal text-sulfurblack text-base ">Jl. Pasteur No.38, Pasteur, Kec. Sukajadi, Kota Bandung, Jawa Barat 40161</p>
+                            <p class=" font-normal text-sulfurblack text-base ">{{ data.lokasi_rs }}</p>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">rsudbandung@gmail.com</p>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">081234214944</p>
+                            <p class=" font-normal text-sulfurblack text-base ">{{ data.info_kontak }}</p>
                         </td>
 
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">https://www.google.com/maps</p>
+                            <p class=" font-normal text-sulfurblack text-base ">{{ data.link_maps }}</p>
                         </td>
 
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <img src="../assets/example.png" alt="foto rumah sakit">
+                        <td class="px-6 py-4 whitespace-nowrap min-w-[300px] max-w-[301px]">
+                            <img class="bg-hospital bg-cover bg-center w-[160px] h-[160px]" :src="url + data.image_url">
                         </td>
                     </tr>
 

@@ -64,7 +64,7 @@ export default {
             showeditadmin: false,
             getRoles: false,
             resulterror: '',
-            daftaradmin: '',
+            daftarpengurus: '',
             edited: {
                 full_name: '',
                 username: ''
@@ -77,9 +77,9 @@ export default {
 
 <template>
     <div>
-        <form v-if="daftaradmin" @submit.prevent="editadmin(daftaradmin.id)"
+        <form v-if="daftarpengurus" @submit.prevent="editpengurus(daftarpengurus.id)"
             class="overflow-x-hidden overflow-y-auto inset-0 justify-center items-center flex">
-            <div v-if="getRoles === 'true'" class="relative w-auto my-6 mx-auto max-w-6xl flex flex-col-reverse">
+            <div class="relative w-auto my-6 mx-auto max-w-6xl flex flex-col-reverse">
                 <!--content-->
                 <div
                     class="border border-red rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
@@ -102,13 +102,13 @@ export default {
                             <label for="nama lengkap" class="font-poppins font-bold text-base text-orange">Nama
                                 Lengkap</label>
                             <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
-                                v-model="edited.full_name" name="nama lengkap" id="" :placeholder="daftaradmin.full_name">
+                                v-model="edited.full_name" name="nama lengkap" id="">
                         </div>
 
                         <div class="flex gap-2 flex-col">
                             <label for="username" class="font-poppins font-bold text-base text-orange">Username</label>
                             <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
-                                name="username" v-model="edited.username" id="" :placeholder="daftaradmin.username">
+                                name="username" v-model="edited.username" id="" >
                         </div>
                     </div>
                     <!--footer-->
@@ -127,9 +127,9 @@ export default {
                         </router-link>
                     </div>
                 </div>
-                <div v-if="resulterror.message === 'Error Update Admin by ID: Unauthorized, Superadmins cannot update other superadmins'"
+                <!-- <div v-if="resulterror.message === 'Error Update Admin by ID: Unauthorized, Superadmins cannot update other superadmins'"
                     class="px-2 mt-4">
-                    <!-- Alert Error -->
+                    
                     <div class="bg-[#fecdd3] px-6 py-4 mx-2 my-4 rounded-md text-lg flex items-center mx-auto max-w-lg">
                         <svg viewBox="0 0 24 24" class="text-[#dc2626] w-5 h-5 sm:w-5 sm:h-5 mr-3">
                             <path fill="currentColor"
@@ -138,14 +138,14 @@ export default {
                         </svg>
                         <span class="text-[#991b1b]">Error, superadmin tidak bisa edit superadmin lainnya</span>
                     </div>
-                    <!-- End Alert Error -->
-                </div>
+                    
+                </div> -->
             </div>
-            <div v-else>
+            <!-- <div v-else>
                 <p class="font-bold font-poppins text-5xl">Dilarang Akses Halaman Ini</p>
                 <a href="/kelolaakun" class="hover:text-orange hover:underline font-bold font-poppins text-5xl">Klik Disini
                     Untuk Kembali ke Halaman Sebelumnya</a>
-            </div>
+            </div> -->
         </form>
         <div v-if="showeditadmin" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
     </div>

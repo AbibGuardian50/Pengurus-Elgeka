@@ -63,6 +63,21 @@ export default {
         toggleModalCreatePengurus: function () {
             this.showcreatepengurus = !this.showcreatepengurus;
         },
+        deletepengurus(id) {
+            if (confirm('Apakah kamu yakin untuk menghapus akun pengurus ini?')) {
+                const tokenlogin = VueCookies.get('TokenAuthorization')
+                const url = `https://elgeka-web-api-production.up.railway.app/api/v1/pengurus/${id}`
+                axios.delete(url, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
+                    .then(response => {
+                        console.log(response.data)
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        console.log(error)
+
+                    })
+            }
+        },
 
     }
 }
@@ -144,7 +159,7 @@ export default {
                                 <button
                                     class="py-1 px-8 rounded-[5px] bg-orange font-bold text-base text-white">Edit</button>
                             </a>
-                            <button href="#"
+                            <button href="#" @click="deletepengurus(data.id)"
                                 class="py-1 px-8 rounded-[5px] ml-2 shadow-xl bg-offwhite bg-opacity-64 text-orange font-bold text-base ">Hapus</button>
                         </td>
                     </tr>
@@ -178,7 +193,8 @@ export default {
                                     <label for="nama lengkap" class="font-poppins font-bold text-base text-orange">Nama
                                         Lengkap</label>
                                     <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
-                                        name="nama lengkap" id="" v-model="form.full_name" placeholder="Muhammad Abieb Basnuril">
+                                        name="nama lengkap" id="" v-model="form.full_name"
+                                        placeholder="Muhammad Abieb Basnuril">
                                 </div>
                                 <div class="flex gap-2 flex-col">
                                     <label for="username"
@@ -191,7 +207,7 @@ export default {
                                     <label for="Password"
                                         class="font-poppins font-bold text-base text-orange">Password</label>
                                     <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="password"
-                                        name="Password" id="" v-model="form.password"  placeholder="Masukkan Password">
+                                        name="Password" id="" v-model="form.password" placeholder="Masukkan Password">
                                 </div>
 
                                 <div class="flex gap-2 flex-col">
