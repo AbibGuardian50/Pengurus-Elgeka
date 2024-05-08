@@ -18,7 +18,7 @@ export default {
 
 <template>
     <div class="flex">
-        <div class="bg-orange flex flex-col items-center pt-8 w-[310px] max-[1800px]:h-full h-screen">
+        <div class="bg-teal flex flex-col items-center pt-8 w-[310px] max-[1800px]:h-full h-screen">
             <div>
                 <div class="flex justify-center items-center">
                     <img class="bg-white mb-8 rounded-md" src="../assets/logo.png" alt="">
@@ -47,37 +47,37 @@ export default {
                     <div class="flex flex-col gap-2 pt-4">
                         <router-link to="/dataumum">
                             <button
-                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-deepnavyblue opacity-70">Data Umum</button>
+                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-lightcream font-inter ">Data Umum</button>
                         </router-link>
                             
                         <router-link to="/datakesehatan">
                             <button
-                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-deepnavyblue opacity-70">Data Kesehatan</button>
+                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-lightcream font-inter ">Data Kesehatan</button>
                         </router-link>
 
                         <router-link to="/datatreatment">
                             <button
-                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-deepnavyblue opacity-70">Data Treatment</button>
+                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-lightcream font-inter ">Data Treatment</button>
                         </router-link>
 
                         <router-link to="/DataKepemilikanObat">
                             <button
-                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-deepnavyblue opacity-70">Kepemilikan Obat</button>
+                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-lightcream font-inter ">Kepemilikan Obat</button>
                         </router-link>
 
                         <router-link to="/datarumahsakit">
                             <button
-                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-deepnavyblue opacity-70">Data Rumah Sakit</button>
+                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-lightcream font-inter ">Data Rumah Sakit</button>
                         </router-link>
 
                         <router-link to="/kelolaakun">
                             <button
-                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-deepnavyblue opacity-70">Kelola Akun</button>
+                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-lightcream font-inter ">Kelola Akun</button>
                         </router-link>
 
                         <router-link to="/verifikasidokter">
                             <button
-                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-deepnavyblue opacity-70">Verifikasi Dokter</button>
+                                class="focus:bg-[#EEEEED] px-4 focus:text-black focus:opacity-100 focus:font-bold font-bold text-lightcream font-inter ">Verifikasi Dokter</button>
                         </router-link>
 
                     </div>

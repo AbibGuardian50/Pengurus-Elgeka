@@ -30,6 +30,20 @@ const router = createRouter({
     },
 
     {
+      path: '/detaildataumum',
+      name: 'detaildataumum',
+      component: () => import('../views/DetailDataUmum.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
+    },
+
+    {
       path: '/DataKepemilikanObat',
       name: 'DataKepemilikanObat',
       component: () => import('../views/DataKepemilikanObat.vue'),

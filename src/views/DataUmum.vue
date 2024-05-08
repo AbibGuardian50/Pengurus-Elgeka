@@ -1,113 +1,235 @@
 <script>
 import Sidebar from "../components/Sidebar.vue"
+import axios from 'axios'
+import VueCookies from 'vue-cookies'
+import { Bar, Pie, Doughnut } from 'vue-chartjs'
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js'
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
 
 export default {
+    async created() {
+        this.loaded = false
+        try {
+            const tokenlogin = VueCookies.get('TokenAuthorization')
+            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/list/website'
+            const response = await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ${tokenlogin}`
+                },
+            });
+            const responseData = response.data.Data;
+            // Data Pengelompokan Umur
+            const ageCounts = {};
+            responseData.forEach(item => {
+                const age = item.Age;
+                if (age !== 0 && age !== null) {
+                    ageCounts[age] = (ageCounts[age] || 0) + 1;
+                }
+            });
+            this.ageData = {
+                labels: Object.keys(ageCounts),
+                datasets: [{
+                    label: 'Umur',
+                    backgroundColor: 'rgba(123, 228, 241, 1)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    data: Object.values(ageCounts),
+                    color: 'yellow',
+                }],
+            };
+
+            // Data Kabupaten
+            const districtCounts = {};
+            responseData.forEach(item => {
+                const district = item.District;
+                if (district !== "") { // Tambahkan kondisi disini
+                    districtCounts[district] = (districtCounts[district] || 0) + 1;
+                }
+            });
+            this.DistrictData = {
+                labels: Object.keys(districtCounts),
+                datasets: [{
+                    label: 'Kabupaten',
+                    backgroundColor: '#F0E442',
+                    borderWidth: 1,
+                    data: Object.values(districtCounts),
+                    color: 'yellow',
+                }],
+            };
+            // Data Golongan Darah
+            const labels = ['A', 'AB', 'B', 'O'];
+            const BloodGroups = responseData.map(item => item.BloodGroup);
+            const BloodGroupCounts = {}
+            labels.forEach(label => {
+                // Counting non-null values only
+                BloodGroupCounts[label] = BloodGroups.filter(group => group === label && group !== null).length;
+            });
+            const backgroundColors = {
+                'A': '#009E73',
+                'AB': '#CC79A7',
+                'B': '#56B4E9',
+                'O': '#E69F00'
+            };
+            console.log(BloodGroups)
+            this.BloodData = {
+                labels: Object.keys(BloodGroupCounts),
+                datasets: [
+                    {
+                        label: 'Golongan Darah',
+                        color: '#FF6384',
+                        backgroundColor: Object.keys(BloodGroupCounts).map(label => backgroundColors[label]),
+                        data: Object.values(BloodGroupCounts)
+                    },
+
+                ]
+            };
+            this.loaded = true
+        } catch (error) {
+            console.error(error);
+        }
+    },
     components: {
-        Sidebar
-    }
+        Sidebar,
+        Bar,
+        Pie,
+        Doughnut,
+    },
+    computed: {
+        golonganDarahTerbanyak() {
+            if (!this.BloodData.datasets) return '';
+            const BloodGroupCounts = this.BloodData.datasets[0].data;
+            const labels = this.BloodData.labels;
+            const maxCount = Math.max(...BloodGroupCounts);
+            const indexOfMaxCount = BloodGroupCounts.indexOf(maxCount);
+            const golonganDarahTerbanyak = labels[indexOfMaxCount];
+
+            // Menghitung jumlah orang dengan golongan darah terbanyak
+            const jumlahOrangTerbanyak = maxCount;
+            const teksGolonganDarahTerbanyak = `${golonganDarahTerbanyak} (${jumlahOrangTerbanyak} Orang)`;
+
+            // Cek jika ada lebih dari satu golongan darah dengan nilai yang sama
+            const duplicates = labels.filter(label => BloodGroupCounts[label] === maxCount);
+            if (duplicates.length > 1) {
+                // Jika ada lebih dari satu, ambil yang pertama secara alfabetis
+                return duplicates.sort()[0];
+            }
+            return teksGolonganDarahTerbanyak;
+
+        },
+        golonganDarahTerlangka() {
+            if (!this.BloodData.datasets) return '';
+            const BloodGroupCounts = this.BloodData.datasets[0].data;
+            const labels = this.BloodData.labels;
+            const minCount = Math.min(...BloodGroupCounts);
+            const indexOfMinCount = BloodGroupCounts.indexOf(minCount);
+            const golonganDarahTerlangka = labels[indexOfMinCount];
+
+            // Menghitung jumlah orang dengan golongan darah terlangka
+            const jumlahOrangTerlangka = minCount;
+
+            // Format teks yang menampilkan golongan darah dan jumlah orang
+            const teksGolonganDarahTerlangka = `${golonganDarahTerlangka} (${jumlahOrangTerlangka} Orang)`;
+
+
+
+            // Cek jika ada lebih dari satu golongan darah dengan nilai yang sama
+            const duplicates = labels.filter(label => BloodGroupCounts[label] === minCount);
+            if (duplicates.length > 1) {
+                // Jika ada lebih dari satu, ambil yang pertama secara alfabetis
+                return duplicates.sort()[0];
+            }
+            return teksGolonganDarahTerlangka;
+        }
+    },
+    data() {
+        return {
+            loaded: false,
+            BloodData: [],
+            ageData: [],
+            DistrictData: [],
+            ageOptions: {
+                responsive: true,
+                plugins: {  // 'legend' now within object 'plugins {}'
+                    legend: {
+                        labels: {
+                            color: "#222539",  // not 'fontColor:' anymore
+                            // fontSize: 18  // not 'fontSize:' anymore
+                            font: {
+                                size: 18,
+                                weight: 'bold' // 'size' now within object 'font {}'
+                            }
+                        }
+                    }
+                },
+            }
+        }
+    },
+
+    name: 'BarChart',
 }
 </script>
 
 <template>
-    <div class="flex">
+    <div class="flex bg-offwhite">
         <Sidebar />
 
-        <div>
-            <div class="ml-8 flex items-center justify-between border-b border-lightgray">
-                <p class=" font-bold text-[30px]  mt-4 py-4 leading-6 text-blueblack">Data Umum
-                    Pasien</p>
-                <form class="relative w-max flex flex-row bg-white rounded-md pl-4 mt-4 py-4">
-                    <div>
-                        <form action="" class="max-w-[480px] w-full px-4">
-                            <div class="relative">
-                                <input type="text" name="q" class="w-full border h-12 shadow py-2 px-4 rounded-lg"
-                                    placeholder="Quick Find">
-                                <button type="submit">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                        class="text-gray-400 h-5 w-5 absolute top-3.5 right-3 fill-current"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                            d="M4.64286 7.92857C4.64286 3.82588 7.96874 0.5 12.0714 0.5C16.1741 0.5 19.5 3.82588 19.5 7.92857C19.5 12.0313 16.1741 15.3571 12.0714 15.3571C10.3811 15.3571 8.82147 14.7917 7.57333 13.8409L2.20711 19.2071C1.81658 19.5976 1.18342 19.5976 0.792893 19.2071C0.402369 18.8166 0.402369 18.1834 0.792893 17.7929L6.15912 12.4267C5.20834 11.1785 4.64286 9.61894 4.64286 7.92857ZM12.0714 2.5C9.07331 2.5 6.64286 4.93045 6.64286 7.92857C6.64286 9.42791 7.24938 10.7837 8.23285 11.7672C9.21632 12.7506 10.5721 13.3571 12.0714 13.3571C15.0695 13.3571 17.5 10.9267 17.5 7.92857C17.5 4.93045 15.0695 2.5 12.0714 2.5Z"
-                                            fill="black" />
-                                    </svg>
-
-                                </button>
-                            </div>
-                        </form>
+        <div class="flex flex-col gap-4 pt-4 pl-4">
+            <div class="flex gap-4 items-center">
+                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 pr-8">
+                    <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 pl-8">Grafik
+                        Pasien
+                        berdasarkan Kabupaten</p>
+                    <Bar v-if="loaded" :data="DistrictData" class="w-full max-w-[700px] min-h-[282px] max-h-[282px] text-white ml-8" />
+                </div>
+                
+                <div
+                    class="flex flex-col justify-between pl-4 bg-work bg-no-repeat bg-center bg-cover h-full max-h-[282px] min-w-[509px] max-w-[510px]">
+                    <div class="flex flex-col gap-4">
+                        <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA UMUM PASIEN</p>
+                        <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang data
+                            umum pasien</p>
                     </div>
-                </form>
+                    <div class="">
+                        <a href="/detaildataumum"><button class="font-opensans text-white flex items-center gap-2 pb-4">Read
+                                more <svg width="12" height="11" viewBox="0 0 12 11" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M1 6.00156H8.586L6.293 8.29456C6.03304 8.54563 5.92879 8.91743 6.0203 9.26706C6.11182 9.61669 6.38486 9.88974 6.73449 9.98125C7.08412 10.0728 7.45593 9.96851 7.707 9.70856L11.707 5.70856C11.8951 5.52095 12.0008 5.26621 12.0008 5.00056C12.0008 4.7349 11.8951 4.48017 11.707 4.29256L7.707 0.292556C7.31598 -0.097909 6.68247 -0.0974613 6.292 0.293556C5.90153 0.684574 5.90198 1.31809 6.293 1.70856L8.586 4.00156H1C0.447715 4.00156 0 4.44927 0 5.00156C0 5.55384 0.447715 6.00156 1 6.00156Z"
+                                        fill="white" />
+                                </svg>
+                            </button></a>
+                    </div>
+
+                </div>
             </div>
 
-            <p class="ml-8 font-normal text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
 
-            <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
-                <thead class="bg-gray-50">
-                    <tr class="border-b-[0.5px] border-b-orange">
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
-                            No
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
-                            Nama
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
-                            Alamat
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
-                            Gender
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
-                            Tanggal Lahir
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
-                            Golongan Darah
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
-                            Nomor HP
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
-                            Email
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap  font-normal  text-sulfurblack text-base">
-                            1
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="">
-                                    <div class=" font-normal text-sulfurblack text-base">
-                                        Abib Basnuril
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 min-w-[300px] max-w-[301px]">
-                            <p class=" font-normal text-sulfurblack text-base ">Desa balabala RT03/RW02,
-                                kec bojong, kab bandung, prov jabar</p>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">Laki-Laki</p>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">11 Desember 1999</p>
-                        </td>
 
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">AB</p>
-                        </td>
+            <div class="flex gap-4">
+                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 pr-8">
+                    <p class="font-assistant text-[18px] font-semibold leading-5 text-midnightblue">Grafik Pasien
+                        berdasarkan Golongan Darah</p>
+                    
+                    <Pie v-if="loaded" :data="BloodData" class="border border-lightsilver rounded-lg max-w-[350px] h-full max-h-[350px] text-white ml-8" />
+                    <div class="pb-4">
+                        <p>Golongan Darah Terbanyak: {{ golonganDarahTerbanyak }}</p>
+                        <p>Golongan Darah Terlangka: {{ golonganDarahTerlangka }}</p>
+                    </div>
+                </div>
 
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">081234214944</p>
-                        </td>
+                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 pr-8">
+                    <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 pl-8">Grafik
+                        Pasien
+                        berdasarkan Umur</p>
+                    <Bar v-if="loaded" :data="ageData" :options="ageOptions"
+                        class="w-full border border-lightsilver rounded-lg p-4 max-w-[700px] min-h-[340px] max-h-[350px] text-white mx-4" />
+                </div>
 
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">abib@gmail.com</p>
-                        </td>
-                    </tr>
+            </div>
 
-                </tbody>
-        </table>
+
+
+        </div>
     </div>
-</div></template>
+</template>

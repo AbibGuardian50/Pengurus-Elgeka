@@ -20,8 +20,7 @@ export default {
                 this.daftarpengurus = response.data.result.data
                 // const superAdmin = VueCookies.get('superAdmin')
                 // this.getRoles = superAdmin
-                console.log(this.getRoles)
-                console.log(this.daftaradmin)
+                console.log(this.daftarpengurus)
             } else {
                 this.error = 'dilarang akses halaman ini'
             }
@@ -40,7 +39,6 @@ export default {
         },
         editpengurus(id) {
             const tokenlogin = VueCookies.get('TokenAuthorization')
-            // const toast = useToast();
             const url = `https://elgeka-web-api-production.up.railway.app/api/v1/pengurus/${id}`
             axios.patch(url, this.edited, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                 .then(response => {
@@ -65,7 +63,7 @@ export default {
             getRoles: false,
             resulterror: '',
             daftarpengurus: '',
-            edited: {
+            daftarpengurus: {
                 full_name: '',
                 username: ''
             }
@@ -102,13 +100,13 @@ export default {
                             <label for="nama lengkap" class="font-poppins font-bold text-base text-orange">Nama
                                 Lengkap</label>
                             <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
-                                v-model="edited.full_name" name="nama lengkap" id="">
+                                v-model="daftarpengurus.full_name" name="nama lengkap" id="">
                         </div>
 
                         <div class="flex gap-2 flex-col">
                             <label for="username" class="font-poppins font-bold text-base text-orange">Username</label>
                             <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
-                                name="username" v-model="edited.username" id="" >
+                                name="username" v-model="daftarpengurus.username" id="" >
                         </div>
                     </div>
                     <!--footer-->
