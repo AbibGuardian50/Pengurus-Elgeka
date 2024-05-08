@@ -1,9 +1,69 @@
 <script>
 import Sidebar from "../components/Sidebar.vue"
+import axios from 'axios'
+import VueCookies from 'vue-cookies'
+import { format } from 'date-fns';
+import idLocale from 'date-fns/locale/id';
 
 export default {
+    async created() {
+        try {
+            const tokenlogin = VueCookies.get('TokenAuthorization')
+            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/list/website';
+            const response = await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ${tokenlogin}`
+                },
+            });
+            this.InfoPatient = response.data.Data;
+            this.InfoPatient.sort((x, y) => x.id - y.id)
+            this.InfoPatient.forEach((item, index) => {
+                item.no = index + 1;
+            });
+            this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage); // Calculate total pages
+            this.updatePaginatedData(); // Update paginated data
+        } catch (error) {
+            console.error(error);
+        }
+    },
     components: {
         Sidebar
+    },
+    data() {
+        return {
+            InfoPatient: [],
+            perPage: 10, // Number of items per page
+            currentPage: 1, // Current page
+            totalPages: 0, // Total pages
+            paginatedInfoPatient: [] // Paginated data
+        }
+    },
+    methods: {
+        formatDate(dateString) {
+            // Ubah format tanggal
+            return format(new Date(dateString), 'dd MMMM yyyy', { locale: idLocale });
+        },
+        updatePaginatedData() {
+            const startIndex = (this.currentPage - 1) * this.perPage;
+            const endIndex = startIndex + this.perPage;
+            this.paginatedInfoPatient = this.InfoPatient.slice(startIndex, endIndex);
+        },
+        goToPage(pageNumber) {
+        this.currentPage = pageNumber; // Set current page to the selected page number
+        this.updatePaginatedData(); // Update paginated data for the selected page
+    },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                this.updatePaginatedData(); // Update paginated data when navigating to next page
+            }
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.updatePaginatedData(); // Update paginated data when navigating to previous page
+            }
+        }
     }
 }
 </script>
@@ -13,9 +73,9 @@ export default {
         <Sidebar />
 
         <div>
+            <!-- Your content -->
             <div class="ml-8 flex items-center justify-between border-b border-lightgray">
-                <p class=" font-bold text-[30px]  mt-4 py-4 leading-6 text-blueblack">Data Umum
-                    Pasien</p>
+                <p class="font-bold font-gotham text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Pasien</p>
                 <form class="relative w-max flex flex-row bg-white rounded-md pl-4 mt-4 py-4">
                     <div>
                         <form action="" class="max-w-[480px] w-full px-4">
@@ -38,76 +98,95 @@ export default {
                 </form>
             </div>
 
-            <p class="ml-8 font-normal text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
+            <p class="ml-8 font-light font-gotham text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
 
             <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
                 <thead class="bg-gray-50">
-                    <tr class="border-b-[0.5px] border-b-orange">
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
+                    <tr class="border-b-[0.5px] border-b-lightgray">
+                        <th scope="col" class="px-3 py-3 max-w-[50px] text-left font-bold font-gotham text-black text-base">
                             No
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
+                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Nama
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
+                        <th scope="col" class="px-3 py-3 max-w-[300px] text-left font-bold font-gotham text-black text-base">
                             Alamat
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
+                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Gender
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
+                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Tanggal Lahir
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
+                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            Umur
+                        </th>
+                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Golongan Darah
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
+                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Nomor HP
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
+                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Email
                         </th>
+                        
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap  font-normal  text-sulfurblack text-base">
-                            1
+                <tbody>
+                    <tr v-for="(data, index) in paginatedInfoPatient" :key="index"
+                        class="bg-white divide-y divide-gray-200">
+                        <td class="px-3 py-4 whitespace-nowrap font-gotham min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
+                            {{ data.no }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-3 py-4 min-w-[200px] max-w-[251px]">
                             <div class="flex items-center">
-                                <div class="">
-                                    <div class=" font-normal text-sulfurblack text-base">
-                                        Abib Basnuril
+                                <div>
+                                    <div class="font-gotham font-light leading-4 text-black text-base">
+                                        {{ data.Name }}
                                     </div>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4 min-w-[300px] max-w-[301px]">
-                            <p class=" font-normal text-sulfurblack text-base ">Desa balabala RT03/RW02,
-                                kec bojong, kab bandung, prov jabar</p>
+                        <td class="px-3 py-4 min-w-[250px] max-w-[251px]">
+                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.Address }}</p>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">Laki-Laki</p>
+                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
+                            <p v-if="data.Gender === 'female'" class="font-gotham font-light leading-4 text-black text-base">Perempuan</p>
+                            <p v-else-if="data.Gender === 'male'" class="font-gotham font-light leading-4 text-black text-base">Laki-Laki</p>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">11 Desember 1999</p>
+                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
+                            <p class="font-gotham font-light leading-4 text-black text-base">{{ formatDate(data.BirthDate) }}</p>
                         </td>
-
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">AB</p>
+                        <td class="px-3 py-4 min-w-[50px] max-w-[101px]">
+                            <p v-if="data.Age" class="font-gotham font-light leading-4 text-black text-base">{{ data.Age }}</p>
+                            <p v-else-if="!data.Age" class="font-gotham font-light leading-4 text-black text-base">Tidak diketahui</p>
                         </td>
-
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">081234214944</p>
+                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
+                            <p v-if="data.BloodGroup" class="font-gotham font-light leading-4 text-black text-base">{{ data.BloodGroup }}
+                            </p>
+                            <p v-else class="font-gotham font-light leading-4 text-black text-base">Tidak diketahui</p>
                         </td>
-
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">abib@gmail.com</p>
+                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
+                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.PhoneNumber }}</p>
+                        </td>
+                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
+                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.Email }}</p>
                         </td>
                     </tr>
-
                 </tbody>
-        </table>
+            </table>
+
+            <!-- Pagination navigation -->
+            <div class="ml-8 mt-4 flex justify-center">
+                <button @click="prevPage" :disabled="currentPage === 1"
+                    class="px-4 py-2 mr-2 bg-teal  text-white rounded-md">Previous</button>
+                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
+                    :class="{ 'bg-teal  text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
+                    class="px-4 py-2 mr-2">{{ pageNumber }}</button>
+                <button @click="nextPage" :disabled="currentPage === totalPages"
+                    class="px-4 py-2 bg-teal  text-white rounded-md">Next</button>
+            </div>
+        </div>
     </div>
-</div></template>
+</template>

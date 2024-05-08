@@ -19,12 +19,35 @@ export default {
                 },
             });
             const responseData = response.data.Data;
+            // Hitung total pasien
+            this.TotalGeneralPatient = responseData.length;
+
+            // Sekarang TotalPasienUmum berisi jumlah total pasien dari respons API
+            console.log('Total Pasien:', this.TotalGeneralPatient);
             // Data Pengelompokan Umur
-            const ageCounts = {};
+            // const ageCounts = {};
+
+            const ageCounts = {
+                '1-20': 0,
+                '21-40': 0,
+                '41-60': 0,
+                '61-80': 0,
+                '81+': 0
+            };
             responseData.forEach(item => {
                 const age = item.Age;
                 if (age !== 0 && age !== null) {
-                    ageCounts[age] = (ageCounts[age] || 0) + 1;
+                    if (age <= 20) {
+                        ageCounts['1-20']++;
+                    } else if (age <= 40) {
+                        ageCounts['21-40']++;
+                    } else if (age <= 60) {
+                        ageCounts['41-60']++;
+                    } else if (age <= 80) {
+                        ageCounts['61-80']++;
+                    } else {
+                        ageCounts['81+']++;
+                    }
                 }
             });
             this.ageData = {
@@ -96,6 +119,11 @@ export default {
         Doughnut,
     },
     computed: {
+        TotalGolonganDarah() {
+            if (!this.BloodData.datasets) return 0;
+            const BloodGroupCounts = this.BloodData.datasets[0].data;
+            return BloodGroupCounts.reduce((total, count) => total + count, 0);
+        },
         golonganDarahTerbanyak() {
             if (!this.BloodData.datasets) return '';
             const BloodGroupCounts = this.BloodData.datasets[0].data;
@@ -115,7 +143,6 @@ export default {
                 return duplicates.sort()[0];
             }
             return teksGolonganDarahTerbanyak;
-
         },
         golonganDarahTerlangka() {
             if (!this.BloodData.datasets) return '';
@@ -127,12 +154,8 @@ export default {
 
             // Menghitung jumlah orang dengan golongan darah terlangka
             const jumlahOrangTerlangka = minCount;
-
             // Format teks yang menampilkan golongan darah dan jumlah orang
             const teksGolonganDarahTerlangka = `${golonganDarahTerlangka} (${jumlahOrangTerlangka} Orang)`;
-
-
-
             // Cek jika ada lebih dari satu golongan darah dengan nilai yang sama
             const duplicates = labels.filter(label => BloodGroupCounts[label] === minCount);
             if (duplicates.length > 1) {
@@ -148,6 +171,7 @@ export default {
             BloodData: [],
             ageData: [],
             DistrictData: [],
+            TotalGeneralPatient: '',
             ageOptions: {
                 responsive: true,
                 plugins: {  // 'legend' now within object 'plugins {}'
@@ -180,9 +204,10 @@ export default {
                     <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 pl-8">Grafik
                         Pasien
                         berdasarkan Kabupaten</p>
-                    <Bar v-if="loaded" :data="DistrictData" class="w-full max-w-[700px] min-h-[282px] max-h-[282px] text-white ml-8" />
+                    <Bar v-if="loaded" :data="DistrictData"
+                        class="w-full max-w-[700px] min-h-[282px] max-h-[282px] text-white ml-8" />
                 </div>
-                
+
                 <div
                     class="flex flex-col justify-between pl-4 bg-work bg-no-repeat bg-center bg-cover h-full max-h-[282px] min-w-[509px] max-w-[510px]">
                     <div class="flex flex-col gap-4">
@@ -202,6 +227,14 @@ export default {
                     </div>
 
                 </div>
+
+                <div class="flex flex-col">
+                    <p class="font-bebasneue font-normal text-[24px] text-charcoalgray">Statistik Pasien</p>
+                    <div class="bg-white rounded-lg shadow-[0_0_12px_0_rgba(0,0,0,0.04)] px-20 flex flex-col">
+                        <p class="font-hindsiliguri text-crimson font-medium py-4 ">USERS</p>
+                        <p class="font-hindsiliguri text-charcoalgray font-bold text-[32px] leading-[52px] pb-4">{{ TotalGeneralPatient }}</p>
+                    </div>
+                </div>
             </div>
 
 
@@ -210,11 +243,13 @@ export default {
                 <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 pr-8">
                     <p class="font-assistant text-[18px] font-semibold leading-5 text-midnightblue">Grafik Pasien
                         berdasarkan Golongan Darah</p>
-                    
-                    <Pie v-if="loaded" :data="BloodData" class="border border-lightsilver rounded-lg max-w-[350px] h-full max-h-[350px] text-white ml-8" />
+
+                    <Pie v-if="loaded" :data="BloodData"
+                        class="border border-lightsilver rounded-lg max-w-[350px] h-full max-h-[350px] text-white ml-8" />
                     <div class="pb-4">
                         <p>Golongan Darah Terbanyak: {{ golonganDarahTerbanyak }}</p>
                         <p>Golongan Darah Terlangka: {{ golonganDarahTerlangka }}</p>
+                        <p>Total : {{ TotalGolonganDarah }} atau {{ TotalGeneralPatient }}</p>
                     </div>
                 </div>
 
