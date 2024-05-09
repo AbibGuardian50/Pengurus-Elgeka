@@ -99,9 +99,6 @@ export default {
                             Link Google Maps
                         </th>
                         <th scope="col" class="px-3 py-3 text-left font-gotham font-bold text-blueblack text-base">
-                            Latitude Longitude
-                        </th>
-                        <th scope="col" class="px-3 py-3 text-left font-gotham font-bold text-blueblack text-base">
                             Gambar
                         </th>
                         <th scope="col" class="">
@@ -127,10 +124,6 @@ export default {
 
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
                             <a :href="data.link_maps" target="_blank" class="hover:text-warmgray font-normal text-sulfurblack text-base ">{{ data.link_maps }}</a>
-                        </td>
-
-                        <td class="px-3 py-4  min-w-[200px] max-w-[201px]">
-                            <p class=" font-normal text-sulfurblack text-base ">{{ data.latlong }}</p>
                         </td>
 
                         <td class="px-3 py-4 whitespace-nowrap min-w-[200px] max-w-[201px]">

@@ -8,7 +8,7 @@ export default {
             // VueCookies.remove('superAdmin');
             // VueCookies.remove('email');
             // VueCookies.remove('fullname');
-            // VueCookies.remove('id_user');
+            VueCookies.remove('TokenAuthorization');
             // Lakukan langkah lain yang diperlukan saat logout
         },
 

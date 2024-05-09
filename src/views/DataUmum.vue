@@ -249,7 +249,7 @@ export default {
                     <div class="pb-4">
                         <p>Golongan Darah Terbanyak: {{ golonganDarahTerbanyak }}</p>
                         <p>Golongan Darah Terlangka: {{ golonganDarahTerlangka }}</p>
-                        <p>Total : {{ TotalGolonganDarah }} atau {{ TotalGeneralPatient }}</p>
+                        <p>Total : {{ TotalGeneralPatient }}</p>
                     </div>
                 </div>
 

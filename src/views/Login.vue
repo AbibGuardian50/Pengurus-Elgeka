@@ -21,7 +21,7 @@ export default {
                     password: this.password
                 },
                 )
-                if (response.status === 200) {
+                if (response.data.message === "Login Success") {
                     // console.log(response)
                     // // VueCookies.set('Authentication',response.data.Token)
                     // VueCookies.set('Name', response.data.Data[0].Name)
@@ -31,6 +31,16 @@ export default {
                     VueCookies.set('TokenAuthorization',response.data.result.token)
                     this.$router.push('/dataumum')
                     console.log(response)
+                }
+                else if (response.data.code === 400) {
+                    // console.log(response)
+                    // // VueCookies.set('Authentication',response.data.Token)
+                    // VueCookies.set('Name', response.data.Data[0].Name)
+                    // VueCookies.set('Message', response.data.Message)
+                    // const token = ('Authentication', response.data.Token);
+                    // this.setTokenCookie(token);
+                    console.log(response)
+                    this.error = 'ada kesalahan dari sistem, mohon coba lagi'
                 }
             } catch (error) {
                 this.error = 'ada kesalahan dari sistem, mohon coba lagi'
@@ -106,6 +116,8 @@ export default {
                     </div> -->
                 </div>
 
+                <!-- Error Message, hanya muncul jika ada kesalahan dari user atau sistem -->
+                <div v-if="error" class="text-red font-gotham font-bold text-2xl pt-4">{{ error }}</div>
             </form>
             <!-- Forgot Password Link -->
         </div>
