@@ -132,7 +132,7 @@ export default {
                         </div>
 
                         <div class="flex gap-2 flex-col relative">
-                                    <label for="Google Maps" class="font-poppins font-bold text-base text-teal">Latlong</label>
+                                    <label for="Google Maps" class="font-poppins font-bold text-base text-teal">Link Google Maps</label>
                                     <div class="relative">
                                         <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
                                             name="Google Maps" id="" v-model="DataHospital.link_maps"
@@ -154,8 +154,7 @@ export default {
 
 
                                 <div class="flex gap-2 flex-col relative">
-                                    <label for="Google Maps" class="font-poppins font-bold text-base text-teal">Link Google
-                                        Maps</label>
+                                    <label for="Google Maps" class="font-poppins font-bold text-base text-teal">Latlong</label>
                                     <div class="relative">
                                         <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
                                             name="Google Maps" id="" v-model="DataHospital.latlong"
