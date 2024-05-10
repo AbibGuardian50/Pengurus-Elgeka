@@ -74,7 +74,6 @@ export default {
                     })
                     .catch(error => {
                         console.log(error)
-
                     })
             }
         },
@@ -88,13 +87,13 @@ export default {
         <Sidebar />
 
         <div class="ml-8">
-            <p class="text-[30px] text-orange font-bold">Kelola Akun</p>
+            <p class="text-[30px] text-teal font-bold pt-8">Kelola Akun</p>
             <hr>
 
-            <p>Akun Pengurus</p>
+            <p class="font-normal text-[20px] leading-5 text-blueblack pt-4">Akun Pengurus</p>
             <table class="min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
                 <thead class="bg-gray-50">
-                    <tr class="border-b-[0.5px] border-b-orange">
+                    <tr class="border-b-[0.5px] border-b-teal">
                         <th scope="col" class="px-6 py-3 text-left font-normal  text-sulfurblack text-base">
                             NO
                         </th>
@@ -112,7 +111,7 @@ export default {
                         </th>
                         <th scope="col" class="">
                             <button v-on:click="toggleModalCreatePengurus()"
-                                class="bg-orange px-4 py-1 rounded-md text-left  font-semibold text-white text-base">Tambah</button>
+                                class="bg-teal px-4 py-1 rounded-md text-left  font-semibold text-white text-base">Tambah</button>
                         </th>
                     </tr>
                 </thead>
@@ -157,10 +156,10 @@ export default {
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <a :href="'editpengurus/' + data.id">
                                 <button
-                                    class="py-1 px-8 rounded-[5px] bg-orange font-bold text-base text-white">Edit</button>
+                                    class="py-1 px-8 rounded-[5px] bg-teal font-bold text-base text-white">Edit</button>
                             </a>
                             <button href="#" @click="deletepengurus(data.id)"
-                                class="py-1 px-8 rounded-[5px] ml-2 shadow-xl bg-offwhite bg-opacity-64 text-orange font-bold text-base ">Hapus</button>
+                                class="py-1 px-8 rounded-[5px] ml-2 shadow-xl bg-offwhite text-white bg-teal font-bold text-base ">Hapus</button>
                         </td>
                     </tr>
                 </tbody>

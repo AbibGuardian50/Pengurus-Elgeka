@@ -9,18 +9,18 @@ export default {
     async created() {
         try {
             const tokenlogin = VueCookies.get('TokenAuthorization')
-            const url = 'https://elgeka-mobile-production.up.railway.app/api/doctor/list_inactive';
+            const url = 'https://elgeka-mobile-production.up.railway.app/api/doctor/list/website';
             const response = await axios.get(url, {
                 headers: {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
-            this.InfoDoctor = response.data.Data;
-            this.InfoDoctor.sort((x, y) => x.id - y.id)
-            this.InfoDoctor.forEach((item, index) => {
+            this.InfoPatient = response.data.Data;
+            this.InfoPatient.sort((x, y) => x.id - y.id)
+            this.InfoPatient.forEach((item, index) => {
                 item.no = index + 1;
             });
-            this.totalPages = Math.ceil(this.InfoDoctor.length / this.perPage); // Calculate total pages
+            this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage); // Calculate total pages
             this.updatePaginatedData(); // Update paginated data
         } catch (error) {
             console.error(error);
@@ -31,38 +31,14 @@ export default {
     },
     data() {
         return {
-            InfoDoctor: [],
+            InfoPatient: [],
             perPage: 10, // Number of items per page
             currentPage: 1, // Current page
             totalPages: 0, // Total pages
-            paginatedInfoDoctor: [] // Paginated data
-
+            paginatedInfoPatient: [] // Paginated data
         }
     },
     methods: {
-        editstatusdoctor(id) {
-            if (confirm('Apakah kamu yakin untuk mengaktifkan status dokter ini menjadi verified?')) {
-                const tokenlogin = VueCookies.get('TokenAuthorization');
-                axios.defaults.withCredentials = true;
-                const url = `https://elgeka-mobile-production.up.railway.app/api/doctor/activate_account/${id}`;
-                axios.post(
-                    url,
-                    {},
-                    {
-                        headers: {
-                            Authorization: `Bearer ${tokenlogin}`
-                        }
-                    }
-                )
-                    .then(response => {
-                        console.log(response.data);
-                        window.location.reload();
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
-            }
-        },
         formatDate(dateString) {
             // Ubah format tanggal
             return format(new Date(dateString), 'dd MMMM yyyy', { locale: idLocale });
@@ -70,12 +46,12 @@ export default {
         updatePaginatedData() {
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
-            this.paginatedInfoDoctor = this.InfoDoctor.slice(startIndex, endIndex);
+            this.paginatedInfoPatient = this.InfoPatient.slice(startIndex, endIndex);
         },
         goToPage(pageNumber) {
-            this.currentPage = pageNumber; // Set current page to the selected page number
-            this.updatePaginatedData(); // Update paginated data for the selected page
-        },
+        this.currentPage = pageNumber; // Set current page to the selected page number
+        this.updatePaginatedData(); // Update paginated data for the selected page
+    },
         nextPage() {
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
@@ -99,7 +75,7 @@ export default {
         <div>
             <!-- Your content -->
             <div class="ml-8 flex items-center justify-between border-b border-lightgray">
-                <p class="font-bold font-gotham text-[30px] mt-4 py-4 leading-6 text-blueblack">Verifikasi Dokter</p>
+                <p class="font-bold font-gotham text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Dokter</p>
                 <form class="relative w-max flex flex-row bg-white rounded-md pl-4 mt-4 py-4">
                     <div>
                         <form action="" class="max-w-[480px] w-full px-4">
@@ -130,41 +106,31 @@ export default {
                         <th scope="col" class="px-3 py-3 max-w-[50px] text-left font-bold font-gotham text-black text-base">
                             No
                         </th>
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Nama
                         </th>
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Gender
                         </th>
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Nomor HP
                         </th>
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Email
                         </th>
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Poli
                         </th>
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
-                            Nama Rumah Sakit
+                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            Rumah Sakit
                         </th>
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
-                            Status
-                        </th>
-
+                        
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(data, index) in paginatedInfoDoctor" :key="index" class="bg-white divide-y divide-gray-200">
-                        <td
-                            class="px-3 py-4 whitespace-nowrap font-gotham min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
+                    <tr v-for="(data, index) in paginatedInfoPatient" :key="index"
+                        class="bg-white divide-y divide-gray-200">
+                        <td class="px-3 py-4 whitespace-nowrap font-gotham min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
                             {{ data.no }}
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[251px]">
@@ -177,41 +143,22 @@ export default {
                             </div>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p v-if="data.Gender === 'female'"
-                                class="font-gotham font-light leading-4 text-black text-base">Perempuan</p>
-                            <p v-else-if="data.Gender === 'male'"
-                                class="font-gotham font-light leading-4 text-black text-base">Laki-Laki</p>
-                            <p v-else-if="!data.Gender" class="font-gotham font-light leading-4 text-black text-base">Tidak
-                                Diketahui</p>
+                            <p v-if="data.Gender === 'female'" class="font-gotham font-light leading-4 text-black text-base">Perempuan</p>
+                            <p v-else-if="data.Gender === 'male'" class="font-gotham font-light leading-4 text-black text-base">Laki-Laki</p>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p v-if="data.PhoneNumber" class="font-gotham font-light leading-4 text-black text-base">{{
-                                data.PhoneNumber }}</p>
-                            <p v-else-if="!data.PhoneNumber" class="font-gotham font-light leading-4 text-black text-base">
-                                Tidak Diketahui</p>
+                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.PhoneNumber }}</p>
                         </td>
-                        <td class="px-3 py-4 min-w-[200px] max-w-[221px]">
+                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
                             <p class="font-gotham font-light leading-4 text-black text-base">{{ data.Email }}</p>
                         </td>
+
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
                             <p class="font-gotham font-light leading-4 text-black text-base">{{ data.PolyName }}</p>
                         </td>
+
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
                             <p class="font-gotham font-light leading-4 text-black text-base">{{ data.HospitalName }}</p>
-                        </td>
-                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <div>
-                                <select class="bg-teal py-2 px-4 rounded-lg text-white font-gotham">
-                                    <option>Verified</option>
-                                    <option selected>Not Verified</option>
-                                </select>
-                            </div>
-                        </td>
-                        <td class="px-3 py-4 whitespace-nowrap  text-sm font-medium">
-                            <a @click="editstatusdoctor(data.ID)">
-                                <button
-                                    class="py-1 px-8 rounded-[5px] bg-teal font-inter font-bold text-base text-white">Edit</button>
-                            </a>
                         </td>
                     </tr>
                 </tbody>

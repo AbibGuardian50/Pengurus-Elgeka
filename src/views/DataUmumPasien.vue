@@ -216,7 +216,7 @@ export default {
                             umum pasien</p>
                     </div>
                     <div class="">
-                        <a href="/detaildataumum"><button class="font-opensans text-white flex items-center gap-2 pb-4">Read
+                        <a href="/detaildataumumpasien"><button class="font-opensans text-white flex items-center gap-2 pb-4">Read
                                 more <svg width="12" height="11" viewBox="0 0 12 11" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path

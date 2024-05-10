@@ -16,9 +16,9 @@ const router = createRouter({
     },
 
     {
-      path: '/dataumum',
-      name: 'dataumum',
-      component: () => import('../views/DataUmum.vue'),
+      path: '/dataumumpasien',
+      name: 'dataumumpasien',
+      component: () => import('../views/DataUmumPasien.vue'),
       beforeEnter: (to, from, next) => {
         const tokenlogin = VueCookies.get('TokenAuthorization');
         if (!tokenlogin) {
@@ -30,9 +30,37 @@ const router = createRouter({
     },
 
     {
-      path: '/detaildataumum',
-      name: 'detaildataumum',
-      component: () => import('../views/DetailDataUmum.vue'),
+      path: '/detaildataumumpasien',
+      name: 'detaildataumumpasien',
+      component: () => import('../views/DetailDataUmumPasien.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
+    },
+
+    {
+      path: '/dataumumdokter',
+      name: 'dataumumdokter',
+      component: () => import('../views/DataUmumDokter.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
+    },
+
+    {
+      path: '/detaildataumumdokter',
+      name: 'detaildataumumdokter',
+      component: () => import('../views/DetailDataUmumDokter.vue'),
       beforeEnter: (to, from, next) => {
         const tokenlogin = VueCookies.get('TokenAuthorization');
         if (!tokenlogin) {
@@ -47,6 +75,20 @@ const router = createRouter({
       path: '/DataKepemilikanObat',
       name: 'DataKepemilikanObat',
       component: () => import('../views/DataKepemilikanObat.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
+    },
+
+    {
+      path: '/DetailDataKepemilikanObat',
+      name: 'DetailDataKepemilikanObat',
+      component: () => import('../views/DetailDataKepemilikanObat.vue'),
       beforeEnter: (to, from, next) => {
         const tokenlogin = VueCookies.get('TokenAuthorization');
         if (!tokenlogin) {
@@ -103,6 +145,20 @@ const router = createRouter({
       path: '/editpengurus/:id',
       name: 'EditPengurus',
       component: () => import('../views/EditPengurus.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
+    },
+
+    {
+      path: '/EditDataRumahSakit/:id',
+      name: 'EditDataRumahSakit',
+      component: () => import('../views/EditDataRumahSakit.vue'),
       beforeEnter: (to, from, next) => {
         const tokenlogin = VueCookies.get('TokenAuthorization');
         if (!tokenlogin) {

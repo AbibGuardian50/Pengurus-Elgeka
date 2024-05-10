@@ -50,11 +50,25 @@ export default {
             axios.post(url, formData, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                 .then(response => {
                     console.log(response.data);
-                    
+                    window.location.reload();
                 })
                 .catch(error => {
                     console.log(error)
                 })
+        },
+        deletehospital(id) {
+            if (confirm('Apakah kamu yakin untuk menghapus data rumah sakit ini?')) {
+                const tokenlogin = VueCookies.get('TokenAuthorization')
+                const url = `https://elgeka-web-api-production.up.railway.app/api/v1/infoRS/${id}`
+                axios.delete(url, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
+                    .then(response => {
+                        console.log(response.data);
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            }
         },
         toggleModalCreateHospital: function () {
             this.showcreatehospital = !this.showcreatehospital;
@@ -103,7 +117,7 @@ export default {
                         </th>
                         <th scope="col" class="">
                             <button v-on:click="toggleModalCreateHospital()"
-                                class="bg-orange px-4 py-1 rounded-md text-left  font-semibold text-white text-base">Tambah</button>
+                                class="bg-teal px-4 py-1 rounded-md text-left  font-semibold text-white text-base">Tambah</button>
                         </th>
                     </tr>
                 </thead>
@@ -123,20 +137,22 @@ export default {
                         </td>
 
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <a :href="data.link_maps" target="_blank" class="hover:text-warmgray font-normal text-sulfurblack text-base ">{{ data.link_maps }}</a>
+                            <a :href="data.link_maps" target="_blank"
+                                class="hover:text-warmgray font-normal text-sulfurblack text-base ">{{ data.link_maps }}</a>
                         </td>
 
                         <td class="px-3 py-4 whitespace-nowrap min-w-[200px] max-w-[201px]">
                             <img class="bg-hospital bg-cover bg-center w-[160px] h-[160px]" :src="url + data.image_url">
                         </td>
 
-                        <td class="px-3 py-4 flex flex-col gap-2 justify-center items-center whitespace-nowrap text-sm font-medium">
-                            <a :href="'editpengurus/' + data.id">
+                        <td
+                            class="px-3 py-4 flex flex-col gap-2 justify-center items-center whitespace-nowrap text-sm font-medium">
+                            <a :href="'editdatarumahsakit/' + data.id">
                                 <button
-                                    class="py-1 px-8 rounded-[5px] w-[110px] bg-white font-bold text-base text-orange shadow-s">Edit</button>
+                                    class="py-1 px-8 rounded-[5px] w-[110px] bg-white font-bold text-base text-teal shadow-s">Edit</button>
                             </a>
-                            <a href=""><button href="#" @click="deletepengurus(data.id)"
-                                    class="py-1 px-8 rounded-[5px] w-[110px] shadow-s bg-white bg-opacity-64 text-orange font-bold text-base ">Hapus</button></a>
+                            <button href="#" @click="deletehospital(data.id)"
+                                class="py-1 px-8 rounded-[5px] w-[110px] shadow-s bg-white bg-opacity-64 text-teal font-bold text-base ">Hapus</button>
                         </td>
                     </tr>
 
@@ -152,7 +168,7 @@ export default {
                             class="border border-red rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                             <!--header-->
                             <div class="flex items-start justify-between p-5 border-b-2 border-black rounded-t">
-                                <h3 class="text-[40px] text-orange font-semibold font-poppins">
+                                <h3 class="text-[40px] text-teal font-semibold font-poppins">
                                     Data RSUD Bandung
                                 </h3>
                                 <button
@@ -167,41 +183,70 @@ export default {
                             <div class="flex flex-col gap-8 relative p-6">
                                 <div class="flex gap-2 flex-col">
                                     <label for="nama lengkap"
-                                        class="font-poppins font-bold text-base text-orange">Nama</label>
+                                        class="font-poppins font-bold text-base text-teal">Nama</label>
                                     <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
                                         name="nama lengkap" id="" v-model="form.nama_rs" placeholder="Nama Rumah Sakit">
                                 </div>
                                 <div class="flex gap-2 flex-col">
-                                    <label for="alamat" class="font-poppins font-bold text-base text-orange">Alamat</label>
+                                    <label for="alamat" class="font-poppins font-bold text-base text-teal">Alamat</label>
                                     <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
-                                        name="alamat" id="" v-model="form.lokasi_rs" placeholder="Contoh format: Jatiwaringin, Kota Bekasi">
+                                        name="alamat" id="" v-model="form.lokasi_rs"
+                                        placeholder="Contoh format: Jatiwaringin, Kota Bekasi">
                                 </div>
 
                                 <div class="flex gap-2 flex-col">
-                                    <label for="Kontak" class="font-poppins font-bold text-base text-orange">Kontak</label>
+                                    <label for="Kontak" class="font-poppins font-bold text-base text-teal">Kontak</label>
                                     <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
                                         name="Kontak" id="" v-model="form.info_kontak"
                                         placeholder="Nomor Telepon Rumah Sakit">
                                 </div>
 
-                                <div class="flex gap-2 flex-col">
-                                    <label for="Google Maps" class="font-poppins font-bold text-base text-orange">Link
-                                        Google Maps</label>
-                                    <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
-                                        name="Google Maps" id="" v-model="form.link_maps"
-                                        placeholder="Link/URL Google Maps">
+                                <div class="flex gap-2 flex-col relative">
+                                    <label for="Google Maps" class="font-poppins font-bold text-base text-teal">Latlong</label>
+                                    <div class="relative">
+                                        <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
+                                            name="Google Maps" id="" v-model="form.link_maps"
+                                            placeholder="Link/URL Google Maps">
+                                        <a target="_blank" href="https://imgur.com/gallery/jwZQDHN"><span
+                                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <g clip-path="url(#clip0_1706_972)">
+                                                        <path
+                                                            d="M6.06016 6.00004C6.2169 5.55449 6.52626 5.17878 6.93347 4.93946C7.34067 4.70015 7.81943 4.61267 8.28495 4.69252C8.75047 4.77236 9.17271 5.01439 9.47688 5.37573C9.78106 5.73706 9.94753 6.19439 9.94683 6.66671C9.94683 8.00004 7.94683 8.66671 7.94683 8.66671M8.00016 11.3334H8.00683M14.6668 8.00004C14.6668 11.6819 11.6821 14.6667 8.00016 14.6667C4.31826 14.6667 1.3335 11.6819 1.3335 8.00004C1.3335 4.31814 4.31826 1.33337 8.00016 1.33337C11.6821 1.33337 14.6668 4.31814 14.6668 8.00004Z"
+                                                            stroke="#98A2B3" stroke-width="1.33333" stroke-linecap="round"
+                                                            stroke-linejoin="round" />
+                                                    </g>
+                                                </svg>
+                                            </span></a>
+                                    </div>
+                                </div>
+
+
+                                <div class="flex gap-2 flex-col relative">
+                                    <label for="Google Maps" class="font-poppins font-bold text-base text-teal">Link Google
+                                        Maps</label>
+                                    <div class="relative">
+                                        <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
+                                            name="Google Maps" id="" v-model="form.latlong"
+                                            placeholder="Link/URL Google Maps">
+                                        <a target="_blank" href="https://imgur.com/gallery/LaDTHRq"><span
+                                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <g clip-path="url(#clip0_1706_972)">
+                                                        <path
+                                                            d="M6.06016 6.00004C6.2169 5.55449 6.52626 5.17878 6.93347 4.93946C7.34067 4.70015 7.81943 4.61267 8.28495 4.69252C8.75047 4.77236 9.17271 5.01439 9.47688 5.37573C9.78106 5.73706 9.94753 6.19439 9.94683 6.66671C9.94683 8.00004 7.94683 8.66671 7.94683 8.66671M8.00016 11.3334H8.00683M14.6668 8.00004C14.6668 11.6819 11.6821 14.6667 8.00016 14.6667C4.31826 14.6667 1.3335 11.6819 1.3335 8.00004C1.3335 4.31814 4.31826 1.33337 8.00016 1.33337C11.6821 1.33337 14.6668 4.31814 14.6668 8.00004Z"
+                                                            stroke="#98A2B3" stroke-width="1.33333" stroke-linecap="round"
+                                                            stroke-linejoin="round" />
+                                                    </g>
+                                                </svg>
+                                            </span></a>
+                                    </div>
                                 </div>
 
                                 <div class="flex gap-2 flex-col">
-                                    <label for="Latlong" class="font-poppins font-bold text-base text-orange">Latitude
-                                        Longitude</label>
-                                    <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
-                                        name="Google Maps" id="" v-model="form.latlong"
-                                        placeholder="Latitude Longitude Google Maps">
-                                </div>
-
-                                <div class="flex gap-2 flex-col">
-                                    <label for="Foto Profil" class="font-poppins font-bold text-base text-orange">Gambar
+                                    <label for="Foto Profil" class="font-poppins font-bold text-base text-teal">Gambar
                                         Lengkap</label>
                                     <input @change="handleFileChange"
                                         class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="file"
@@ -213,12 +258,12 @@ export default {
                             <!--footer-->
                             <div class="flex items-center justify-center p-6 border-t-2 border-black rounded-b">
                                 <button
-                                    class="text-white bg-orange border hover:text-white active:bg-orange-600 font-bold uppercase text-sm px-12 py-3 rounded outline-none focus:outline-none mr-1 mb-1   "
+                                    class="text-white bg-teal border hover:text-white active:bg-teal-600 font-bold uppercase text-sm px-12 py-3 rounded outline-none focus:outline-none mr-1 mb-1   "
                                     type="submit">
                                     Simpan
                                 </button>
                                 <button
-                                    class="text-orange bg-white border active:bg-orange-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
+                                    class="text-teal bg-white border active:bg-teal-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
                                     type="button" v-on:click="toggleModalCreateHospital()">
                                     Batal
                                 </button>
@@ -229,5 +274,4 @@ export default {
                 <div v-if="showcreatehospital" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
             </div>
         </div>
-    </div>
-</template>
+</div></template>

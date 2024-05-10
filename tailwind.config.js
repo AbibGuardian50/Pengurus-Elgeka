@@ -35,6 +35,10 @@ export default {
         'maize': '#F0E442',
         'crimson': '#FF5B5A',
         'charcoalgray': '#454256',
+        'whisperingsilver': '#EEEEED99',
+        'midnightshadow': '#070707',
+        'azurebreeze': '#4AD0E0',
+        'deepseateal': '#0A6B77',
       }
     },
     fontFamily: {

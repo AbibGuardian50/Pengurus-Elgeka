@@ -15,6 +15,7 @@ export default {
     methods: {
         async login() {
             try {
+                axios.defaults.withCredentials = true;
                 const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/pengurus/login'
                 const response = await axios.post(url, {
                     username: this.username,
@@ -29,7 +30,7 @@ export default {
                     // const token = ('Authentication', response.data.Token);
                     // this.setTokenCookie(token);
                     VueCookies.set('TokenAuthorization',response.data.result.token)
-                    this.$router.push('/dataumum')
+                    this.$router.push('/dataumumpasien')
                     console.log(response)
                 }
                 else if (response.data.code === 400) {
