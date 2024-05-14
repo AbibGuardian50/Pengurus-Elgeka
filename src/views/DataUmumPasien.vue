@@ -200,12 +200,12 @@ export default {
 
         <div class="flex flex-col gap-4 pt-4 pl-4">
             <div class="flex gap-4 items-center">
-                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 pr-8">
+                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 py-4 pr-8">
                     <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 pl-8">Grafik
                         Pasien
                         berdasarkan Kabupaten</p>
                     <Bar v-if="loaded" :data="DistrictData"
-                        class="w-full max-w-[700px] min-h-[282px] max-h-[282px] text-white ml-8" />
+                        class="border border-lightsilver rounded-md w-full max-w-[700px] min-h-[282px] max-h-[282px] text-white ml-8" />
                 </div>
 
                 <div
@@ -216,7 +216,8 @@ export default {
                             umum pasien</p>
                     </div>
                     <div class="">
-                        <a href="/detaildataumumpasien"><button class="font-opensans text-white flex items-center gap-2 pb-4">Read
+                        <a href="/detaildataumumpasien"><button
+                                class="font-opensans text-white flex items-center gap-2 pb-4">Read
                                 more <svg width="12" height="11" viewBox="0 0 12 11" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -227,21 +228,13 @@ export default {
                     </div>
 
                 </div>
-
-                <div class="flex flex-col">
-                    <p class="font-bebasneue font-normal text-[24px] text-charcoalgray">Statistik Pasien</p>
-                    <div class="bg-white rounded-lg shadow-[0_0_12px_0_rgba(0,0,0,0.04)] px-20 flex flex-col">
-                        <p class="font-hindsiliguri text-crimson font-medium py-4 ">USERS</p>
-                        <p class="font-hindsiliguri text-charcoalgray font-bold text-[32px] leading-[52px] pb-4">{{ TotalGeneralPatient }}</p>
-                    </div>
-                </div>
             </div>
 
 
 
-            <div class="flex gap-4">
+            <div class="flex gap-4 pb-8">
                 <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 pr-8">
-                    <p class="font-assistant text-[18px] font-semibold leading-5 text-midnightblue">Grafik Pasien
+                    <p class="font-assistant text-[18px] font-semibold leading-5 text-midnightblue pt-4">Grafik Pasien
                         berdasarkan Golongan Darah</p>
 
                     <Pie v-if="loaded" :data="BloodData"
@@ -253,12 +246,24 @@ export default {
                     </div>
                 </div>
 
-                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 pr-8">
-                    <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 pl-8">Grafik
-                        Pasien
-                        berdasarkan Umur</p>
-                    <Bar v-if="loaded" :data="ageData" :options="ageOptions"
-                        class="w-full border border-lightsilver rounded-lg p-4 max-w-[700px] min-h-[340px] max-h-[350px] text-white mx-4" />
+                <div class="flex flex-col items-center justify-center gap-4 rounded-lg pl-4 pr-8">
+                    <div class="bg-white py-4">
+                        <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pb-2 pl-8">Grafik
+                            Pasien
+                            berdasarkan Umur</p>
+                        <Bar v-if="loaded" :data="ageData" :options="ageOptions"
+                            class="w-full border border-lightsilver rounded-lg p-4 max-w-[700px] min-h-[340px] max-h-[350px] text-white mx-4" />
+                    </div>
+                    <div>
+                        <div class="flex flex-col py-4">
+                            <div class="bg-white rounded-lg shadow-[0_0_12px_0_rgba(0,0,0,0.04)] pl-4 pr-20 flex flex-col">
+                                <p class="font-opensans text-black font-semibold text-[16px] leading-[52px]">
+                                    Total Pasien: {{
+                                        TotalGeneralPatient }}</p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>

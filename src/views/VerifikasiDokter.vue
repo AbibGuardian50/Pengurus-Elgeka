@@ -124,9 +124,9 @@ export default {
 
             <p class="ml-8 font-light font-gotham text-[20px] leading-7 text-blueblack mt-4">Biodata Dokter</p>
 
-            <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
-                <thead>
-                    <tr class="border-b-[0.5px] border-b-teal">
+            <table class="ml-8 min-w-full overflow-x-auto w-[1200px]">
+                <thead class="border-b border-teal">
+                    <tr>
                         <th scope="col" class="px-3 py-3 max-w-[50px] text-left font-bold font-gotham text-black text-base">
                             No
                         </th>
@@ -201,10 +201,9 @@ export default {
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
                             <div>
-                                <select class="bg-teal py-2 px-4 rounded-lg text-white font-gotham">
-                                    <option>Verified</option>
-                                    <option selected>Not Verified</option>
-                                </select>
+                                <p class="bg-teal pl-2 py-2 rounded-lg text-white font-gotham">
+                                    Not Verified
+                                </p>
                             </div>
                         </td>
                         <td class="px-3 py-4 whitespace-nowrap  text-sm font-medium">

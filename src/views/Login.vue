@@ -107,7 +107,7 @@ export default {
                 <!-- Login Button -->
                 <div class="flex items-center flex-col">
                     <button type="submit"
-                        class="bg-orange text-white font-semibold rounded-md py-2 px-4 w-full">Login</button>
+                        class="bg-teal text-white font-semibold rounded-md py-2 px-4 w-full">Login</button>
                     <!-- <div class="mt-6 text-blue-500">
                         <router-link>
                             <a target="_blank"

@@ -81,11 +81,6 @@ export default {
                                 </details>
                             </li>
                         </ul>
-                        <router-link to="/datakesehatan">
-                            <button
-                                class="focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Data
-                                Kesehatan</button>
-                        </router-link>
 
                         <ul class="flex flex-col gap-2">
                             <li>
@@ -119,17 +114,17 @@ export default {
                                                 </a>
                                             </li>
                                             <li class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
-                                                <a href="/dataumumpasien">
+                                                <a href="/HasilLabPotentialHydrogen">
                                                     Potential Hydrogen
                                                 </a>
                                             </li>
                                             <li class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
-                                                <a href="/dataumumpasien">
+                                                <a href="/HasilLabHemoglobin">
                                                     Hemoglobin
                                                 </a>
                                             </li>
                                             <li class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
-                                                <a href="/dataumumpasien">
+                                                <a href="/HasilLabHeartRate">
                                                     Heart Rate
                                                 </a>
                                             </li>
@@ -143,12 +138,6 @@ export default {
                                 </details>
                             </li>
                         </ul>
-
-                        <router-link to="/datatreatment">
-                            <button
-                                class="focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Data
-                                Treatment</button>
-                        </router-link>
 
                         <router-link to="/DataKepemilikanObat">
                             <button

@@ -70,11 +70,11 @@ export default {
                 <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 pr-8">
                     <p class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">GRAFIK DATA LEUKOCYTES</p>
                     <Bar v-if="loaded" :data="DataLabLeukocytes"
-                        class="w-full max-w-[700px] h-full max-h-[900px] text-white ml-8" />
+                        class="min-w-[700px] max-w-[1000px] min-h-[350px] max-h-[650px] text-white ml-8" />
                 </div>
 
                 <div
-                    class="flex flex-col justify-between pl-4 bg-work bg-no-repeat bg-center bg-cover h-full max-h-[900px] min-w-[509px] max-w-[700px]">
+                    class="flex flex-col justify-between pl-4 bg-work bg-no-repeat bg-center bg-cover h-full rounded-md max-h-[900px] min-w-[509px] max-w-[700px]">
                     <div class="flex flex-col gap-4">
                         <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA LEUKOCYTES KESELURUHAN</p>
                         <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang data

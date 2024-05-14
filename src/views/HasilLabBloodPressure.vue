@@ -90,12 +90,12 @@ export default {
         <div class="flex flex-col gap-4 pt-4 pl-4">
             <div class="flex gap-4 items-center">
                 <div class="flex flex-col items-center justify-center gap-4 rounded-lg pl-4 pr-8">
-                    <div class="mb-8 bg-white">
+                    <div class="mb-4 bg-white">
                         <p
                             class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
                             GRAFIK DATA TEKANAN DARAH (DataSys)</p>
                         <Bar v-if="loaded" :data="DataLabBcrAbl"
-                            class="w-full max-w-[700px] min-h-[282px] max-h-[282px] text-white ml-8" />
+                            class="min-w-[700px] max-w-[1000px] min-h-[350px] max-h-[650px] text-white ml-8" />
                     </div>
 
                     <div class="bg-white">
@@ -103,13 +103,13 @@ export default {
                             class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
                             GRAFIK DATA TEKANAN DARAH (DataDia)</p>
                         <Bar v-if="loaded" :data="DataLabBcrAblDataDia"
-                            class="w-full max-w-[700px] min-h-[282px] max-h-[282px] text-white ml-8" />
+                            class="min-w-[700px] max-w-[1000px] min-h-[350px] max-h-[650px] text-white ml-8" />
                     </div>
 
                 </div>
 
                 <div
-                    class="flex flex-col justify-between pl-4 bg-work bg-no-repeat bg-center bg-cover h-full max-h-[282px] min-w-[509px] max-w-[510px]">
+                    class="flex flex-col justify-between pl-4 bg-work bg-no-repeat bg-center bg-cover rounded-md min-w-[400px] max-w-[650px] min-h-[700px] max-h-[1000px]">
                     <div class="flex flex-col gap-4">
                         <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA BLOOD PRESSURE KESELURUHAN
                         </p>
