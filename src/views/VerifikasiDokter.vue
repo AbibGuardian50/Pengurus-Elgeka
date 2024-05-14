@@ -93,14 +93,14 @@ export default {
 </script>
 
 <template>
-    <div class="flex">
+    <div class="flex bg-offwhite">
         <Sidebar />
 
         <div>
             <!-- Your content -->
             <div class="ml-8 flex items-center justify-between border-b border-lightgray">
                 <p class="font-bold font-gotham text-[30px] mt-4 py-4 leading-6 text-blueblack">Verifikasi Dokter</p>
-                <form class="relative w-max flex flex-row bg-white rounded-md pl-4 mt-4 py-4">
+                <form class="relative w-max flex flex-row rounded-md pl-4 mt-4 py-4">
                     <div>
                         <form action="" class="max-w-[480px] w-full px-4">
                             <div class="relative">
@@ -125,8 +125,8 @@ export default {
             <p class="ml-8 font-light font-gotham text-[20px] leading-7 text-blueblack mt-4">Biodata Dokter</p>
 
             <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
-                <thead class="bg-gray-50">
-                    <tr class="border-b-[0.5px] border-b-lightgray">
+                <thead>
+                    <tr class="border-b-[0.5px] border-b-teal">
                         <th scope="col" class="px-3 py-3 max-w-[50px] text-left font-bold font-gotham text-black text-base">
                             No
                         </th>
@@ -162,7 +162,7 @@ export default {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(data, index) in paginatedInfoDoctor" :key="index" class="bg-white divide-y divide-gray-200">
+                    <tr v-for="(data, index) in paginatedInfoDoctor" :key="index" class="divide-y divide-gray-200">
                         <td
                             class="px-3 py-4 whitespace-nowrap font-gotham min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
                             {{ data.no }}

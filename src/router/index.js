@@ -28,6 +28,7 @@ const router = createRouter({
         }
       }
     },
+    
 
     {
       path: '/detaildataumumpasien',
@@ -86,9 +87,51 @@ const router = createRouter({
     },
 
     {
-      path: '/DetailDataKepemilikanObat',
+      path: '/DetailDataUmumKepemilikanObat',
       name: 'DetailDataKepemilikanObat',
       component: () => import('../views/DetailDataKepemilikanObat.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
+    },
+
+    {
+      path: '/DetailHasilLabBCRABL',
+      name: 'DetailHasilLabBCRABL',
+      component: () => import('../views/DetailHasilLabBCR-ABL.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
+    },
+
+    {
+      path: '/DetailHasilLabBloodPressure',
+      name: 'DetailHasilLabBloodPressure',
+      component: () => import('../views/DetailHasilLabBloodPressure.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
+    },
+
+    {
+      path: '/DetailHasilLabLeukocytes',
+      name: 'DetailHasilLabLeukocytes',
+      component: () => import('../views/DetailHasilLabLeukocytes.vue'),
       beforeEnter: (to, from, next) => {
         const tokenlogin = VueCookies.get('TokenAuthorization');
         if (!tokenlogin) {
@@ -159,6 +202,48 @@ const router = createRouter({
       path: '/EditDataRumahSakit/:id',
       name: 'EditDataRumahSakit',
       component: () => import('../views/EditDataRumahSakit.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
+    },
+
+    {
+      path: '/HasilLabBCRABL',
+      name: 'HasilLabBCRABL',
+      component: () => import('../views/HasilLabBCR-ABL.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
+    },
+
+    {
+      path: '/HasilLabBloodPressure',
+      name: 'HasilLabBloodPressure',
+      component: () => import('../views/HasilLabBloodPressure.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenlogin = VueCookies.get('TokenAuthorization');
+        if (!tokenlogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }
+    },
+
+    {
+      path: '/HasilLabLeukocytes',
+      name: 'HasilLabLeukocytes',
+      component: () => import('../views/HasilLabLeukocytes.vue'),
       beforeEnter: (to, from, next) => {
         const tokenlogin = VueCookies.get('TokenAuthorization');
         if (!tokenlogin) {

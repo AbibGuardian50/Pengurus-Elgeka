@@ -18,16 +18,26 @@ export default {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
+
             const responseData = response.data.Data;
             this.DataDoctorGeneral = responseData;
             console.log(responseData);
             this.TotalDoctor = responseData.length;
+
+            const ListDoctorurl = 'https://elgeka-mobile-production.up.railway.app/api/doctor/list/website'
+            const ListDoctorresponse = await axios.get(ListDoctorurl, {
+                headers: {
+                    Authorization: `Bearer ${tokenlogin}`
+                },
+            });
+            const responseListDoctor = ListDoctorresponse.data.Data
+            console.log(ListDoctorresponse.data.Data)
+            
             // const TotalPatient = response.data.Data.PatientData
             // this.TotalPatientDoctorGeneral = TotalPatient.length
             // console.log(TotalPatient.length);
 
             // Data Pasien Dokter
-
             const DoctorPatientData = responseData.map(item => item.PatientData ? item.PatientData.length : 0);
             const DoctorData = responseData.map(item => item.DoctorName);
             const DoctorPatientDataCounts = {}
@@ -46,6 +56,64 @@ export default {
                 ]
             };
             this.loaded = true
+
+            //Data Dokter berdasarkan RS
+            const HospitalPerDoctorCount = {};
+            responseListDoctor.forEach(doctor => {
+                const hospitalName = doctor.HospitalName;
+                if (HospitalPerDoctorCount[hospitalName]) {
+                    HospitalPerDoctorCount[hospitalName]++;
+                } else {
+                    HospitalPerDoctorCount[hospitalName] = 1;
+                }
+            });
+            const labels = Object.keys(HospitalPerDoctorCount);
+            const data = Object.values(HospitalPerDoctorCount);
+            // const backgroundColorsHospitalPerDoctor = labels.map(() => this.generateRandomColor());
+
+            this.HospitalPerDoctorData = {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Jumlah Dokter',
+                        backgroundColor: '#0A6B77',
+                        data: data
+                    }
+                ]
+            };
+            this.loaded = true;
+            this.doctorCount = HospitalPerDoctorCount;
+            this.TotalHospitalDoctor = responseListDoctor.length;
+
+            //Data Dokter berdasarkan Poli
+            const PoliPerDoctorCount = {};
+            responseListDoctor.forEach(doctor => {
+                const polyName = doctor.PolyName;
+                if (PoliPerDoctorCount[polyName]) {
+                    PoliPerDoctorCount[polyName]++;
+                } else {
+                    PoliPerDoctorCount[polyName] = 1;
+                }
+            });
+            const labelspoli = Object.keys(PoliPerDoctorCount);
+            const datapoli = Object.values(PoliPerDoctorCount);
+            // const backgroundColorsHospitalPerDoctor = labels.map(() => this.generateRandomColor());
+
+            this.PoliPerDoctorData = {
+                labels: labelspoli,
+                datasets: [
+                    {
+                        label: 'Jumlah Dokter',
+                        backgroundColor: '#0A6B77',
+                        data: datapoli
+                    }
+                ]
+            };
+            this.loaded = true;
+            this.poliCount = PoliPerDoctorCount;
+            this.TotalPoliDoctor = responseListDoctor.length;
+
+
         } catch (error) {
             console.error(error);
         }
@@ -66,6 +134,13 @@ export default {
             TotalDoctor: [],
             DataDoctorGeneral: [],
             TotalPatientDoctorGeneral: [],
+            HospitalPerDoctorData: [],
+            PoliPerDoctorData: [],
+            HospitalPerDoctorCount: {},
+            PoliPerDoctorCount: {},
+            TotalHospitalDoctor: 0,
+            TotalPoliDoctor: 0,
+
         }
     },
     methods: {
@@ -89,11 +164,10 @@ export default {
 
         <div class="flex flex-col gap-4 pt-4 pl-4">
             <div class="flex gap-4 items-center">
-                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 pr-8">
-                    <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 pl-8">Grafik
-                        Pasien
-                        berdasarkan Kabupaten</p>
-
+                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg ">
+                    <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full px-8 pt-4 border-b border-teal">Grafik Dokter Berdasarkan Rumah Sakit</p>
+                    <Bar v-if="loaded" :data="HospitalPerDoctorData"
+                            class="w-full rounded-lg p-4 max-w-[700px] min-h-[340px] max-h-[350px] text-white mx-4" />
                 </div>
 
                 <div
@@ -158,10 +232,10 @@ export default {
                     </div>
                 </div>
 
-                <div class=" flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 pr-8">
-                    <p class="font-bebasneue text-[24px] font-normal leading-5 text-charcoalgray w-full pt-4 pl-8">Data
-                        dokter</p>
-
+                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg ">
+                    <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full px-8 pt-4 border-b border-teal">Grafik Dokter Berdasarkan Rumah Sakit</p>
+                    <Bar v-if="loaded" :data="PoliPerDoctorData"
+                            class="w-full rounded-lg p-4 max-w-[700px] min-h-[340px] max-h-[350px] text-white mx-4" />
                 </div>
 
             </div>

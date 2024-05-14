@@ -8,7 +8,8 @@ export default {
     extend: {
       backgroundImage: {
         'hospital' : "url('/src/assets/hospital-alternate.jpg')",
-        'work' : "url('/src/assets/work.png')"
+        'work' : "url('/src/assets/work.png')",
+        'seeingstatistics' : "url('/src/assets/seeingstatistics.png')"
       },
       boxShadow: {
         's': '2px 1px 5px 0px rgba(0, 0, 0, 0.25)',
@@ -43,7 +44,7 @@ export default {
     },
     fontFamily: {
       'gotham': ['GothamPro', 'sans-serif'],
-      'inter': ['inter', 'sans-serif'],
+      'inter': ['Inter', 'sans-serif'],
       'verdana': ['verdana', 'sans-serif'],
       'poppins': ['poppins', 'sans-serif'],
       'opensans': ['open-sans', 'sans-serif'],

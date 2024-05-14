@@ -83,7 +83,7 @@ export default {
 </script>
 
 <template>
-    <div class="flex">
+    <div class="flex bg-offwhite">
         <Sidebar />
 
         <div class="ml-8">
@@ -92,7 +92,7 @@ export default {
 
             <p class="font-normal text-[20px] leading-5 text-blueblack pt-4">Akun Pengurus</p>
             <table class="min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
-                <thead class="bg-gray-50">
+                <thead>
                     <tr class="border-b-[0.5px] border-b-teal">
                         <th scope="col" class="px-6 py-3 text-left font-normal  text-sulfurblack text-base">
                             NO
@@ -115,7 +115,7 @@ export default {
                         </th>
                     </tr>
                 </thead>
-                <tbody v-for="data in daftarpengurus" :key="data.id" class="bg-white divide-y divide-gray-200">
+                <tbody v-for="data in daftarpengurus" :key="data.id" class=" divide-y divide-gray-200">
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap  font-normal  text-sulfurblack text-base">
                             {{ data.no }}

@@ -16,6 +16,7 @@ export default {
                 },
             });
             this.DataOwnershipMedicine = response.data.Data;
+            console.log(response.data.Data.ListMedicine)
             this.DataOwnershipMedicine.sort((x, y) => x.id - y.id)
             this.DataOwnershipMedicine.forEach((item, index) => {
                 item.no = index + 1;
@@ -29,7 +30,7 @@ export default {
     components: {
         Sidebar
     },
-    data () {
+    data() {
         return {
             perPage: 10, // Number of items per page
             currentPage: 1, // Current page
@@ -83,8 +84,8 @@ export default {
             <p class="ml-8 font-normal text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
 
             <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
-                <thead class="bg-gray-50">
-                    <tr class="border-b-[0.5px] border-b-orange">
+                <thead>
+                    <tr class="border-b-[0.5px] border-b-teal">
                         <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
                             No
                         </th>
@@ -98,17 +99,12 @@ export default {
                             Email
                         </th>
                         <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
-                            Alamat
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
-                            Dokter
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
                             Obat yang dimiliki
                         </th>
                     </tr>
                 </thead>
-                <tbody v-for="data in DataOwnershipMedicine" :key="data.id"  class="bg-white divide-y divide-gray-200">
+                <tbody v-for="(data, index) in DataOwnershipMedicine" :key="index"
+                    class="bg-white divide-y divide-gray-200">
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap  font-normal  text-sulfurblack text-base">
                             {{ data.no }}
@@ -129,7 +125,10 @@ export default {
                             <p class=" font-normal text-sulfurblack text-base ">{{ data.Email }}</p>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base "></p>
+                            <div v-for="(medicine, mIndex) in data.ListMedicine" :key="mIndex">
+                                <p class="font-normal text-sulfurblack text-base" v-if="mIndex !== 0">- {{ medicine.Name }}
+                                </p>
+                            </div>
                         </td>
 
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -137,7 +136,7 @@ export default {
                         </td>
 
                         <td class="px-6 py-4 whitespace-nowrap">
-                            
+
                         </td>
                     </tr>
 

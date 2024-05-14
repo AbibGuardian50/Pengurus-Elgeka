@@ -69,18 +69,25 @@ export default {
 </script>
 
 <template>
-    <div class="flex">
+    <div class="flex bg-offwhite">
         <Sidebar />
 
         <div>
             <!-- Your content -->
             <div class="ml-8 flex items-center justify-between border-b border-lightgray">
                 <p class="font-bold font-gotham text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Dokter</p>
-                <form class="relative w-max flex flex-row bg-white rounded-md pl-4 mt-4 py-4">
+                <a href="/dataumumdokter" class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg width="18" height="15" viewBox="0 0 18 15" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M16.5001 6.01013L5.12185 6.01013L8.56112 2.5754C8.95103 2.19931 9.1074 1.64237 8.97014 1.11866C8.83287 0.594938 8.42333 0.185938 7.89892 0.0488548C7.37451 -0.0882282 6.81685 0.0679398 6.44026 0.457335L0.440653 6.44903C0.158546 6.73005 0 7.11162 0 7.50955C0 7.90748 0.158546 8.28906 0.440653 8.57008L6.44026 14.5618C7.02675 15.1467 7.97696 15.146 8.56262 14.5603C9.14828 13.9746 9.14761 13.0256 8.56112 12.4407L5.12185 9.00598L16.5001 9.00598C17.3285 9.00598 18 8.33534 18 7.50806C18 6.68078 17.3285 6.01013 16.5001 6.01013Z"
+                                fill="#1E1E1E" />
+                        </svg>
+                    </span> Kembali ke Grafik</a>
+                <!-- <form class="relative w-max flex flex-row rounded-md pl-4 mt-4 py-4 bg-offwhite">
                     <div>
                         <form action="" class="max-w-[480px] w-full px-4">
-                            <div class="relative">
-                                <input type="text" name="q" class="w-full border h-12 shadow py-2 px-4 rounded-lg"
+                            <div class="relative bg-offwhite">
+                                <input type="text" name="q" class="w-full border bg-offwhite h-12 shadow py-2 px-4 rounded-lg"
                                     placeholder="Quick Find">
                                 <button type="submit">
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
@@ -95,14 +102,14 @@ export default {
                             </div>
                         </form>
                     </div>
-                </form>
+                </form> -->
             </div>
 
             <p class="ml-8 font-light font-gotham text-[20px] leading-7 text-blueblack mt-4">Biodata Dokter</p>
 
             <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
                 <thead class="bg-gray-50">
-                    <tr class="border-b-[0.5px] border-b-lightgray">
+                    <tr class="bg-offwhite border-b-[0.5px] border-b-lightgray">
                         <th scope="col" class="px-3 py-3 max-w-[50px] text-left font-bold font-gotham text-black text-base">
                             No
                         </th>
@@ -129,7 +136,7 @@ export default {
                 </thead>
                 <tbody>
                     <tr v-for="(data, index) in paginatedInfoPatient" :key="index"
-                        class="bg-white divide-y divide-gray-200">
+                        class="bg-offwhite divide-y divide-gray-200">
                         <td class="px-3 py-4 whitespace-nowrap font-gotham min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
                             {{ data.no }}
                         </td>
