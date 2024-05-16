@@ -20,13 +20,33 @@ export default {
             const responseData = response.data.Data;
 
             // Menghitung jumlah kemunculan setiap nilai Data
-            const DataLabHeartRateCounts = {};
+            const DataLabHeartRateCounts = {
+                '60-80': 0,
+                '81-100': 0,
+                '101-120': 0,
+                '121-140': 0,
+                '141-160': 0,
+                '161-180': 0,
+                '180 >': 0,
+            };
             responseData.forEach(item => {
-                const dataValue = item.Data.toString(); // Ubah menjadi string untuk konsistensi
-                if (DataLabHeartRateCounts[dataValue]) {
-                    DataLabHeartRateCounts[dataValue]++;
-                } else {
-                    DataLabHeartRateCounts[dataValue] = 1;
+                const DataLabHeartRate = item.Data;
+                if (DataLabHeartRate !== 0 && DataLabHeartRate !== null) {
+                    if (DataLabHeartRate < 80) {
+                        DataLabHeartRateCounts['60-80']++;
+                    } else if (DataLabHeartRate <= 100) {
+                        DataLabHeartRateCounts['81-100']++;
+                    } else if (DataLabHeartRate <= 120) {
+                        DataLabHeartRateCounts['101-120']++;
+                    } else if (DataLabHeartRate <= 140) {
+                        DataLabHeartRateCounts['121-140']++;
+                    } else if (DataLabHeartRate <= 160) {
+                        DataLabHeartRateCounts['141-160']++;
+                    } else if (DataLabHeartRate <= 180) {
+                        DataLabHeartRateCounts['161-180']++;
+                    } else if (DataLabHeartRate > 180) {
+                        DataLabHeartRateCounts['180 >']++;
+                    }
                 }
             });
 

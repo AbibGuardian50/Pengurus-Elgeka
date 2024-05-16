@@ -18,15 +18,30 @@ export default {
                 },
             });
             const responseData = response.data.Data;
+            console.log(responseData)
 
             // Menghitung jumlah kemunculan setiap nilai Data
-            const DataLabBcrAblCounts = {};
+            const DataLabBcrAblCounts = {
+                '1-10': 0,
+                '0.1-1': 0,
+                '0.01-0.1': 0,
+                '0.001-0.0032': 0,
+                '< 0.0032': 0
+            };
             responseData.forEach(item => {
-                const dataValue = item.Data.toString(); // Ubah menjadi string untuk konsistensi
-                if (DataLabBcrAblCounts[dataValue]) {
-                    DataLabBcrAblCounts[dataValue]++;
-                } else {
-                    DataLabBcrAblCounts[dataValue] = 1;
+                const DataLabBCR = item.Data;
+                if (DataLabBCR !== 0 && DataLabBCR !== null) {
+                    if (DataLabBCR <= 10) {
+                        DataLabBcrAblCounts['1-10']++;
+                    } else if (DataLabBCR <= 1) {
+                        DataLabBcrAblCounts['0.1-1']++;
+                    } else if (DataLabBCR <= 0.1) {
+                        DataLabBcrAblCounts['0.01-0.1']++;
+                    } else if (DataLabBCR <= 0.001) {
+                        DataLabBcrAblCounts['0.001-0.0032']++;
+                    } else if (DataLabBCR <= 0.0032){
+                        DataLabBcrAblCounts['< 0.0032']++;
+                    }
                 }
             });
 

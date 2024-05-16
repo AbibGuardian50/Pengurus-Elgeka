@@ -4,6 +4,7 @@ import axios from 'axios'
 import VueCookies from 'vue-cookies'
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+import { useToast } from 'vue-toastification';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
@@ -18,15 +19,45 @@ export default {
                 },
             });
             const responseData = response.data.Data;
+            const toast = useToast();
+            if (response.data.ErrorMessage === 'Failed to parse token') {
+                        toast.error('Token invalid, mohon untuk login kembali');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    }
 
             // Menghitung jumlah kemunculan setiap nilai Data
-            const DataLabPotentialHydrogenCounts = {};
+            const DataLabPotentialHydrogenCounts = {
+                '14': 0,
+                '11-13': 0,
+                '9-11': 0,
+                '7-9': 0,
+                '5-7': 0,
+                '3-5': 0,
+                '1-3': 0,
+                '< 1': 0,
+            };
             responseData.forEach(item => {
-                const dataValue = item.Data.toString(); // Ubah menjadi string untuk konsistensi
-                if (DataLabPotentialHydrogenCounts[dataValue]) {
-                    DataLabPotentialHydrogenCounts[dataValue]++;
-                } else {
-                    DataLabPotentialHydrogenCounts[dataValue] = 1;
+                const DataLabPotentialHydrogen = item.Data;
+                if (DataLabPotentialHydrogen !== 0 && DataLabPotentialHydrogen !== null) {
+                    if (DataLabPotentialHydrogen < 1) {
+                        DataLabPotentialHydrogenCounts['< 1']++;
+                    } else if (DataLabPotentialHydrogen <= 3) {
+                        DataLabPotentialHydrogenCounts['1-3']++;
+                    } else if (DataLabPotentialHydrogen <= 5) {
+                        DataLabPotentialHydrogenCounts['3-5']++;
+                    } else if (DataLabPotentialHydrogen <= 7) {
+                        DataLabPotentialHydrogenCounts['5-7']++;
+                    } else if (DataLabPotentialHydrogen <= 9) {
+                        DataLabPotentialHydrogenCounts['7-9']++;
+                    } else if (DataLabPotentialHydrogen <= 11) {
+                        DataLabPotentialHydrogenCounts['9-11']++;
+                    } else if (DataLabPotentialHydrogen <= 13) {
+                        DataLabPotentialHydrogenCounts['11-13']++;
+                    } else if (DataLabPotentialHydrogen <= 14) {
+                        DataLabPotentialHydrogenCounts['14']++;
+                    }
                 }
             });
 

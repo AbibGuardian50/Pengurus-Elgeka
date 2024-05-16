@@ -63,7 +63,7 @@ export default {
                 this.currentPage--;
                 this.updatePaginatedData(); // Update paginated data when navigating to previous page
             }
-        }
+        },
     }
 }
 </script>

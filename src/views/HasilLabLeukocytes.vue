@@ -18,26 +18,51 @@ export default {
                 },
             });
             const responseData = response.data.Data;
+            console.log(responseData)
 
             // Menghitung jumlah kemunculan setiap nilai Data
-            const DataLabLeukocytes = {};
+            const DataLabLeukocytesCounts = {
+                '9.500 - 10.500': 0,
+                '8.500 - 9.500': 0,
+                '7.500 - 8.500': 0,
+                '6.500 - 7.500': 0,
+                '5.500 - 6.500': 0,
+                '4.500 - 5.500': 0,
+                '3.500 - 4.500': 0,
+                '< 3500': 0,
+            };
             responseData.forEach(item => {
-                const dataValue = item.Data.toString(); // Ubah menjadi string untuk konsistensi
-                if (DataLabLeukocytes[dataValue]) {
-                    DataLabLeukocytes[dataValue]++;
-                } else {
-                    DataLabLeukocytes[dataValue] = 1;
+                const DataLabLeukocytes = item.Data;
+                if (DataLabLeukocytes !== 0 && DataLabLeukocytes !== null) {
+                    if (DataLabLeukocytes < 3500) {
+                        DataLabLeukocytesCounts['< 3500']++;
+                    } else if (DataLabLeukocytes <= 4500) {
+                        DataLabLeukocytesCounts['3.500 - 4.500']++;
+                    } else if (DataLabLeukocytes <= 5500) {
+                        DataLabLeukocytesCounts['4.500 - 5.500']++;
+                    } else if (DataLabLeukocytes <= 6500) {
+                        DataLabLeukocytesCounts['5.500 - 6.500']++;
+                    } else if (DataLabLeukocytes <= 7500) {
+                        DataLabLeukocytesCounts['6.500 - 7.500']++;
+                    } else if (DataLabLeukocytes <= 8500) {
+                        DataLabLeukocytesCounts['7.500 - 8.500']++;
+                    } else if (DataLabLeukocytes <= 9500) {
+                        DataLabLeukocytesCounts['8.500 - 9.500']++;
+                    } else if (DataLabLeukocytes <= 10500) {
+                        DataLabLeukocytesCounts['9.500 - 10.500']++;
+                    }
                 }
             });
 
+
             // Persiapkan data untuk chart
             const chartData = {
-                labels: Object.keys(DataLabLeukocytes),
+                labels: Object.keys(DataLabLeukocytesCounts),
                 datasets: [{
                     label: 'Jumlah Orang',
                     backgroundColor: '#56B4E9',
                     borderWidth: 1,
-                    data: Object.values(DataLabLeukocytes),
+                    data: Object.values(DataLabLeukocytesCounts),
                 }],
             };
 
@@ -68,7 +93,9 @@ export default {
         <div class="flex flex-col gap-4 pt-4 pl-4">
             <div class="flex gap-4 items-center">
                 <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 pr-8">
-                    <p class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">GRAFIK DATA LEUKOCYTES</p>
+                    <p
+                        class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
+                        GRAFIK DATA LEUKOCYTES</p>
                     <Bar v-if="loaded" :data="DataLabLeukocytes"
                         class="min-w-[700px] max-w-[1000px] min-h-[350px] max-h-[650px] text-white ml-8" />
                 </div>
@@ -76,12 +103,14 @@ export default {
                 <div
                     class="flex flex-col justify-between pl-4 bg-work bg-no-repeat bg-center bg-cover h-full rounded-md max-h-[900px] min-w-[509px] max-w-[700px]">
                     <div class="flex flex-col gap-4">
-                        <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA LEUKOCYTES KESELURUHAN</p>
+                        <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA LEUKOCYTES KESELURUHAN
+                        </p>
                         <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang data
                             Leukocytes</p>
                     </div>
                     <div class="">
-                        <a href="/DetailHasilLabLeukocytes"><button class="font-opensans text-white flex items-center gap-2 pb-4">Read
+                        <a href="/DetailHasilLabLeukocytes"><button
+                                class="font-opensans text-white flex items-center gap-2 pb-4">Read
                                 more <svg width="12" height="11" viewBox="0 0 12 11" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -93,5 +122,4 @@ export default {
                 </div>
             </div>
         </div>
-    </div>
-</template>
+</div></template>

@@ -20,13 +20,30 @@ export default {
             const responseData = response.data.Data;
 
             // Menghitung jumlah kemunculan setiap nilai Data
-            const DataLabHemoglobinCounts = {};
+            const DataLabHemoglobinCounts = {
+                '9 <': 0,
+                '9-11': 0,
+                '11-13': 0,
+                '13-15': 0,
+                '15-17': 0,
+                '17 >': 0,
+            };
             responseData.forEach(item => {
-                const dataValue = item.Data.toString(); // Ubah menjadi string untuk konsistensi
-                if (DataLabHemoglobinCounts[dataValue]) {
-                    DataLabHemoglobinCounts[dataValue]++;
-                } else {
-                    DataLabHemoglobinCounts[dataValue] = 1;
+                const DataLabHemoglobin = item.Data;
+                if (DataLabHemoglobin !== 0 && DataLabHemoglobin !== null) {
+                    if (DataLabHemoglobin < 9) {
+                        DataLabHemoglobinCounts['9 <']++;
+                    } else if (DataLabHemoglobin <= 11) {
+                        DataLabHemoglobinCounts['9-11']++;
+                    } else if (DataLabHemoglobin <= 13) {
+                        DataLabHemoglobinCounts['11-13']++;
+                    } else if (DataLabHemoglobin <= 15) {
+                        DataLabHemoglobinCounts['13-15']++;
+                    } else if (DataLabHemoglobin <= 17) {
+                        DataLabHemoglobinCounts['15-17']++;
+                    } else if (DataLabHemoglobin > 17) {
+                        DataLabHemoglobinCounts['17 >']++;
+                    }
                 }
             });
 

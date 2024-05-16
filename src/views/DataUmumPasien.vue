@@ -19,6 +19,7 @@ export default {
                 },
             });
             const responseData = response.data.Data;
+            console.log(responseData)
             // Hitung total pasien
             this.TotalGeneralPatient = responseData.length;
 
@@ -66,7 +67,8 @@ export default {
             const districtCounts = {};
             responseData.forEach(item => {
                 const district = item.District;
-                if (district !== "") { // Tambahkan kondisi disini
+                const province = item.Province;
+                if (province === "Jawa Barat" && district !== "") { // Tambahkan kondisi disini
                     districtCounts[district] = (districtCounts[district] || 0) + 1;
                 }
             });
@@ -80,6 +82,7 @@ export default {
                     color: 'yellow',
                 }],
             };
+
             // Data Golongan Darah
             const labels = ['A', 'AB', 'B', 'O'];
             const BloodGroups = responseData.map(item => item.BloodGroup);

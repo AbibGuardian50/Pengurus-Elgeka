@@ -12,6 +12,8 @@ export default {
             this.InfoRS.forEach((item, index) => {
                 item.no = index + 1;
             });
+            this.totalPages = Math.ceil(this.InfoRS.length / this.perPage); // Calculate total pages
+            this.updatePaginatedData(); // Update paginated data
             console.log(this.InfoRS)
         } catch (error) {
             console.error(error);
@@ -34,9 +36,34 @@ export default {
                 info_kontak: []
             },
             showcreatehospital: false,
+            perPage: 5, // Number of items per page
+            currentPage: 1, // Current page
+            totalPages: 0, // Total pages
+            paginatedInfoRS: [] // Paginated data
         }
     },
     methods: {
+        updatePaginatedData() {
+            const startIndex = (this.currentPage - 1) * this.perPage;
+            const endIndex = startIndex + this.perPage;
+            this.paginatedInfoRS = this.InfoRS.slice(startIndex, endIndex);
+        },
+        goToPage(pageNumber) {
+            this.currentPage = pageNumber; // Set current page to the selected page number
+            this.updatePaginatedData(); // Update paginated data for the selected page
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                this.updatePaginatedData(); // Update paginated data when navigating to next page
+            }
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.updatePaginatedData(); // Update paginated data when navigating to previous page
+            }
+        },
         createhospital() {
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/infoRS'
@@ -83,12 +110,12 @@ export default {
 }
 </script>
 
-<template>
+<template >
     <div class="flex bg-offwhite">
         <Sidebar />
 
-        <div>
-            <div class="ml-4 flex items-center justify-between border-b border-lightgray ">
+        <div class="bg-offwhite">
+            <div class="ml-4 flex items-center justify-between border-b border-lightgray bg-offwhite">
                 <p class=" font-bold text-[30px]  mt-4 py-4 leading-6 text-blueblack">Data Rumah Sakit</p>
             </div>
 
@@ -121,7 +148,7 @@ export default {
                         </th>
                     </tr>
                 </thead>
-                <tbody v-for="data in InfoRS" :key="data.id" class=" divide-y divide-gray-200">
+                <tbody v-for="data in paginatedInfoRS" :key="data.id" class=" divide-y divide-gray-200">
                     <tr>
                         <td class="px-3 py-4 whitespace-nowrap font-normal text-sulfurblack text-base">
                             {{ data.no }}
@@ -136,12 +163,12 @@ export default {
                             <p class=" font-normal text-sulfurblack text-base ">{{ data.info_kontak }}</p>
                         </td>
 
-                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
+                        <td class="px-3 py-4 min-w-[200px] whitespace-normal break-words max-w-[201px] text-wrap">
                             <a :href="data.link_maps" target="_blank"
-                                class="hover:text-warmgray font-normal text-sulfurblack text-base ">{{ data.link_maps }}</a>
+                                class="hover:text-warmgray font-normal text-wrap text-sulfurblack text-base ">{{ data.link_maps }}</a>
                         </td>
 
-                        <td class="px-3 py-4 whitespace-nowrap min-w-[200px] max-w-[201px]">
+                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
                             <img class="bg-hospital bg-cover bg-center w-[160px] h-[160px]" :src="url + data.image_url">
                         </td>
 
@@ -158,6 +185,18 @@ export default {
 
                 </tbody>
             </table>
+
+            <!-- Pagination navigation -->
+        <div class="ml-8 mt-4 flex justify-center">
+            <button @click="prevPage" :disabled="currentPage === 1"
+                class="px-4 py-2 mr-2 bg-teal  text-white rounded-md">Previous</button>
+            <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
+                :class="{ 'bg-teal  text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
+                class="px-4 py-2 mr-2">{{ pageNumber }}</button>
+            <button @click="nextPage" :disabled="currentPage === totalPages"
+                class="px-4 py-2 bg-teal  text-white rounded-md">Next</button>
+        </div>
+
             <!-- Modal Create Rumah Sakit -->
             <div>
                 <form v-if="showcreatehospital" @submit.prevent="createhospital()"
