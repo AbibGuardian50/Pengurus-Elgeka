@@ -48,7 +48,7 @@ export default {
                     console.log(response.data)
                     this.resulterror = response.data
                     if (response.data.code === 200) {
-                        toast.success('Edit data rumah sakit berhasil!');
+                        toast.success('Edit data rumah sakit berhasil');
                         this.$router.push('/datarumahsakit')
                     } else if (response.data.code === 400) {
                         setTimeout(() => {
