@@ -4,10 +4,12 @@ import axios from 'axios'
 import VueCookies from 'vue-cookies'
 import { format } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
+import { useToast } from 'vue-toastification';
 
 export default {
     async created() {
         try {
+            const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const url = 'https://elgeka-mobile-production.up.railway.app/api/doctor/list/website';
             const response = await axios.get(url, {
@@ -15,6 +17,10 @@ export default {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
+            console.log(response);
+            if (response.data.Message === "Success to Get Doctor List") {
+                toast.success('Detail Data Dokter Berhasil Dimuat');
+            }
             this.InfoPatient = response.data.Data;
             this.InfoPatient.sort((x, y) => x.id - y.id)
             this.InfoPatient.forEach((item, index) => {

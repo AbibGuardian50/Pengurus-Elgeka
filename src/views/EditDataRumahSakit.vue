@@ -29,11 +29,6 @@ export default {
         }
     },
     methods: {
-        // showToatWarning(){
-        //     toast.warning('Wow warning!',{
-        //         autoClose: 1000,
-        //     });   
-        // },
         toggleModalEditHospital: function () {
             this.showedithospital = !this.showedithospital;
         },
@@ -115,26 +110,26 @@ export default {
                     <div class="flex flex-col gap-8 relative p-6">
                         <div class="flex gap-2 flex-col">
                             <label for="Nama RS" class="font-poppins font-bold text-base text-teal">Nama</label>
-                            <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
+                            <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text" required
                                 v-model="DataHospital.nama_rs" name="Nama RS" id="">
                         </div>
 
                         <div class="flex gap-2 flex-col">
                             <label for="Alamat" class="font-poppins font-bold text-base text-teal">Alamat</label>
-                            <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
+                            <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text" required
                                 name="Alamat" v-model="DataHospital.lokasi_rs" id="" >
                         </div>
                         
                         <div class="flex gap-2 flex-col">
                             <label for="Kontak" class="font-poppins font-bold text-base text-teal">Kontak</label>
-                            <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
+                            <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text" required
                                 name="Kontak" v-model="DataHospital.info_kontak" id="" >
                         </div>
 
                         <div class="flex gap-2 flex-col relative">
                                     <label for="Google Maps" class="font-poppins font-bold text-base text-teal">Link Google Maps</label>
                                     <div class="relative">
-                                        <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
+                                        <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text" required
                                             name="Google Maps" id="" v-model="DataHospital.link_maps"
                                             placeholder="Link/URL Google Maps">
                                         <a target="_blank" href="https://imgur.com/gallery/jwZQDHN"><span
@@ -156,7 +151,7 @@ export default {
                                 <div class="flex gap-2 flex-col relative">
                                     <label for="Google Maps" class="font-poppins font-bold text-base text-teal">Latlong</label>
                                     <div class="relative">
-                                        <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
+                                        <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text" required
                                             name="Google Maps" id="" v-model="DataHospital.latlong"
                                             placeholder="Link/URL Google Maps">
                                         <a target="_blank" href="https://imgur.com/gallery/LaDTHRq"><span

@@ -4,10 +4,12 @@ import axios from 'axios'
 import VueCookies from 'vue-cookies'
 import { format } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
+import { useToast } from 'vue-toastification';
 
 export default {
     async created() {
         try {
+            const toast = useToast()
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const url = 'https://elgeka-mobile-production.up.railway.app/api/user/medicine/list_patient/website';
             const response = await axios.get(url, {
@@ -15,8 +17,11 @@ export default {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
+            if (response.data.Message === "Success to Get Patient Medicine List Website") {
+                toast.success('Data pasien berhasil dimuat!')
+            }
+            console.log(response);
             this.DataOwnershipMedicine = response.data.Data;
-            console.log(response.data.Data.ListMedicine)
             this.DataOwnershipMedicine.sort((x, y) => x.id - y.id)
             this.DataOwnershipMedicine.forEach((item, index) => {
                 item.no = index + 1;
@@ -69,10 +74,10 @@ export default {
     <div class="flex">
         <Sidebar />
 
-        <div>
+        <div class="w-full bg-offwhite">
             <div class="ml-8 flex items-center justify-between border-b border-lightgray">
                 <p class=" font-bold text-[30px]  mt-4 py-4 leading-6 text-blueblack">Data Kepemilikan Obat</p>
-                <form class="relative w-max flex flex-row bg-white rounded-md pl-4 mt-4 py-4">
+                <form class="relative w-max flex flex-row rounded-md pl-4 mt-4 py-4">
                     <input type="search" placeholder="Quick Find"
                         class="peer cursor-pointer border relative z-10 h-12 w-12 rounded-md bg-transparent pl-2 outline-none w-full cursor-text pr-4" />
                     <div class="flex items-center justify-center pr-4">
@@ -101,10 +106,13 @@ export default {
                         <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
                             Obat yang dimiliki
                         </th>
+                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
+                            Stok Obat
+                        </th>
                     </tr>
                 </thead>
                 <tbody v-for="(data, index) in DataOwnershipMedicine" :key="index"
-                    class="bg-white divide-y divide-gray-200">
+                    class="divide-y divide-gray-200">
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap  font-normal  text-sulfurblack text-base">
                             {{ data.no }}
@@ -127,6 +135,13 @@ export default {
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div v-for="(medicine, mIndex) in data.ListMedicine" :key="mIndex">
                                 <p class="font-normal text-sulfurblack text-base" v-if="mIndex !== 0">- {{ medicine.Name }}
+                                </p>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div v-for="(medicine, mIndex) in data.ListMedicine" :key="mIndex" >
+                                <p class="font-bold font-assistant text-black text-[16px]" v-if="mIndex !== 0">{{ medicine.Stock }}
                                 </p>
                             </div>
                         </td>

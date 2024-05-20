@@ -4,10 +4,12 @@ import axios from 'axios'
 import VueCookies from 'vue-cookies'
 import { format } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
+import { useToast } from 'vue-toastification';
 
 export default {
     async created() {
         try {
+            const toast = useToast()
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const url = 'https://elgeka-mobile-production.up.railway.app/api/doctor/list_inactive';
             const response = await axios.get(url, {
@@ -15,14 +17,20 @@ export default {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
-            this.InfoDoctor = response.data.Data;
-            this.InfoDoctor.sort((x, y) => x.id - y.id)
-            this.InfoDoctor.forEach((item, index) => {
-                item.no = index + 1;
-            });
-            this.totalPages = Math.ceil(this.InfoDoctor.length / this.perPage); // Calculate total pages
-            this.updatePaginatedData(); // Update paginated data
+            if (!response.data.Data || response.data.Data.length === 0) {
+                toast.error('Data Dokter Kosong');
+            } else {
+                this.InfoDoctor = response.data.Data;
+                this.InfoDoctor.sort((x, y) => x.id - y.id)
+                this.InfoDoctor.forEach((item, index) => {
+                    item.no = index + 1;
+                });
+                this.totalPages = Math.ceil(this.InfoDoctor.length / this.perPage); // Calculate total pages
+                this.updatePaginatedData(); // Update paginated data
+            }
         } catch (error) {
+            const toast = useToast()
+            toast.error('Terjadi kesalahan saat mengambil data');
             console.error(error);
         }
     },
@@ -161,7 +169,7 @@ export default {
 
                     </tr>
                 </thead>
-                <tbody>
+                <tbody v-if="InfoDoctor">
                     <tr v-for="(data, index) in paginatedInfoDoctor" :key="index" class="divide-y divide-gray-200">
                         <td
                             class="px-3 py-4 whitespace-nowrap font-gotham min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">

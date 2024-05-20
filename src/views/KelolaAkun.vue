@@ -2,9 +2,11 @@
 import Sidebar from "../components/Sidebar.vue"
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
+import { useToast } from 'vue-toastification';
 export default {
     async created() {
         try {
+            const toast = useToast()
             const tokenlogin = VueCookies.get('TokenAuthorization')
             if (tokenlogin) {
                 const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/pengurus'
@@ -13,6 +15,9 @@ export default {
                         Authorization: `Bearer ${tokenlogin}`
                     },
                 })
+                if (response.data.message === "Get All Pengurus Successfully") {
+                    toast.success('Data Admin berhasil dimuat!')
+                }
                 if (response.data.code === 400) {
                     console.log('Superadmin tidak bisa edit superadmin lainnya')
                 }
@@ -155,8 +160,7 @@ export default {
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <a :href="'editpengurus/' + data.id">
-                                <button
-                                    class="py-1 px-8 rounded-[5px] bg-teal font-bold text-base text-white">Edit</button>
+                                <button class="py-1 px-8 rounded-[5px] bg-teal font-bold text-base text-white">Edit</button>
                             </a>
                             <button href="#" @click="deletepengurus(data.id)"
                                 class="py-1 px-8 rounded-[5px] ml-2 shadow-xl bg-offwhite text-white bg-teal font-bold text-base ">Hapus</button>

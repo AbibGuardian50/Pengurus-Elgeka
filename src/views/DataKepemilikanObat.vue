@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar.vue"
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
 import { Bar, Pie, Doughnut } from 'vue-chartjs'
+import { useToast } from 'vue-toastification';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js'
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
@@ -16,11 +17,68 @@ export default {
             HospitalPerMedicineData: [],
             PoliPerMedicineData: [],
             StatisticsPatientData: [],
+            MedicineOptions: {
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#222539',  // Mengubah warna font pada sumbu X
+                            font: {
+                                size: 20  // Mengubah ukuran font pada sumbu X
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Nama Obat',
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        },
+                    },
+                    y: {
+                        ticks: {
+                            color: '#222539',  // Mengubah warna font pada sumbu X
+                            font: {
+                                size: 20  // Mengubah ukuran font pada sumbu X
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Jumlah',
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                },
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        titleFont: {
+                            size: 22,
+                        },
+                        bodyFont: {
+                            size: 22,
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            color: "#222539",
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     async created() {
         this.loaded = false
         try {
+           
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const patientDataPromise = this.fetchPatientData(tokenlogin)
             const medicineDataPromise = this.fetchMedicineData(tokenlogin)
@@ -46,21 +104,30 @@ export default {
     },
     methods: {
         async fetchPatientData(token) {
+            const toast = useToast()
             const url = 'https://elgeka-mobile-production.up.railway.app/api/user/medicine/list_patient/website'
             const response = await axios.get(url, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             })
+            if (response.data.Message === "Success to Get Patient Medicine List Website") {
+                toast.success('Data pasien berhasil dimuat!')
+            }  
             return response.data.Data
         },
         async fetchMedicineData(token) {
+            const toast = useToast()
             const url = 'https://elgeka-mobile-production.up.railway.app/api/user/medicine/list/website'
             const response = await axios.get(url, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             })
+            if (response.data.Message === "Success to Get Medicine List Website") {
+                toast.success('Data obat Pasien berhasil dimuat!')
+            }
+            console.log(response)
             const data = response.data.Data
             return {
                 TotalPatientWithMedicine: data.Total_Patient_Have_Medicine,
@@ -153,8 +220,11 @@ export default {
                         </div>
 
                         <div class="flex">
-                            <Doughnut v-if="loaded" :data="MedicineData"
-                                class="min-w-[600px] rounded-lg p-4 max-w-[700px] min-h-[340px] max-h-[350px] text-white mx-4" />
+                            <Bar v-if="loaded" :data="MedicineData" :options="MedicineOptions"
+                                class="min-w-[1200px] rounded-lg p-4 max-w-[1300px] min-h-[540px] max-h-[550px] text-white mx-4" />
+                                <div v-else>
+                                    Tabel Sedang Dimuat.....
+                                </div>
                         </div>
 
                         <div class="pb-4"></div>
@@ -181,15 +251,15 @@ export default {
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         <tr v-for="patient in StatisticsPatientData" :key="patient.id" class="hover:bg-[#ddd]">
-                                            <td class="px-6 py-4 whitespace-nowrap font-normal font-assistant text-black text-[15px]">{{ patient.Name }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap font-normal font-assistant text-black text-[20px]">{{ patient.Name }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div v-for="(medicine, mIndex) in patient.ListMedicine" :key="mIndex" class="flex">
+                                                <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => med.Stock < 10)" :key="mIndex" class="flex">
                                                     <p class="font-normal font-assistant text-black text-[20px]">- {{ medicine.Name }}</p>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div v-for="(medicine, mIndex) in patient.ListMedicine" :key="mIndex" class="flex py-[0.2rem]">
-                                                    <p class="font-bold font-assistant text-black text-[16px]">{{ medicine.Stock }}</p>
+                                                <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => med.Stock < 10)" :key="mIndex" class="flex py-[0.2rem]">
+                                                    <p class="font-bold font-assistant text-black text-[20px]">{{ medicine.Stock }}</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -243,20 +313,3 @@ export default {
     </div>
 </div>
 </template>
-
-
-
-<!-- <style>
-table {
-    width: 100%;
-}
-
-th, td {
-    text-align: left;
-    padding: 8px;
-}
-
-tr:hover {
-    background-color: #ddd;
-}
-</style> -->

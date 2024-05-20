@@ -69,7 +69,7 @@ export default {
                     class="object-cover w-full h-full"></router-link>
         </div>
         <div class="flex flex-col lg:p-36 md:p-52 sm:20 p-8 w-full lg:w-1/2">
-            <img class="w-[120px] shadow-[0_15px_28px_6px_rgba(0,0,0,0.25)] mb-20" src="../assets/logo.png" alt="Logo">
+            <img class="w-[120px] bg-teal rounded-md shadow-[0_15px_28px_6px_rgba(0,0,0,0.25)] mb-20" src="../assets/logoElgekaPutih1.png" alt="Logo">
             <h1 class="text-2xl font-bold font-verdana text-[32px] mb-4">Dashboard Pengurus</h1>
             <form @submit.prevent="login">
                 <div class="mb-4">
@@ -88,7 +88,7 @@ export default {
                 <div class="mb-4 flex flex-col">
                     <div>
                         <input type="checkbox" id="remember" name="remember" v-model="rememberMe"
-                            class="outline-[#D4A02C] bg-white accent-orange">
+                            class="outline-[#D4A02C] bg-white accent-teal">
                         <label for="remember"
                             class="font-verdana text-[#344054] text-deepbluegray font-normal text-[14px] ml-2">Remember
                             Me</label>

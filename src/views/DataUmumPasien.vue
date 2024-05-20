@@ -4,6 +4,7 @@ import axios from 'axios'
 import VueCookies from 'vue-cookies'
 import { Bar, Pie, Doughnut } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js'
+import { useToast } from 'vue-toastification';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
 
@@ -11,6 +12,7 @@ export default {
     async created() {
         this.loaded = false
         try {
+            const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const url = 'https://elgeka-mobile-production.up.railway.app/api/user/list/website'
             const response = await axios.get(url, {
@@ -19,7 +21,10 @@ export default {
                 },
             });
             const responseData = response.data.Data;
-            console.log(responseData)
+            console.log(response)
+            if (response.data.Message === "Success to Get Patient List") {
+                toast.success('Data Pasien Berhasil Dimuat');
+            }
             // Hitung total pasien
             this.TotalGeneralPatient = responseData.length;
 
@@ -176,20 +181,140 @@ export default {
             DistrictData: [],
             TotalGeneralPatient: '',
             ageOptions: {
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#222539',  // Mengubah warna font pada sumbu X
+                            font: {
+                                size: 20  // Mengubah ukuran font pada sumbu X
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Range Umur',
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        },
+                    },
+                    y: {
+                        ticks: {
+                            color: '#222539',  // Mengubah warna font pada sumbu X
+                            font: {
+                                size: 20  // Mengubah ukuran font pada sumbu X
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Jumlah',
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                },
                 responsive: true,
-                plugins: {  // 'legend' now within object 'plugins {}'
+                plugins: {
+                    tooltip: {
+                        titleFont: {
+                            size: 22,
+                        },
+                        bodyFont: {
+                            size: 22,
+                        }
+                    },
                     legend: {
                         labels: {
-                            color: "#222539",  // not 'fontColor:' anymore
-                            // fontSize: 18  // not 'fontSize:' anymore
+                            color: "#222539",
                             font: {
-                                size: 18,
-                                weight: 'bold' // 'size' now within object 'font {}'
+                                size: 22,
+                                weight: 'bold'
                             }
                         }
                     }
+                }
+            },
+            BloodOptions: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        titleFont: {
+                            size: 22,
+                        },
+                        bodyFont: {
+                            size: 22,
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            color: "#222539",
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            },
+            DistrictOptions: {
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#222539',  // Mengubah warna font pada sumbu X
+                            font: {
+                                size: 20  // Mengubah ukuran font pada sumbu X
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Nama Kota',
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        },
+                    },
+                    y: {
+                        ticks: {
+                            color: '#222539',  // Mengubah warna font pada sumbu X
+                            font: {
+                                size: 20  // Mengubah ukuran font pada sumbu X
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Jumlah',
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        }
+                    },
                 },
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        titleFont: {
+                            size: 22,
+                        },
+                        bodyFont: {
+                            size: 22,
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            color: "#222539",
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
             }
+
         }
     },
 
@@ -207,8 +332,8 @@ export default {
                     <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 pl-8">Grafik
                         Pasien
                         berdasarkan Kabupaten</p>
-                    <Bar v-if="loaded" :data="DistrictData"
-                        class="border border-lightsilver rounded-md w-full max-w-[700px] min-h-[282px] max-h-[282px] text-white ml-8" />
+                    <Bar v-if="loaded" :data="DistrictData" :options="DistrictOptions"
+                        class="border border-lightsilver rounded-md min-w-[800px] max-w-[900px] min-h-[400px] max-h-[450px] text-white ml-8 p-4" />
                 </div>
 
                 <div
@@ -240,12 +365,12 @@ export default {
                     <p class="font-assistant text-[18px] font-semibold leading-5 text-midnightblue pt-4">Grafik Pasien
                         berdasarkan Golongan Darah</p>
 
-                    <Pie v-if="loaded" :data="BloodData"
+                    <Pie v-if="loaded" :data="BloodData" :options="BloodOptions"
                         class="border border-lightsilver rounded-lg max-w-[350px] h-full max-h-[350px] text-white ml-8" />
                     <div class="pb-4">
-                        <p>Golongan Darah Terbanyak: {{ golonganDarahTerbanyak }}</p>
-                        <p>Golongan Darah Terlangka: {{ golonganDarahTerlangka }}</p>
-                        <p>Total : {{ TotalGeneralPatient }}</p>
+                        <p class="font-opensans font-bold text-black text-[20px]">Golongan Darah Terbanyak: {{ golonganDarahTerbanyak }}</p>
+                        <p class="font-opensans font-bold text-black text-[20px]">Golongan Darah Terlangka: {{ golonganDarahTerlangka }}</p>
+                        <p class="font-opensans font-bold text-black text-[20px]">Total : {{ TotalGeneralPatient }}</p>
                     </div>
                 </div>
 
