@@ -39,8 +39,9 @@ export default {
         },
         editpengurus(id) {
             const tokenlogin = VueCookies.get('TokenAuthorization')
+            this.daftarpengurus.is_active = this.daftarpengurus.is_active.toString();
             const url = `https://elgeka-web-api-production.up.railway.app/api/v1/pengurus/${id}`
-            axios.patch(url, this.edited, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
+            axios.patch(url, this.daftarpengurus, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                 .then(response => {
                     console.log(response.data)
                     this.resulterror = response.data
@@ -65,7 +66,8 @@ export default {
             daftarpengurus: '',
             daftarpengurus: {
                 full_name: '',
-                username: ''
+                username: '',
+                is_active: '',
             }
         }
     },
@@ -83,7 +85,7 @@ export default {
                     class="border border-red rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                     <!--header-->
                     <div class="flex items-start justify-between p-5 border-b-2 border-black rounded-t">
-                        <h3 class="text-[40px] text-orange font-semibold font-poppins">
+                        <h3 class="text-[40px] text-teal font-semibold font-poppins">
                             Edit Akun Pengurus
                         </h3>
                         <button
@@ -97,28 +99,39 @@ export default {
                     <!--body-->
                     <div class="flex flex-col gap-8 relative p-6">
                         <div class="flex gap-2 flex-col">
-                            <label for="nama lengkap" class="font-poppins font-bold text-base text-orange">Nama
+                            <label for="nama lengkap" class="font-poppins font-bold text-base text-teal">Nama
                                 Lengkap</label>
-                            <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
+                            <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text" required
                                 v-model="daftarpengurus.full_name" name="nama lengkap" id="">
                         </div>
 
                         <div class="flex gap-2 flex-col">
-                            <label for="username" class="font-poppins font-bold text-base text-orange">Username</label>
-                            <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
+                            <label for="username" class="font-poppins font-bold text-base text-teal">Username</label>
+                            <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text" required
                                 name="username" v-model="daftarpengurus.username" id="" >
+                        </div>
+
+                        <div class="flex gap-2 flex-col">
+                            <label for="Status" class="font-poppins font-bold text-base text-teal">Status Aktif</label>
+                            <!-- <input class="border border-black py-4 min-w-[550px] pr-2 rounded-md" type="text" name="nama lengkap" id="" placeholder="  Muhammad Abieb Basnuril"> -->
+                            <select required 
+                            class="border border-black py-4 min-w-[550px] pl-2 rounded-md"
+                                name="Status" id="" v-model="daftarpengurus.is_active">
+                                <option value="false">Nonaktif</option>
+                                <option value="true">Aktif</option>
+                            </select>
                         </div>
                     </div>
                     <!--footer-->
                     <div class="flex items-center justify-center p-6 border-t-2 border-black rounded-b">
                         <button
-                            class="text-white bg-orange border hover:text-white active:bg-orange-600 font-bold uppercase text-sm px-12 py-3 rounded outline-none focus:outline-none mr-1 mb-1   "
+                            class="text-white bg-teal border hover:text-white active:bg-teal-600 font-bold uppercase text-sm px-12 py-3 rounded outline-none focus:outline-none mr-1 mb-1   "
                             type="submit">
                             Simpan
                         </button>
                         <router-link to="/kelolaakun">
                             <button
-                                class="text-orange bg-white border active:bg-orange-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
+                                class="text-teal bg-white border active:bg-teal-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
                                 type="button">
                                 batal
                             </button>
@@ -141,7 +154,7 @@ export default {
             </div>
             <!-- <div v-else>
                 <p class="font-bold font-poppins text-5xl">Dilarang Akses Halaman Ini</p>
-                <a href="/kelolaakun" class="hover:text-orange hover:underline font-bold font-poppins text-5xl">Klik Disini
+                <a href="/kelolaakun" class="hover:text-teal hover:underline font-bold font-poppins text-5xl">Klik Disini
                     Untuk Kembali ke Halaman Sebelumnya</a>
             </div> -->
         </form>

@@ -179,7 +179,7 @@ export default {
                             class="border border-red rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                             <!--header-->
                             <div class="flex items-start justify-between p-5 border-b-2 border-black rounded-t">
-                                <h3 class="text-[40px] text-orange font-semibold font-poppins">
+                                <h3 class="text-[40px] text-teal font-semibold font-poppins">
                                     Akun Pengurus
                                 </h3>
                                 <button
@@ -193,7 +193,7 @@ export default {
                             <!--body-->
                             <div class="flex flex-col gap-8 relative p-6">
                                 <div class="flex gap-2 flex-col">
-                                    <label for="nama lengkap" class="font-poppins font-bold text-base text-orange">Nama
+                                    <label for="nama lengkap" class="font-poppins font-bold text-base text-teal">Nama
                                         Lengkap</label>
                                     <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
                                         name="nama lengkap" id="" v-model="form.full_name"
@@ -201,20 +201,20 @@ export default {
                                 </div>
                                 <div class="flex gap-2 flex-col">
                                     <label for="username"
-                                        class="font-poppins font-bold text-base text-orange">username</label>
+                                        class="font-poppins font-bold text-base text-teal">username</label>
                                     <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
                                         name="username" id="" v-model="form.username" placeholder="admin abib">
                                 </div>
 
                                 <div class="flex gap-2 flex-col">
                                     <label for="Password"
-                                        class="font-poppins font-bold text-base text-orange">Password</label>
+                                        class="font-poppins font-bold text-base text-teal">Password</label>
                                     <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="password"
                                         name="Password" id="" v-model="form.password" placeholder="Masukkan Password">
                                 </div>
 
                                 <div class="flex gap-2 flex-col">
-                                    <label for="Status" class="font-poppins font-bold text-base text-orange">Status</label>
+                                    <label for="Status" class="font-poppins font-bold text-base text-teal">Status</label>
                                     <!-- <input class="border border-black py-4 min-w-[550px] pr-2 rounded-md" type="text" name="nama lengkap" id="" placeholder="  Muhammad Abieb Basnuril"> -->
                                     <select
                                         class="border bg-white border-black py-4 min-w-[550px] pl-2 rounded-md font-poppins font-medium text-base text-[#00000080]"
@@ -229,12 +229,12 @@ export default {
                             <!--footer-->
                             <div class="flex items-center justify-center p-6 border-t-2 border-black rounded-b">
                                 <button
-                                    class="text-white bg-orange border hover:text-white active:bg-orange-600 font-bold uppercase text-sm px-12 py-3 rounded outline-none focus:outline-none mr-1 mb-1   "
+                                    class="text-white bg-teal border hover:text-white active:bg-teal-600 font-bold uppercase text-sm px-12 py-3 rounded outline-none focus:outline-none mr-1 mb-1   "
                                     type="submit">
                                     Simpan
                                 </button>
                                 <button
-                                    class="text-orange bg-white border active:bg-orange-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
+                                    class="text-teal bg-white border active:bg-teal-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
                                     type="button" v-on:click="toggleModalCreatePengurus()">
                                     Batal
                                 </button>
