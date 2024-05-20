@@ -1,7 +1,7 @@
 <script>
 import axios from 'axios'
 import VueCookies from 'vue-cookies';
-// import { useToast } from 'vue-toastification';
+import { useToast } from 'vue-toastification';
 // import { toast } from 'vue3-toastify';
 // import 'vue3-toastify/dist/index.css';
 
@@ -33,6 +33,7 @@ export default {
             this.showedithospital = !this.showedithospital;
         },
         edithospital(id) {
+            const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const formData = new FormData();
             formData.append('nama_rs', this.DataHospital.nama_rs);
@@ -47,9 +48,11 @@ export default {
                     console.log(response.data)
                     this.resulterror = response.data
                     if (response.data.code === 200) {
+                        toast.success('Edit data rumah sakit berhasil!');
                         this.$router.push('/datarumahsakit')
                     } else if (response.data.code === 400) {
                         setTimeout(() => {
+                            toast.error('Edit data rumah sakit gagal!');
                             this.$router.push('/datarumahsakit');
                         }, 5000);
                     }
