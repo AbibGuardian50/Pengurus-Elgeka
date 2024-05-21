@@ -117,6 +117,10 @@ export default {
             };
             this.loaded = true
         } catch (error) {
+            const toast = useToast()
+            if (error.message === "Request failed with status code 401") {
+                toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+            }
             console.error(error);
         }
     },

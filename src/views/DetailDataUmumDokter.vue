@@ -29,6 +29,10 @@ export default {
             this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage); // Calculate total pages
             this.updatePaginatedData(); // Update paginated data
         } catch (error) {
+            const toast = useToast()
+            if (error.message === "Request failed with status code 401") {
+                toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+            }
             console.error(error);
         }
     },

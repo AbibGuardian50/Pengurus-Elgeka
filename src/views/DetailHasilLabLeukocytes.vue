@@ -2,19 +2,25 @@
 import Sidebar from "../components/Sidebar.vue"
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
+import { useToast } from 'vue-toastification';
 import { format } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
 
 export default {
     async created() {
         try {
+            const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization')
-            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/bcr_abl';
+            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/leukocytes';
             const response = await axios.get(url, {
                 headers: {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
+            console.log(response)
+            if (response.data.Message === "Success to Get Leukocytes Data") {
+                toast.success('Data Hasil Lab Leukocytes Berhasil Dimuat');
+            }
             this.InfoPatient = response.data.Data;
             this.InfoPatient.sort((x, y) => x.id - y.id)
             this.InfoPatient.forEach((item, index) => {
@@ -23,6 +29,10 @@ export default {
             this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage); // Calculate total pages
             this.updatePaginatedData(); // Update paginated data
         } catch (error) {
+            const toast = useToast()
+            if (error.message === "Request failed with status code 401") {
+                toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+            }
             console.error(error);
         }
     },
@@ -76,7 +86,7 @@ export default {
             <!-- Your content -->
             <div class="ml-8 flex items-center justify-between border-b border-lightgray">
                 <p class="font-bold font-gotham text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Pasien</p>
-                <a href="/HasilLabBCRABL" class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg width="18" height="15" viewBox="0 0 18 15" fill="none"
+                <a href="/HasilLabLeukocytes" class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg width="18" height="15" viewBox="0 0 18 15" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M16.5001 6.01013L5.12185 6.01013L8.56112 2.5754C8.95103 2.19931 9.1074 1.64237 8.97014 1.11866C8.83287 0.594938 8.42333 0.185938 7.89892 0.0488548C7.37451 -0.0882282 6.81685 0.0679398 6.44026 0.457335L0.440653 6.44903C0.158546 6.73005 0 7.11162 0 7.50955C0 7.90748 0.158546 8.28906 0.440653 8.57008L6.44026 14.5618C7.02675 15.1467 7.97696 15.146 8.56262 14.5603C9.14828 13.9746 9.14761 13.0256 8.56112 12.4407L5.12185 9.00598L16.5001 9.00598C17.3285 9.00598 18 8.33534 18 7.50806C18 6.68078 17.3285 6.01013 16.5001 6.01013Z"

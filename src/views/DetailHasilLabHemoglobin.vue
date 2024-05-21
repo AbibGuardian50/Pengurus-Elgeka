@@ -1,6 +1,7 @@
 <script>
 import Sidebar from "../components/Sidebar.vue"
 import axios from 'axios'
+import { useToast } from 'vue-toastification';
 import VueCookies from 'vue-cookies'
 import { format } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
@@ -8,6 +9,7 @@ import idLocale from 'date-fns/locale/id';
 export default {
     async created() {
         try {
+            const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/hemoglobin';
             const response = await axios.get(url, {
@@ -15,6 +17,9 @@ export default {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
+            if (response.data.Message === "Success to Get Hemoglobin Data") {
+                toast.success('Detail Data Hasil Lab Hemoglobin Berhasil Dimuat');
+            }
             this.InfoLabHemoglobin = response.data.Data;
             this.InfoLabHemoglobin.sort((x, y) => x.id - y.id)
             this.InfoLabHemoglobin.forEach((item, index) => {
@@ -23,6 +28,10 @@ export default {
             this.totalPages = Math.ceil(this.InfoLabHemoglobin.length / this.perPage); // Calculate total pages
             this.updatePaginatedData(); // Update paginated data
         } catch (error) {
+            const toast = useToast()
+            if (error.message === "Request failed with status code 401") {
+                toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+            }
             console.error(error);
         }
     },

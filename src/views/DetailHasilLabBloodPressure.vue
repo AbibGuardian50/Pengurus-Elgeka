@@ -2,12 +2,14 @@
 import Sidebar from "../components/Sidebar.vue"
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
+import { useToast } from 'vue-toastification';
 import { format } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
 
 export default {
     async created() {
         try {
+            const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/blood_pressure';
             const response = await axios.get(url, {
@@ -15,6 +17,9 @@ export default {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
+            if (response.data.Message === "Success to Get Blood Pressure Data") {
+                toast.success('Data Hasil Lab Blood Pressure Berhasil Dimuat');
+            }
             this.InfoPatient = response.data.Data;
             this.InfoPatient.sort((x, y) => x.id - y.id)
             this.InfoPatient.forEach((item, index) => {
@@ -23,6 +28,10 @@ export default {
             this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage); // Calculate total pages
             this.updatePaginatedData(); // Update paginated data
         } catch (error) {
+            const toast = useToast()
+            if (error.message === "Request failed with status code 401") {
+                toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+            }
             console.error(error);
         }
     },

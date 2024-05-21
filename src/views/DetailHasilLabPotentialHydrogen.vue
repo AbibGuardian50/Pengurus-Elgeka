@@ -4,10 +4,12 @@ import axios from 'axios'
 import VueCookies from 'vue-cookies'
 import { format } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
+import { useToast } from 'vue-toastification';
 
 export default {
     async created() {
         try {
+            const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/potential_hydrogen';
             const response = await axios.get(url, {
@@ -15,6 +17,9 @@ export default {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
+            if (response.data.Message === "Success to Get Potential Hydrogen Data") {
+                toast.success('Detail Data Hasil Lab Potential Hydrogen Berhasil Dimuat');
+            }
             this.InfoLabPotentialHydrogen = response.data.Data;
             this.InfoLabPotentialHydrogen.sort((x, y) => x.id - y.id)
             this.InfoLabPotentialHydrogen.forEach((item, index) => {
@@ -23,6 +28,10 @@ export default {
             this.totalPages = Math.ceil(this.InfoLabPotentialHydrogen.length / this.perPage); // Calculate total pages
             this.updatePaginatedData(); // Update paginated data
         } catch (error) {
+            const toast = useToast()
+            if (error.message === "Request failed with status code 401") {
+                toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+            }
             console.error(error);
         }
     },

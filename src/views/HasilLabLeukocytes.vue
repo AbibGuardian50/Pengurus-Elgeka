@@ -2,6 +2,7 @@
 import Sidebar from "../components/Sidebar.vue"
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
+import { useToast } from 'vue-toastification';
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
 
@@ -10,6 +11,7 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 export default {
     async created() {
         try {
+            const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/leukocytes'
             const response = await axios.get(url, {
@@ -18,7 +20,10 @@ export default {
                 },
             });
             const responseData = response.data.Data;
-            console.log(responseData)
+            console.log(response)
+            if (response.data.Message === "Success to Get Leukocytes Data") {
+                toast.success('Data Hasil Lab Leukocytes Berhasil Dimuat');
+            }
 
             // Menghitung jumlah kemunculan setiap nilai Data
             const DataLabLeukocytesCounts = {
@@ -69,6 +74,10 @@ export default {
             this.DataLabLeukocytes = chartData;
             this.loaded = true; // Setelah data dimuat berhasil
         } catch (error) {
+            const toast = useToast()
+            if (error.message === "Request failed with status code 401") {
+                toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+            }
             console.error(error);
         }
     },
@@ -80,6 +89,62 @@ export default {
         return {
             loaded: false,
             DataLabLeukocytes: null, // Ganti menjadi null untuk menunjukkan bahwa data belum dimuat
+            HasilLabLeukocytesOptions: {
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#222539',  // Mengubah warna font pada sumbu X
+                            font: {
+                                size: 20  // Mengubah ukuran font pada sumbu X
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Nilai',
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        },
+                    },
+                    y: {
+                        ticks: {
+                            color: '#222539',  // Mengubah warna font pada sumbu X
+                            font: {
+                                size: 20  // Mengubah ukuran font pada sumbu X
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Jumlah',
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                },
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        titleFont: {
+                            size: 22,
+                        },
+                        bodyFont: {
+                            size: 22,
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            color: "#222539",
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            },
         }
     },
     name: 'BarChart',
@@ -96,7 +161,7 @@ export default {
                     <p
                         class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
                         GRAFIK DATA LEUKOCYTES</p>
-                    <Bar v-if="loaded" :data="DataLabLeukocytes"
+                    <Bar v-if="loaded" :data="DataLabLeukocytes" :options="HasilLabLeukocytesOptions"
                         class="min-w-[700px] max-w-[1000px] min-h-[350px] max-h-[650px] text-white ml-8" />
                 </div>
 

@@ -78,7 +78,6 @@ export default {
     async created() {
         this.loaded = false
         try {
-           
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const patientDataPromise = this.fetchPatientData(tokenlogin)
             const medicineDataPromise = this.fetchMedicineData(tokenlogin)
@@ -93,7 +92,11 @@ export default {
 
             this.loaded = true
         } catch (error) {
-            console.error(error)
+            console.error(error.message)
+            const toast = useToast()
+            if (error.message === "Request failed with status code 401") {
+                toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+            }
         }
     },
     components: {
@@ -113,7 +116,7 @@ export default {
             })
             if (response.data.Message === "Success to Get Patient Medicine List Website") {
                 toast.success('Data pasien berhasil dimuat!')
-            }  
+            }
             return response.data.Data
         },
         async fetchMedicineData(token) {
@@ -222,9 +225,9 @@ export default {
                         <div class="flex">
                             <Bar v-if="loaded" :data="MedicineData" :options="MedicineOptions"
                                 class="min-w-[1200px] rounded-lg p-4 max-w-[1300px] min-h-[540px] max-h-[550px] text-white mx-4" />
-                                <div v-else>
-                                    Tabel Sedang Dimuat.....
-                                </div>
+                            <div v-else>
+                                Tabel Sedang Dimuat.....
+                            </div>
                         </div>
 
                         <div class="pb-4"></div>
@@ -244,22 +247,35 @@ export default {
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr class="hover:bg-[#ddd]">
-                                            <th class="px-6 py-3 text-left text-[20px] font-extrabold text-black font-assistant uppercase tracking-wider">PASIEN</th>
-                                            <th class="px-6 py-3 text-left text-[20px] font-extrabold text-black font-assistant uppercase tracking-wider">OBAT</th>
-                                            <th class="px-6 py-3 text-left text-[20px] font-extrabold text-black font-assistant uppercase tracking-wider">JUMLAH</th>
+                                            <th
+                                                class="px-6 py-3 text-left text-[20px] font-extrabold text-black font-assistant uppercase tracking-wider">
+                                                PASIEN</th>
+                                            <th
+                                                class="px-6 py-3 text-left text-[20px] font-extrabold text-black font-assistant uppercase tracking-wider">
+                                                OBAT</th>
+                                            <th
+                                                class="px-6 py-3 text-left text-[20px] font-extrabold text-black font-assistant uppercase tracking-wider">
+                                                JUMLAH</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
-                                        <tr v-for="patient in StatisticsPatientData" :key="patient.id" class="hover:bg-[#ddd]">
-                                            <td class="px-6 py-4 whitespace-nowrap font-normal font-assistant text-black text-[20px]">{{ patient.Name }}</td>
+                                        <tr v-for="patient in StatisticsPatientData" :key="patient.id"
+                                            class="hover:bg-[#ddd]">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap font-normal font-assistant text-black text-[20px]">
+                                                {{ patient.Name }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => med.Stock < 10)" :key="mIndex" class="flex">
-                                                    <p class="font-normal font-assistant text-black text-[20px]">- {{ medicine.Name }}</p>
+                                                <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => med.Stock < 10)"
+                                                    :key="mIndex" class="flex">
+                                                    <p class="font-normal font-assistant text-black text-[20px]">- {{
+                                                        medicine.Name }}</p>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => med.Stock < 10)" :key="mIndex" class="flex py-[0.2rem]">
-                                                    <p class="font-bold font-assistant text-black text-[20px]">{{ medicine.Stock }}</p>
+                                                <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => med.Stock < 10)"
+                                                    :key="mIndex" class="flex py-[0.2rem]">
+                                                    <p class="font-bold font-assistant text-black text-[20px]">{{
+                                                        medicine.Stock }}</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -282,34 +298,30 @@ export default {
 
                         </div>
                     </div>
-
-                </div>
-
-                <div class="flex gap-4 items-center">
                     <div
-                        class="flex flex-col justify-between pl-4 bg-seeingstatistics bg-no-repeat bg-center bg-cover rounded-md h-full max-h-[1000px] min-w-[509px] max-w-[510px]">
-                        <div class="flex flex-col gap-4">
-                            <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA UMUM KEPEMILIKAN
-                                OBAT</p>
-                            <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang
-                                data umum kepemilikan obat</p>
-                        </div>
-                        <div>
-                            <a href="/detaildataumumkepemilikanobat">
-                                <button class="font-opensans text-white flex items-center gap-2 pb-4">
-                                Read more
-                                <svg width="12" height="11" viewBox="0 0 12 11" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M1 6.00156H8.586L6.293 8.29456C6.03304 8.54563 5.92879 8.91743 6.0203 9.26706C6.11182 9.61669 6.38486 9.88974 6.73449 9.98125C7.08412 10.0728 7.45593 9.96851 7.707 9.70856L11.707 5.70856C11.8951 5.52095 12.0008 5.26621 12.0008 5.00056C12.0008 4.7349 11.8951 4.48017 11.707 4.29256L7.707 0.292556C7.31598 -0.097909 6.68247 -0.0974613 6.292 0.293556C5.90153 0.684574 5.90198 1.31809 6.293 1.70856L8.586 4.00156H1C0.447715 4.00156 0 4.44927 0 5.00156C0 5.55384 0.447715 6.00156 1 6.00156Z"
-                                        fill="white" />
-                                </svg>
-                            </button>
-                        </a>
-                    </div>
+                class="flex flex-col justify-between pl-4 bg-seeingstatistics bg-no-repeat bg-center bg-cover rounded-md h-full max-h-[1000px] w-full">
+                <div class="flex flex-col gap-4">
+                    <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA UMUM KEPEMILIKAN
+                        OBAT</p>
+                    <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang
+                        data umum kepemilikan obat</p>
                 </div>
+                <div>
+                    <a href="/detaildataumumkepemilikanobat">
+                        <button class="font-opensans text-white flex items-center gap-2 pb-4">
+                            Read more
+                            <svg width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                d="M1 6.00156H8.586L6.293 8.29456C6.03304 8.54563 5.92879 8.91743 6.0203 9.26706C6.11182 9.61669 6.38486 9.88974 6.73449 9.98125C7.08412 10.0728 7.45593 9.96851 7.707 9.70856L11.707 5.70856C11.8951 5.52095 12.0008 5.26621 12.0008 5.00056C12.0008 4.7349 11.8951 4.48017 11.707 4.29256L7.707 0.292556C7.31598 -0.097909 6.68247 -0.0974613 6.292 0.293556C5.90153 0.684574 5.90198 1.31809 6.293 1.70856L8.586 4.00156H1C0.447715 4.00156 0 4.44927 0 5.00156C0 5.55384 0.447715 6.00156 1 6.00156Z"
+                                fill="white" />
+                        </svg>
+                    </button>
+                </a>
             </div>
         </div>
+                </div>
+
+            </div>
+            
     </div>
-</div>
-</template>
+</div></template>

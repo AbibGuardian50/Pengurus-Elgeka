@@ -2,6 +2,7 @@
 import Sidebar from "../components/Sidebar.vue"
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
+import { useToast } from 'vue-toastification';
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
 
@@ -10,6 +11,7 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 export default {
     async created() {
         try {
+            const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/blood_pressure'
             const response = await axios.get(url, {
@@ -17,6 +19,9 @@ export default {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
+            if (response.data.Message === "Success to Get Blood Pressure Data") {
+                toast.success('Data Hasil Lab Blood Pressure Berhasil Dimuat');
+            }
             const responseData = response.data.Data;
 
             // Menghitung tekanan darah berdasar DataSys
@@ -65,6 +70,10 @@ export default {
             this.DataLabBcrAbl = chartDataSys;
             this.loaded = true; // Setelah data dimuat berhasil
         } catch (error) {
+            const toast = useToast()
+            if (error.message === "Request failed with status code 401") {
+                toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+            }
             console.error(error);
         }
     },
@@ -77,6 +86,62 @@ export default {
             loaded: false,
             DataLabBcrAbl: null, // Ganti menjadi null untuk menunjukkan bahwa data belum dimuat
             DataLabBcrAblDataDia: null,
+            HasilLabBloodPressureOptions: {
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#222539',  // Mengubah warna font pada sumbu X
+                            font: {
+                                size: 20  // Mengubah ukuran font pada sumbu X
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Nilai',
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        },
+                    },
+                    y: {
+                        ticks: {
+                            color: '#222539',  // Mengubah warna font pada sumbu X
+                            font: {
+                                size: 20  // Mengubah ukuran font pada sumbu X
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Jumlah',
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                },
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        titleFont: {
+                            size: 22,
+                        },
+                        bodyFont: {
+                            size: 22,
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            color: "#222539",
+                            font: {
+                                size: 22,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            },
         }
     },
     name: 'BarChart',
@@ -94,7 +159,7 @@ export default {
                         <p
                             class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
                             GRAFIK DATA TEKANAN DARAH (DataSys)</p>
-                        <Bar v-if="loaded" :data="DataLabBcrAbl"
+                        <Bar v-if="loaded" :data="DataLabBcrAbl" :options="HasilLabBloodPressureOptions"
                             class="min-w-[700px] max-w-[1000px] min-h-[350px] max-h-[650px] text-white ml-8" />
                     </div>
 
@@ -102,7 +167,7 @@ export default {
                         <p
                             class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
                             GRAFIK DATA TEKANAN DARAH (DataDia)</p>
-                        <Bar v-if="loaded" :data="DataLabBcrAblDataDia"
+                        <Bar v-if="loaded" :data="DataLabBcrAblDataDia" :options="HasilLabBloodPressureOptions"
                             class="min-w-[700px] max-w-[1000px] min-h-[350px] max-h-[650px] text-white ml-8" />
                     </div>
 

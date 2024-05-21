@@ -2,11 +2,16 @@
 import Sidebar from "../components/Sidebar.vue"
 import axios from 'axios'
 import VueCookies from 'vue-cookies';
+import { useToast } from 'vue-toastification';
 
 export default {
     async created() {
         try {
+            const toast = useToast();
             const response = await axios.get('https://elgeka-web-api-production.up.railway.app/api/v1/infoRS');
+            if (response.data.message === "Get Info RS Successfully") {
+                toast.success('Data Rumah Sakit Berhasil Dimuat');
+            }
             this.InfoRS = response.data.result.data;
             this.InfoRS.sort((x, y) => x.id - y.id)
             this.InfoRS.forEach((item, index) => {
@@ -14,7 +19,7 @@ export default {
             });
             this.totalPages = Math.ceil(this.InfoRS.length / this.perPage); // Calculate total pages
             this.updatePaginatedData(); // Update paginated data
-            console.log(this.InfoRS)
+            console.log(response)
         } catch (error) {
             console.error(error);
         }
@@ -65,6 +70,7 @@ export default {
             }
         },
         createhospital() {
+            const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/infoRS'
             const formData = new FormData();
@@ -76,10 +82,15 @@ export default {
             formData.append('info_kontak', this.form.info_kontak);
             axios.post(url, formData, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                 .then(response => {
-                    console.log(response.data);
+                    console.log(response);
                     window.location.reload();
+                    if (response.data.message === "Create Info RS Successfully") {
+                        toast.success('Data Rumah Sakit Baru Berhasil Ditambahkan');
+                    }
                 })
                 .catch(error => {
+                    const toast = useToast();
+                    toast.errpr('Terdapat kesalahan pada sistem, mohon coba lagi');
                     console.log(error)
                 })
         },
@@ -165,7 +176,8 @@ export default {
 
                         <td class="px-3 py-4 min-w-[200px] whitespace-normal break-words max-w-[201px] text-wrap">
                             <a :href="data.link_maps" target="_blank"
-                                class="hover:text-warmgray font-normal text-wrap text-sulfurblack text-base ">{{ data.link_maps }}</a>
+                                class="hover:text-warmgray font-normal text-wrap text-sulfurblack text-base ">{{
+                                    data.link_maps }}</a>
                         </td>
 
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
@@ -187,15 +199,15 @@ export default {
             </table>
 
             <!-- Pagination navigation -->
-        <div class="ml-8 mt-4 flex justify-center">
-            <button @click="prevPage" :disabled="currentPage === 1"
-                class="px-4 py-2 mr-2 bg-teal  text-white rounded-md">Previous</button>
-            <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
-                :class="{ 'bg-teal  text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
-                class="px-4 py-2 mr-2">{{ pageNumber }}</button>
-            <button @click="nextPage" :disabled="currentPage === totalPages"
-                class="px-4 py-2 bg-teal  text-white rounded-md">Next</button>
-        </div>
+            <div class="ml-8 mt-4 flex justify-center">
+                <button @click="prevPage" :disabled="currentPage === 1"
+                    class="px-4 py-2 mr-2 bg-teal  text-white rounded-md">Previous</button>
+                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
+                    :class="{ 'bg-teal  text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
+                    class="px-4 py-2 mr-2">{{ pageNumber }}</button>
+                <button @click="nextPage" :disabled="currentPage === totalPages"
+                    class="px-4 py-2 bg-teal  text-white rounded-md">Next</button>
+            </div>
 
             <!-- Modal Create Rumah Sakit -->
             <div>
@@ -224,27 +236,29 @@ export default {
                                     <label for="nama lengkap"
                                         class="font-poppins font-bold text-base text-teal">Nama</label>
                                     <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
-                                        name="nama lengkap" id="" v-model="form.nama_rs" placeholder="Nama Rumah Sakit">
+                                        required name="nama lengkap" id="" v-model="form.nama_rs"
+                                        placeholder="Nama Rumah Sakit">
                                 </div>
                                 <div class="flex gap-2 flex-col">
                                     <label for="alamat" class="font-poppins font-bold text-base text-teal">Alamat</label>
                                     <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
-                                        name="alamat" id="" v-model="form.lokasi_rs"
+                                        required name="alamat" id="" v-model="form.lokasi_rs"
                                         placeholder="Contoh format: Jatiwaringin, Kota Bekasi">
                                 </div>
 
                                 <div class="flex gap-2 flex-col">
                                     <label for="Kontak" class="font-poppins font-bold text-base text-teal">Kontak</label>
                                     <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
-                                        name="Kontak" id="" v-model="form.info_kontak"
+                                        required name="Kontak" id="" v-model="form.info_kontak"
                                         placeholder="Nomor Telepon Rumah Sakit">
                                 </div>
 
                                 <div class="flex gap-2 flex-col relative">
-                                    <label for="Google Maps" class="font-poppins font-bold text-base text-teal">Latlong</label>
+                                    <label for="Google Maps"
+                                        class="font-poppins font-bold text-base text-teal">Latlong</label>
                                     <div class="relative">
                                         <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
-                                            name="Google Maps" id="" v-model="form.link_maps"
+                                            required name="Google Maps" id="" v-model="form.link_maps"
                                             placeholder="Link/URL Google Maps">
                                         <a target="_blank" href="https://imgur.com/gallery/jwZQDHN"><span
                                                 class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
@@ -267,7 +281,7 @@ export default {
                                         Maps</label>
                                     <div class="relative">
                                         <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
-                                            name="Google Maps" id="" v-model="form.latlong"
+                                            required name="Google Maps" id="" v-model="form.latlong"
                                             placeholder="Link/URL Google Maps">
                                         <a target="_blank" href="https://imgur.com/gallery/LaDTHRq"><span
                                                 class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
@@ -288,7 +302,7 @@ export default {
                                     <label for="Foto Profil" class="font-poppins font-bold text-base text-teal">Gambar
                                         Lengkap</label>
                                     <input @change="handleFileChange"
-                                        class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="file"
+                                        class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="file" required
                                         name="Foto Profil" id="">
                                 </div>
 
@@ -312,5 +326,5 @@ export default {
                 </form>
                 <div v-if="showcreatehospital" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
             </div>
-        </div>
+    </div>
 </div></template>
