@@ -1,7 +1,7 @@
 <script>
-import Sidebar from "../components/Sidebar.vue"
-import axios from 'axios'
-import VueCookies from 'vue-cookies'
+import Sidebar from "../components/Sidebar.vue";
+import axios from 'axios';
+import VueCookies from 'vue-cookies';
 import { format } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
 import { useToast } from 'vue-toastification';
@@ -10,7 +10,7 @@ export default {
     async created() {
         try {
             const toast = useToast();
-            const tokenlogin = VueCookies.get('TokenAuthorization')
+            const tokenlogin = VueCookies.get('TokenAuthorization');
             const url = 'https://elgeka-mobile-production.up.railway.app/api/doctor/list/website';
             const response = await axios.get(url, {
                 headers: {
@@ -21,17 +21,21 @@ export default {
             if (response.data.Message === "Success to Get Doctor List") {
                 toast.success('Detail Data Dokter Berhasil Dimuat');
             }
-            this.InfoPatient = response.data.Data;
-            this.InfoPatient.sort((x, y) => x.id - y.id)
+            this.originalInfoPatient = response.data.Data; // Save original data
+            this.InfoPatient = [...this.originalInfoPatient];
+            this.InfoPatient.sort((x, y) => x.id - y.id);
             this.InfoPatient.forEach((item, index) => {
                 item.no = index + 1;
             });
-            this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage); // Calculate total pages
-            this.updatePaginatedData(); // Update paginated data
+            this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage);
+            this.updatePaginatedData();
+            this.getHospitalNames();
+            this.uniquePolis = [...new Set(this.InfoPatient.map(item => item.PolyName))];
+            this.selectedPoli = ''; // Poli yang dipilih default kosong
         } catch (error) {
-            const toast = useToast()
+            const toast = useToast();
             if (error.message === "Request failed with status code 401") {
-                toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+                toast.error('Error code 401, Mohon untuk logout lalu login kembali');
             }
             console.error(error);
         }
@@ -41,16 +45,35 @@ export default {
     },
     data() {
         return {
+            originalInfoPatient: [], // Store the original data
             InfoPatient: [],
-            perPage: 10, // Number of items per page
-            currentPage: 1, // Current page
-            totalPages: 0, // Total pages
-            paginatedInfoPatient: [] // Paginated data
+            perPage: 10,
+            currentPage: 1,
+            totalPages: 0,
+            paginatedInfoPatient: [],
+            hospitalNames: [], // To store unique hospital names
+            selectedHospital: '', // Selected hospital for sorting
+            uniquePolis: [], // Daftar nama poli unik
+            selectedPoli: '' // Poli yang dipilih
         }
     },
     methods: {
+        sortByPoli(sortType) {
+            this.selectedSort = sortType;
+            if (sortType === 'alphabetical') {
+                this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+                this.InfoPatient.sort((a, b) => {
+                    return this.sortDirection === 'asc' ? a.PolyName.localeCompare(b.PolyName) : b.PolyName.localeCompare(a.PolyName);
+                });
+            } else if (sortType === 'count') {
+                this.sortDirection = 'desc'; // Default sort by count in descending order
+                this.sortByPoliCount();
+            }
+            this.updatePaginatedData();
+        },
+
+
         formatDate(dateString) {
-            // Ubah format tanggal
             return format(new Date(dateString), 'dd MMMM yyyy', { locale: idLocale });
         },
         updatePaginatedData() {
@@ -59,24 +82,44 @@ export default {
             this.paginatedInfoPatient = this.InfoPatient.slice(startIndex, endIndex);
         },
         goToPage(pageNumber) {
-        this.currentPage = pageNumber; // Set current page to the selected page number
-        this.updatePaginatedData(); // Update paginated data for the selected page
-    },
+            this.currentPage = pageNumber;
+            this.updatePaginatedData();
+        },
         nextPage() {
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
-                this.updatePaginatedData(); // Update paginated data when navigating to next page
+                this.updatePaginatedData();
             }
         },
         prevPage() {
             if (this.currentPage > 1) {
                 this.currentPage--;
-                this.updatePaginatedData(); // Update paginated data when navigating to previous page
+                this.updatePaginatedData();
             }
+        },
+        sortDataByHospital(event) {
+            this.selectedHospital = event.target.value;
+            if (this.selectedHospital) {
+                this.InfoPatient = this.originalInfoPatient.filter(item => item.HospitalName === this.selectedHospital);
+            } else {
+                this.InfoPatient = [...this.originalInfoPatient]; // Reset to original data
+                this.InfoPatient.sort((x, y) => x.id - y.id);
+            }
+            this.InfoPatient.forEach((item, index) => {
+                item.no = index + 1;
+            });
+            this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage);
+            this.currentPage = 1;
+            this.updatePaginatedData();
+        },
+        getHospitalNames() {
+            const hospitals = this.originalInfoPatient.map(item => item.HospitalName);
+            this.hospitalNames = [...new Set(hospitals)];
         }
     }
 }
 </script>
+
 
 <template>
     <div class="flex bg-offwhite">
@@ -86,8 +129,9 @@ export default {
             <!-- Your content -->
             <div class="ml-8 flex items-center justify-between border-b border-lightgray">
                 <p class="font-bold font-gotham text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Dokter</p>
-                <a href="/dataumumdokter" class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg width="18" height="15" viewBox="0 0 18 15" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
+                <a href="/dataumumdokter"
+                    class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg
+                            width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M16.5001 6.01013L5.12185 6.01013L8.56112 2.5754C8.95103 2.19931 9.1074 1.64237 8.97014 1.11866C8.83287 0.594938 8.42333 0.185938 7.89892 0.0488548C7.37451 -0.0882282 6.81685 0.0679398 6.44026 0.457335L0.440653 6.44903C0.158546 6.73005 0 7.11162 0 7.50955C0 7.90748 0.158546 8.28906 0.440653 8.57008L6.44026 14.5618C7.02675 15.1467 7.97696 15.146 8.56262 14.5603C9.14828 13.9746 9.14761 13.0256 8.56112 12.4407L5.12185 9.00598L16.5001 9.00598C17.3285 9.00598 18 8.33534 18 7.50806C18 6.68078 17.3285 6.01013 16.5001 6.01013Z"
                                 fill="#1E1E1E" />
@@ -123,31 +167,43 @@ export default {
                         <th scope="col" class="px-3 py-3 max-w-[50px] text-left font-bold font-gotham text-black text-base">
                             No
                         </th>
-                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                        <th scope="col"
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Nama
                         </th>
-                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                        <th scope="col"
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Gender
                         </th>
-                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                        <th scope="col"
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Nomor HP
                         </th>
-                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                        <th scope="col"
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Email
                         </th>
-                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
-                            Poli
+                        <th scope="col"
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            <button @click="sortByPoli('alphabetical')" class="flex items-center gap-1">
+                                <span>Poli &#42;</span>
+                                <span v-if="selectedSort === 'alphabetical' && sortDirection === 'asc'">&#9650;</span>
+                                <span v-else-if="selectedSort === 'alphabetical' && sortDirection === 'desc'">&#9660;</span>
+                            </button>
                         </th>
-                        <th scope="col" class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+
+                        <th scope="col"
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
                             Rumah Sakit
                         </th>
-                        
+
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(data, index) in paginatedInfoPatient" :key="index"
                         class="bg-offwhite divide-y divide-gray-200">
-                        <td class="px-3 py-4 whitespace-nowrap font-gotham min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
+                        <td
+                            class="px-3 py-4 whitespace-nowrap font-gotham min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
                             {{ data.no }}
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[251px]">
@@ -160,8 +216,10 @@ export default {
                             </div>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p v-if="data.Gender === 'female'" class="font-gotham font-light leading-4 text-black text-base">Perempuan</p>
-                            <p v-else-if="data.Gender === 'male'" class="font-gotham font-light leading-4 text-black text-base">Laki-Laki</p>
+                            <p v-if="data.Gender === 'female'"
+                                class="font-gotham font-light leading-4 text-black text-base">Perempuan</p>
+                            <p v-else-if="data.Gender === 'male'"
+                                class="font-gotham font-light leading-4 text-black text-base">Laki-Laki</p>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
                             <p class="font-gotham font-light leading-4 text-black text-base">{{ data.PhoneNumber }}</p>
@@ -181,16 +239,27 @@ export default {
                 </tbody>
             </table>
 
-            <!-- Pagination navigation -->
-            <div class="ml-8 mt-4 flex justify-center">
-                <button @click="prevPage" :disabled="currentPage === 1"
-                    class="px-4 py-2 mr-2 bg-teal  text-white rounded-md">Previous</button>
-                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
-                    :class="{ 'bg-teal  text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
-                    class="px-4 py-2 mr-2">{{ pageNumber }}</button>
-                <button @click="nextPage" :disabled="currentPage === totalPages"
-                    class="px-4 py-2 bg-teal  text-white rounded-md">Next</button>
+            <!-- Pagination navigation & sortir -->
+            <div class="ml-8 mt-4 flex justify-between">
+                <div>
+                    <label for="sortHospital" class="font-bold font-gotham text-blueblack">Sortir Berdasarkan Rumah
+                        Sakit:</label>
+                    <select id="sortHospital" @change="sortDataByHospital" class="ml-2 border border-gray-300 p-2 rounded">
+                        <option value="">Pilih Rumah Sakit</option>
+                        <option v-for="hospital in hospitalNames" :key="hospital" :value="hospital">{{ hospital }}</option>
+                    </select>
+                </div>
+                <div class="flex justify-center">
+                    <button @click="prevPage" :disabled="currentPage === 1"
+                        class="px-4 py-2 mr-2 bg-teal text-white rounded-md">Previous</button>
+                    <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
+                        :class="{ 'bg-teal text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
+                        class="px-4 py-2 mr-2">{{ pageNumber }}</button>
+                    <button @click="nextPage" :disabled="currentPage === totalPages"
+                        class="px-4 py-2 bg-teal text-white rounded-md">Next</button>
+                </div>
             </div>
+
         </div>
     </div>
 </template>

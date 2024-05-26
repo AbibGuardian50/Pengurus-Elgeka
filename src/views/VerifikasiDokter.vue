@@ -30,7 +30,9 @@ export default {
             }
         } catch (error) {
             const toast = useToast()
-            toast.error('Terjadi kesalahan saat mengambil data');
+            if (error.response.data.ErrorMessage === "Data Empty") {
+                toast.warning('Sedang tidak ada dokter yang bisa diverifikasi')
+            }
             console.error(error);
         }
     },
@@ -49,6 +51,7 @@ export default {
     },
     methods: {
         editstatusdoctor(id) {
+            const toast = useToast();
             if (confirm('Apakah kamu yakin untuk mengaktifkan status dokter ini menjadi verified?')) {
                 const tokenlogin = VueCookies.get('TokenAuthorization');
                 axios.defaults.withCredentials = true;
@@ -63,10 +66,15 @@ export default {
                     }
                 )
                     .then(response => {
-                        console.log(response.data);
-                        window.location.reload();
+                        console.log(response);
+                        if (response.data.Message === "Doctor Activated Successfully") {
+                            toast.success('Dokter berhasil diverifikasi');
+                            window.location.reload();
+                        }
+                        
                     })
                     .catch(error => {
+                        toast.error('Dokter gagal diverifikasi, mohon coba lagi');
                         console.error(error);
                     });
             }

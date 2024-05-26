@@ -73,7 +73,7 @@ export default {
             responseData.forEach(item => {
                 const district = item.District;
                 const province = item.Province;
-                if (province === "Jawa Barat" && district !== "") { // Tambahkan kondisi disini
+                if (province === "32" && district !== "") { // Tambahkan kondisi disini
                     districtCounts[district] = (districtCounts[district] || 0) + 1;
                 }
             });

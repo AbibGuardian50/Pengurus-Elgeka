@@ -96,7 +96,7 @@ export default {
             <hr>
 
             <p class="font-normal text-[20px] leading-5 text-blueblack pt-4">Akun Pengurus</p>
-            <table class="min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
+            <table class="min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px] mt-4">
                 <thead>
                     <tr class="border-b-[0.5px] border-b-teal">
                         <th scope="col" class="px-6 py-3 text-left font-normal  text-sulfurblack text-base">
