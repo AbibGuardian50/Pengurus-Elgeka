@@ -30,8 +30,6 @@ export default {
             this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage);
             this.updatePaginatedData();
             this.getHospitalNames();
-            this.uniquePolis = [...new Set(this.InfoPatient.map(item => item.PolyName))];
-            this.selectedPoli = ''; // Poli yang dipilih default kosong
         } catch (error) {
             const toast = useToast();
             if (error.message === "Request failed with status code 401") {
@@ -53,25 +51,19 @@ export default {
             paginatedInfoPatient: [],
             hospitalNames: [], // To store unique hospital names
             selectedHospital: '', // Selected hospital for sorting
-            uniquePolis: [], // Daftar nama poli unik
-            selectedPoli: '' // Poli yang dipilih
         }
     },
     methods: {
-        sortByPoli(sortType) {
-            this.selectedSort = sortType;
-            if (sortType === 'alphabetical') {
-                this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-                this.InfoPatient.sort((a, b) => {
-                    return this.sortDirection === 'asc' ? a.PolyName.localeCompare(b.PolyName) : b.PolyName.localeCompare(a.PolyName);
-                });
-            } else if (sortType === 'count') {
-                this.sortDirection = 'desc'; // Default sort by count in descending order
-                this.sortByPoliCount();
+        sortNoColumn() {
+            if (this.sortOrder === 'asc') {
+                this.InfoPatient.sort((a, b) => a.no - b.no);
+                this.sortOrder = 'desc';
+            } else {
+                this.InfoPatient.sort((a, b) => b.no - a.no);
+                this.sortOrder = 'asc';
             }
             this.updatePaginatedData();
         },
-
 
         formatDate(dateString) {
             return format(new Date(dateString), 'dd MMMM yyyy', { locale: idLocale });
@@ -128,7 +120,7 @@ export default {
         <div>
             <!-- Your content -->
             <div class="ml-8 flex items-center justify-between border-b border-lightgray">
-                <p class="font-bold font-gotham text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Dokter</p>
+                <p class="font-bold font-poppins text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Dokter</p>
                 <a href="/dataumumdokter"
                     class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg
                             width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -159,57 +151,78 @@ export default {
                 </form> -->
             </div>
 
-            <p class="ml-8 font-light font-gotham text-[20px] leading-7 text-blueblack mt-4">Biodata Dokter</p>
+            <p class="ml-8 font-light font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Dokter</p>
+
+            <!-- Fitur Sortir -->
+            <div class="ml-8 my-4">
+                <label for="sortHospital" class="font-bold font-poppins text-blueblack">Sortir Berdasarkan Rumah
+                    Sakit:</label>
+                <select id="sortHospital" @change="sortDataByHospital" class="ml-2 border border-gray-300 p-2 rounded">
+                    <option value="">Pilih Rumah Sakit</option>
+                    <option v-for="hospital in hospitalNames" :key="hospital" :value="hospital">{{ hospital }}</option>
+                </select>
+            </div>
 
             <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
                 <thead class="bg-gray-50">
                     <tr class="bg-offwhite border-b-[0.5px] border-b-lightgray">
-                        <th scope="col" class="px-3 py-3 max-w-[50px] text-left font-bold font-gotham text-black text-base">
+                        <th scope="col"
+                            class="px-3 py-3 max-w-[50px] flex items-center gap-1 text-left font-bold font-poppins text-black text-base cursor-pointer"
+                            @click="sortNoColumn">
                             No
+                            <span v-if="sortOrder === 'asc'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M12 19V6M5 12l7-7 7 7" />
+                                </svg>
+                            </span>
+                            <span v-else>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M12 5v13M5 12l7 7 7-7" />
+                                </svg>
+                            </span>
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Nama
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Gender
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Nomor HP
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Email
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
-                            <button @click="sortByPoli('alphabetical')" class="flex items-center gap-1">
-                                <span>Poli &#42;</span>
-                                <span v-if="selectedSort === 'alphabetical' && sortDirection === 'asc'">&#9650;</span>
-                                <span v-else-if="selectedSort === 'alphabetical' && sortDirection === 'desc'">&#9660;</span>
-                            </button>
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                            Poli
                         </th>
 
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Rumah Sakit
                         </th>
-
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(data, index) in paginatedInfoPatient" :key="index"
                         class="bg-offwhite divide-y divide-gray-200">
                         <td
-                            class="px-3 py-4 whitespace-nowrap font-gotham min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
+                            class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-normal leading-4 text-black text-base">
                             {{ data.no }}
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[251px]">
                             <div class="flex items-center">
                                 <div>
-                                    <div class="font-gotham font-light leading-4 text-black text-base">
+                                    <div class="font-poppins font-normal leading-4 text-black text-base">
                                         {{ data.Name }}
                                     </div>
                                 </div>
@@ -217,49 +230,42 @@ export default {
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
                             <p v-if="data.Gender === 'female'"
-                                class="font-gotham font-light leading-4 text-black text-base">Perempuan</p>
+                                class="font-poppins font-normal leading-4 text-black text-base">Perempuan</p>
                             <p v-else-if="data.Gender === 'male'"
-                                class="font-gotham font-light leading-4 text-black text-base">Laki-Laki</p>
+                                class="font-poppins font-normal leading-4 text-black text-base">Laki-Laki</p>
+                                <p v-else
+                                class="font-poppins font-normal leading-4 text-black text-base">Tidak Diketahui</p>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.PhoneNumber }}</p>
+                            <p v-if="data.PhoneNumber" class="font-poppins font-normal leading-4 text-black text-base">{{ data.PhoneNumber }}</p>
+                            <p v-else class="font-poppins font-normal leading-4 text-black text-base">Tidak Diketahui</p>
                         </td>
-                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.Email }}</p>
+                        <td class="px-3 py-4 min-w-[220px] max-w-[221px] break-words">
+                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.Email }}</p>
                         </td>
 
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.PolyName }}</p>
+                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.PolyName }}</p>
                         </td>
 
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.HospitalName }}</p>
+                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.HospitalName }}</p>
                         </td>
                     </tr>
                 </tbody>
             </table>
 
-            <!-- Pagination navigation & sortir -->
-            <div class="ml-8 mt-4 flex justify-between">
-                <div>
-                    <label for="sortHospital" class="font-bold font-gotham text-blueblack">Sortir Berdasarkan Rumah
-                        Sakit:</label>
-                    <select id="sortHospital" @change="sortDataByHospital" class="ml-2 border border-gray-300 p-2 rounded">
-                        <option value="">Pilih Rumah Sakit</option>
-                        <option v-for="hospital in hospitalNames" :key="hospital" :value="hospital">{{ hospital }}</option>
-                    </select>
-                </div>
-                <div class="flex justify-center">
-                    <button @click="prevPage" :disabled="currentPage === 1"
-                        class="px-4 py-2 mr-2 bg-teal text-white rounded-md">Previous</button>
-                    <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
-                        :class="{ 'bg-teal text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
-                        class="px-4 py-2 mr-2">{{ pageNumber }}</button>
-                    <button @click="nextPage" :disabled="currentPage === totalPages"
-                        class="px-4 py-2 bg-teal text-white rounded-md">Next</button>
-                </div>
+            <!-- Pagination navigation -->
+            <div class="flex justify-center">
+                <button @click="prevPage" :disabled="currentPage === 1"
+                    class="px-4 py-2 mr-2 bg-teal text-white font-poppins font-normal rounded-md">Previous</button>
+                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
+                    :class="{ 'bg-teal text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-teal rounded-md': pageNumber !== currentPage }"
+                    class="px-4 py-2 mr-2 font-poppins font-normal">{{ pageNumber }}</button>
+                <button @click="nextPage" :disabled="currentPage === totalPages"
+                    class="px-4 py-2 bg-teal text-white font-poppins font-normal rounded-md">Next</button>
             </div>
 
-        </div>
+
     </div>
-</template>
+</div></template>

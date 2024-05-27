@@ -48,6 +48,16 @@ export default {
         }
     },
     methods: {
+        sortNoColumn() {
+            if (this.sortOrder === 'asc') {
+                this.InfoPatient.sort((a, b) => a.no - b.no);
+                this.sortOrder = 'desc';
+            } else {
+                this.InfoPatient.sort((a, b) => b.no - a.no);
+                this.sortOrder = 'asc';
+            }
+            this.updatePaginatedData();
+        },
         formatDate(dateString) {
             // Ubah format tanggal
             return format(new Date(dateString), 'dd MMMM yyyy', { locale: idLocale });
@@ -119,8 +129,24 @@ export default {
             <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
                 <thead>
                     <tr class="border-b-[0.5px] border-b-lightgray">
-                        <th scope="col" class="px-3 py-3 max-w-[50px] text-left font-bold font-gotham text-black text-base">
+                        <th scope="col"
+                            class="px-3 py-3 max-w-[50px] flex items-center gap-1 text-left font-bold font-poppins text-black text-base cursor-pointer"
+                            @click="sortNoColumn">
                             No
+                            <span v-if="sortOrder === 'asc'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M12 19V6M5 12l7-7 7 7" />
+                                </svg>
+                            </span>
+                            <span v-else>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M12 5v13M5 12l7 7 7-7" />
+                                </svg>
+                            </span>
                         </th>
                         <th scope="col"
                             class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
