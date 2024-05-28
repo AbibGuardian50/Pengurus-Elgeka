@@ -94,7 +94,7 @@ export default {
         <div>
             <!-- Your content -->
             <div class="ml-8 flex items-center justify-between border-b border-lightgray">
-                <p class="font-bold font-gotham text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Pasien</p>
+                <p class="font-bold font-poppins text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Pasien</p>
                 <a href="/dataumumpasien" class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg width="18" height="15" viewBox="0 0 18 15" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -124,7 +124,7 @@ export default {
                 </form> -->
             </div>
 
-            <p class="ml-8 font-light font-gotham text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
+            <p class="ml-8 font-normal font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
 
             <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
                 <thead>
@@ -149,35 +149,35 @@ export default {
                             </span>
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Nama
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[300px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[300px] text-left font-bold font-poppins text-black text-base">
                             Alamat
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Gender
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Tanggal Lahir
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Umur
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Golongan Darah
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Nomor HP
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Email
                         </th>
 
@@ -186,48 +186,48 @@ export default {
                 <tbody>
                     <tr v-for="(data, index) in paginatedInfoPatient" :key="index" class="divide-y divide-gray-200">
                         <td
-                            class="px-3 py-4 whitespace-nowrap font-gotham min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
+                            class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-normal leading-4 text-black text-base">
                             {{ data.no }}
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[251px]">
                             <div class="flex items-center">
                                 <div>
-                                    <div class="font-gotham font-light leading-4 text-black text-base">
+                                    <div class="font-poppins font-normal leading-4 text-black text-base">
                                         {{ data.Name }}
                                     </div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-3 py-4 min-w-[250px] max-w-[251px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.Address }}</p>
+                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.Address }}</p>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
                             <p v-if="data.Gender === 'female'"
-                                class="font-gotham font-light leading-4 text-black text-base">Perempuan</p>
+                                class="font-poppins font-normal leading-4 text-black text-base">Perempuan</p>
                             <p v-else-if="data.Gender === 'male'"
-                                class="font-gotham font-light leading-4 text-black text-base">Laki-Laki</p>
+                                class="font-poppins font-normal leading-4 text-black text-base">Laki-Laki</p>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ formatDate(data.BirthDate)
+                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ formatDate(data.BirthDate)
                             }}</p>
                         </td>
                         <td class="px-3 py-4 min-w-[50px] max-w-[101px]">
-                            <p v-if="data.Age" class="font-gotham font-light leading-4 text-black text-base">{{ data.Age }}
+                            <p v-if="data.Age" class="font-poppins font-normal leading-4 text-black text-base">{{ data.Age }}
                             </p>
-                            <p v-else-if="!data.Age" class="font-gotham font-light leading-4 text-black text-base">Tidak
+                            <p v-else-if="!data.Age" class="font-poppins font-normal leading-4 text-black text-base">Tidak
                                 diketahui</p>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p v-if="data.BloodGroup" class="font-gotham font-light leading-4 text-black text-base">{{
+                            <p v-if="data.BloodGroup" class="font-poppins font-normal leading-4 text-black text-base">{{
                                 data.BloodGroup }}
                             </p>
-                            <p v-else class="font-gotham font-light leading-4 text-black text-base">Tidak diketahui</p>
+                            <p v-else class="font-poppins font-normal leading-4 text-black text-base">Tidak diketahui</p>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.PhoneNumber }}</p>
+                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.PhoneNumber }}</p>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.Email }}</p>
+                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.Email }}</p>
                         </td>
                     </tr>
                 </tbody>

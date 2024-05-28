@@ -330,7 +330,7 @@ export default {
     <div class="flex bg-offwhite">
         <Sidebar />
 
-        <div class="flex flex-col gap-4 pt-4 pl-4">
+        <div class="flex flex-col gap-4 pt-4 pl-4 h-full">
             <div class="flex gap-4 items-center">
                 <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 py-4 pr-8">
                     <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 pl-8">Grafik

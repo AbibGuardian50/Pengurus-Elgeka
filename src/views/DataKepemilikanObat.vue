@@ -160,10 +160,8 @@ export default {
                 acc[hospitalName] = (acc[hospitalName] || 0) + 1
                 return acc
             }, {})
-
             const labels = Object.keys(HospitalPerDoctorCount)
             const data = Object.values(HospitalPerDoctorCount)
-
             return {
                 labels: labels,
                 datasets: [

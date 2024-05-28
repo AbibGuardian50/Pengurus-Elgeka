@@ -84,7 +84,7 @@ export default {
         <div>
             <!-- Your content -->
             <div class="ml-8 flex items-center justify-between border-b border-lightgray">
-                <p class="font-bold font-gotham text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Pasien</p>
+                <p class="font-bold font-poppins text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Pasien</p>
                 <a href="/HasilLabHemoglobin" class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg width="18" height="15" viewBox="0 0 18 15" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -94,36 +94,36 @@ export default {
                     </span> Kembali ke Grafik</a>
             </div>
 
-            <p class="ml-8 font-light font-gotham text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
+            <p class="ml-8 font-normal font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
 
             <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
                 <thead>
                     <tr class="border-b-[0.5px] border-b-lightgray">
-                        <th scope="col" class="px-3 py-3 max-w-[50px] text-left font-bold font-gotham text-black text-base">
+                        <th scope="col" class="px-3 py-3 max-w-[50px] text-left font-bold font-poppins text-black text-base">
                             No
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Nama
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Email
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Handphone
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Data
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Notes
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Tanggal
                         </th>
 
@@ -132,32 +132,32 @@ export default {
                 <tbody>
                     <tr v-for="(data, index) in paginatedInfoLabHemoglobin" :key="index" class="divide-y divide-gray-200">
                         <td
-                            class="px-3 py-4 whitespace-nowrap font-gotham min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
+                            class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-normal leading-4 text-black text-base">
                             {{ data.no }}
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[251px]">
                             <div class="flex items-center">
                                 <div>
-                                    <div class="font-gotham font-light leading-4 text-black text-base">
+                                    <div class="font-poppins font-normal leading-4 text-black text-base">
                                         {{ data.Name }}
                                     </div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-3 py-4 min-w-[250px] max-w-[301px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.Email }}</p>
+                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.Email }}</p>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.PhoneNumber }}</p>
+                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.PhoneNumber }}</p>
                         </td>
                         <td class="px-3 py-4 min-w-[250px] max-w-[251px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.Data }}</p>
+                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.Data }}</p>
                         </td>
                         <td class="px-3 py-4 min-w-[250px] max-w-[251px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.Notes }}</p>
+                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.Notes }}</p>
                         </td>
                         <td class="px-3 py-4 min-w-[250px] max-w-[251px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{formatDate(data.Date)}}</p>
+                            <p class="font-poppins font-normal leading-4 text-black text-base">{{formatDate(data.Date)}}</p>
                         </td>
                     </tr>
                 </tbody>

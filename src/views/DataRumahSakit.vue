@@ -135,22 +135,22 @@ export default {
             <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px] bg-offwhite">
                 <thead class="bg-offwhite">
                     <tr class="border-b-[0.5px] border-b-lightgray">
-                        <th scope="col" class="px-3 py-3 text-left font-gotham font-normal text-sulfurblack text-base">
+                        <th scope="col" class="px-3 py-3 text-left font-poppins font-normal text-sulfurblack text-base">
                             No
                         </th>
-                        <th scope="col" class="px-3 py-3 text-left font-gotham font-bold text-blueblack text-base">
+                        <th scope="col" class="px-3 py-3 text-left font-poppins font-bold text-blueblack text-base">
                             Nama
                         </th>
-                        <th scope="col" class="px-3 py-3 text-left font-gotham font-bold text-blueblack text-base">
+                        <th scope="col" class="px-3 py-3 text-left font-poppins font-bold text-blueblack text-base">
                             Alamat
                         </th>
-                        <th scope="col" class="px-3 py-3 text-left font-gotham font-bold text-blueblack text-base">
+                        <th scope="col" class="px-3 py-3 text-left font-poppins font-bold text-blueblack text-base">
                             Kontak
                         </th>
-                        <th scope="col" class="px-3 py-3 text-left font-gotham font-bold text-blueblack text-base">
+                        <th scope="col" class="px-3 py-3 text-left font-poppins font-bold text-blueblack text-base">
                             Link Google Maps
                         </th>
-                        <th scope="col" class="px-3 py-3 text-left font-gotham font-bold text-blueblack text-base">
+                        <th scope="col" class="px-3 py-3 text-left font-poppins font-bold text-blueblack text-base">
                             Gambar
                         </th>
                         <th scope="col" class="">
@@ -161,22 +161,22 @@ export default {
                 </thead>
                 <tbody v-for="data in paginatedInfoRS" :key="data.id" class=" divide-y divide-gray-200">
                     <tr>
-                        <td class="px-3 py-4 whitespace-nowrap font-normal text-sulfurblack text-base">
+                        <td class="px-3 py-4 whitespace-nowrap font-normal font-poppins text-sulfurblack text-base">
                             {{ data.no }}
                         </td>
                         <td class="px-3 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">{{ data.nama_rs }}</p>
+                            <p class=" font-normal font-poppins text-sulfurblack text-base ">{{ data.nama_rs }}</p>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p class=" font-normal text-sulfurblack text-base ">{{ data.lokasi_rs }}</p>
+                            <p class=" font-normal font-poppins text-sulfurblack text-base ">{{ data.lokasi_rs }}</p>
                         </td>
                         <td class="px-3 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base ">{{ data.info_kontak }}</p>
+                            <p class=" font-normal font-poppins text-sulfurblack text-base ">{{ data.info_kontak }}</p>
                         </td>
 
                         <td class="px-3 py-4 min-w-[200px] whitespace-normal break-words max-w-[201px] text-wrap">
                             <a :href="data.link_maps" target="_blank"
-                                class="hover:text-warmgray font-normal text-wrap text-sulfurblack text-base ">{{
+                                class="hover:text-warmgray font-normal font-poppins text-wrap text-sulfurblack text-base ">{{
                                     data.link_maps }}</a>
                         </td>
 

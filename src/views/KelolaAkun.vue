@@ -99,71 +99,71 @@ export default {
             <table class="min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px] mt-4">
                 <thead>
                     <tr class="border-b-[0.5px] border-b-teal">
-                        <th scope="col" class="px-6 py-3 text-left font-normal  text-sulfurblack text-base">
+                        <th scope="col" class="px-6 py-3 text-left font-normal font-poppins  text-sulfurblack text-base">
                             NO
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal  text-sulfurblack text-base">
+                        <th scope="col" class="px-6 py-3 text-left font-normal font-poppins  text-sulfurblack text-base">
                             Nama Lengkap
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal  text-sulfurblack text-base">
+                        <th scope="col" class="px-6 py-3 text-left font-normal font-poppins  text-sulfurblack text-base">
                             Username
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal  text-sulfurblack text-base">
+                        <th scope="col" class="px-6 py-3 text-left font-normal font-poppins  text-sulfurblack text-base">
                             Status
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal  text-sulfurblack text-base">
+                        <th scope="col" class="px-6 py-3 text-left font-normal font-poppins  text-sulfurblack text-base">
                             Roles
                         </th>
                         <th scope="col" class="">
                             <button v-on:click="toggleModalCreatePengurus()"
-                                class="bg-teal px-4 py-1 rounded-md text-left  font-semibold text-white text-base">Tambah</button>
+                                class="font-poppins bg-teal px-4 py-1 rounded-md text-left  font-semibold text-white text-base">Tambah</button>
                         </th>
                     </tr>
                 </thead>
                 <tbody v-for="data in daftarpengurus" :key="data.id" class=" divide-y divide-gray-200">
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap  font-normal  text-sulfurblack text-base">
+                        <td class="px-6 py-4 whitespace-nowrap font-poppins font-normal  text-sulfurblack text-base">
                             {{ data.no }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="">
-                                    <div class=" font-normal text-sulfurblack text-base">
+                                    <div class="font-poppins font-normal text-sulfurblack text-base">
                                         {{ data.full_name }}
                                     </div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <p class=" font-normal text-sulfurblack text-base underline">{{ data.username }}</p>
+                            <p class="font-poppins font-normal text-sulfurblack text-base underline">{{ data.username }}</p>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span v-if="data.is_active === true"
-                                class="inline-flex  text-base text-[#52FF00] leading-5 font-extrabold rounded-md">
+                                class="font-poppins inline-flex  text-base text-[#52FF00] leading-5 font-extrabold rounded-md">
                                 Aktif
                             </span>
 
                             <span v-if="data.is_active === false"
-                                class="inline-flex  text-base text-red leading-5 font-extrabold rounded-md">
+                                class="font-poppins inline-flex  text-base text-red leading-5 font-extrabold rounded-md">
                                 Nonaktif
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span v-if="data.superUser === true"
-                                class="inline-flex  text-base leading-5 font-bold rounded-md">
+                                class="font-poppins inline-flex  text-base leading-5 font-bold rounded-md">
                                 Super Admin
                             </span>
 
-                            <span v-else class="inline-flex  text-base leading-5 font-bold rounded-md">
+                            <span v-else class="font-poppins inline-flex  text-base leading-5 font-bold rounded-md">
                                 Admin
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td class="font-poppins px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <a :href="'editpengurus/' + data.id">
-                                <button class="py-1 px-8 rounded-[5px] bg-teal font-bold text-base text-white">Edit</button>
+                                <button class="font-poppins py-1 px-8 rounded-[5px] bg-teal font-bold text-base text-white">Edit</button>
                             </a>
                             <button href="#" @click="deletepengurus(data.id)"
-                                class="py-1 px-8 rounded-[5px] ml-2 shadow-xl bg-offwhite text-white bg-teal font-bold text-base ">Hapus</button>
+                                class=" font-poppins py-1 px-8 rounded-[5px] ml-2 shadow-xl bg-offwhite text-white bg-teal font-bold text-base ">Hapus</button>
                         </td>
                     </tr>
                 </tbody>
