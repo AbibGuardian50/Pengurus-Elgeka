@@ -20,7 +20,7 @@ export default {
 
 <template>
     <div class="flex">
-        <div class="bg-teal flex flex-col items-center pt-8 w-[310px] max-[1800px]:h-full h-screen">
+        <div class="bg-teal flex flex-col items-center pt-8 w-[310px] h-full">
             <div>
                 <div class="flex justify-center items-center">
                     <img class="mb-8 rounded-md" src="../assets/logoElgekaPutih1.png" alt="">
