@@ -17,7 +17,7 @@ export default {
     methods: {
         async login() {
             try {
-                axios.defaults.withCredentials = true;
+                // axios.defaults.withCredentials = true;
                 const toast = useToast();
                 const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/pengurus/login';
                 const response = await axios.post(url, {
