@@ -46,6 +46,8 @@ export default {
             totalPages: 0, // Total pages
             paginatedDataOwnershipMedicine: [],
             DataOwnershipMedicine: [], // Paginated data
+            sortColumn: 'no', // Column to sort by
+            sortDirection: 'asc' // Sort direction
         }
     },
     methods: {
@@ -69,6 +71,30 @@ export default {
                 this.currentPage--;
                 this.updatePaginatedData(); // Update paginated data when navigating to previous page
             }
+        },
+        sortData(column) {
+            if (this.sortColumn === column) {
+                this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                this.sortColumn = column;
+                this.sortDirection = 'asc';
+            }
+            this.DataOwnershipMedicine.sort((a, b) => {
+                let compareA, compareB;
+                if (column === 'no') {
+                    compareA = a.no;
+                    compareB = b.no;
+                } else if (column === 'Date') {
+                    compareA = new Date(a.Date);
+                    compareB = new Date(b.Date);
+                }
+                if (this.sortDirection === 'asc') {
+                    return compareA > compareB ? 1 : -1;
+                } else {
+                    return compareA < compareB ? 1 : -1;
+                }
+            });
+            this.updatePaginatedData();
         }
     }
 }
@@ -81,14 +107,15 @@ export default {
         <div class="w-full bg-offwhite">
             <div class="ml-8 flex items-center justify-between border-b border-lightgray">
                 <p class=" font-bold text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Kepemilikan Obat</p>
-                <a href="/DataKepemilikanObat" class="mt-4 flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg width="18" height="15" viewBox="0 0 18 15" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
+                <a href="/DataKepemilikanObat"
+                    class="mt-4 flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg
+                            width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M16.5001 6.01013L5.12185 6.01013L8.56112 2.5754C8.95103 2.19931 9.1074 1.64237 8.97014 1.11866C8.83287 0.594938 8.42333 0.185938 7.89892 0.0488548C7.37451 -0.0882282 6.81685 0.0679398 6.44026 0.457335L0.440653 6.44903C0.158546 6.73005 0 7.11162 0 7.50955C0 7.90748 0.158546 8.28906 0.440653 8.57008L6.44026 14.5618C7.02675 15.1467 7.97696 15.146 8.56262 14.5603C9.14828 13.9746 9.14761 13.0256 8.56112 12.4407L5.12185 9.00598L16.5001 9.00598C17.3285 9.00598 18 8.33534 18 7.50806C18 6.68078 17.3285 6.01013 16.5001 6.01013Z"
                                 fill="#1E1E1E" />
                         </svg>
                     </span> Kembali ke Grafik</a>
-                    <!-- <form class="relative w-max flex flex-row rounded-md pl-4 mt-4 py-4">
+                <!-- <form class="relative w-max flex flex-row rounded-md pl-4 mt-4 py-4">
                     <input type="search" placeholder="Quick Find"
                         class="peer cursor-pointer border relative z-10 h-12 w-12 rounded-md bg-transparent pl-2 outline-none w-full cursor-text pr-4" />
                     <div class="flex items-center justify-center pr-4">
@@ -102,8 +129,18 @@ export default {
             <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
                 <thead>
                     <tr class="border-b-[0.5px] border-b-teal">
-                        <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
+                        <th @click="sortData('no')" scope="col"
+                            class="cursor-pointer flex items-center gap-1 px-3 py-3 max-w-[50px] text-left font-bold font-poppins text-black text-base">
                             No
+                            <span v-if="sortColumn === 'no'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                            <span v-else>
+                                <svg fill="none" height="16" viewBox="0 0 512 512" width="16"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M476.843 57.6L326.333 274.77L326.182 274.99C320.698 282.603 317.745 291.747 317.743 301.13V407.39C317.746 410.792 316.882 414.138 315.232 417.113C313.582 420.088 311.201 422.592 308.313 424.39L212.483 484C204.823 488.77 193.723 487.19 193.773 478.17V301.13C193.77 291.747 190.818 282.603 185.333 274.99L185.183 274.77L34.6825 57.6C32.5751 54.5817 31.3216 51.0505 31.0541 47.379C30.7866 43.7075 31.5149 40.0319 33.1625 36.74C34.7471 33.5274 37.1963 30.8204 40.2348 28.9231C43.2732 27.0259 46.7806 26.0136 50.3627 26H127.593C129.846 26.0026 132.007 26.899 133.6 28.4925C135.193 30.086 136.09 32.2465 136.093 34.5V46C136.093 51.3043 138.2 56.3914 141.951 60.1421C145.701 63.8929 150.788 66 156.093 66H355.093C360.397 66 365.484 63.8929 369.235 60.1421C372.985 56.3914 375.093 51.3043 375.093 46V34.5C375.093 32.2457 375.988 30.0837 377.582 28.4896C379.176 26.8955 381.338 26 383.593 26L461.162 26C464.744 26.0147 468.251 27.0275 471.289 28.9246C474.328 30.8218 476.777 33.5281 478.363 36.74C480.008 40.0325 480.736 43.7077 480.468 47.3788C480.201 51.0498 478.948 54.5808 476.843 57.6V57.6Z"
+                                        fill="black" />
+                                </svg>
+                            </span>
                         </th>
                         <th scope="col" class="px-6 py-3 text-left font-normal text-sulfurblack text-base">
                             Nama
@@ -122,8 +159,8 @@ export default {
                         </th>
                     </tr>
                 </thead>
-                <tbody v-for="(data, index) in DataOwnershipMedicine" :key="index"
-                    class="divide-y divide-gray-200">
+                
+                <tbody v-for="(data, index) in DataOwnershipMedicine" :key="index" class="divide-y divide-gray-200">
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap  font-normal  text-sulfurblack text-base">
                             {{ data.no }}
@@ -151,8 +188,9 @@ export default {
                         </td>
 
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div v-for="(medicine, mIndex) in data.ListMedicine" :key="mIndex" >
-                                <p class="font-bold font-assistant text-black text-[16px]" v-if="mIndex !== 0">{{ medicine.Stock }}
+                            <div v-for="(medicine, mIndex) in data.ListMedicine" :key="mIndex">
+                                <p class="font-bold font-assistant text-black text-[16px]" v-if="mIndex !== 0">{{
+                                    medicine.Stock }}
                                 </p>
                             </div>
                         </td>

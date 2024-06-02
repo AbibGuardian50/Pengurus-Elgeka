@@ -27,6 +27,10 @@ export default {
 
                 if (response.data.message === "Login Success") {
                     VueCookies.set('TokenAuthorization', response.data.result.token);
+                    VueCookies.set('superAdmin', response.data.result.user.superUser);
+                    VueCookies.set('id_user', response.data.result.user.id);
+                    VueCookies.set('status_akun', response.data.result.user.is_active)
+                    console.log(response)
                     toast.success('Login Berhasil!');
 
                     if (this.rememberMe) {

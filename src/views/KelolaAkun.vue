@@ -1,248 +1,395 @@
 <script>
-import Sidebar from "../components/Sidebar.vue"
-import axios from 'axios'
-import VueCookies from 'vue-cookies'
+import axios from "axios";
+import Sidebar from "../components/Sidebar.vue";
+import VueCookies from 'vue-cookies';
 import { useToast } from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
+
 export default {
+    components: {
+        Sidebar
+    },
     async created() {
         try {
-            const toast = useToast()
-            const tokenlogin = VueCookies.get('TokenAuthorization')
+            const tokenlogin = VueCookies.get('TokenAuthorization');
             if (tokenlogin) {
-                const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/pengurus'
-                const response = await axios.get(url, {
-                    headers: {
-                        Authorization: `Bearer ${tokenlogin}`
-                    },
-                })
+                const response = await this.fetchPengurusData(tokenlogin);
+                this.initializePengurusData(response);
                 if (response.data.message === "Get All Pengurus Successfully") {
-                    toast.success('Data Admin berhasil dimuat!')
+                    const toast = useToast();
+                    toast.success('Data Admin berhasil dimuat!');
                 }
-                if (response.data.code === 400) {
-                    console.log('Superadmin tidak bisa edit superadmin lainnya')
-                }
-                // const superAdmin = VueCookies.get('superAdmin')
-                // this.getRoles = superAdmin
-                // this.daftarid = response.data.result.data.id
-                this.daftarpengurus = response.data.result.data
-                this.daftarpengurus.sort((x, y) => x.id - y.id)
-                this.daftarpengurus.forEach((item, index) => {
-                    item.no = index + 1;
-                });
-                console.log(this.daftarpengurus)
             } else {
-                this.error = 'dilarang akses halaman ini'
+                this.error = 'dilarang akses halaman ini';
             }
         } catch (error) {
             console.error(error);
         }
     },
-    components: {
-        Sidebar
-    },
+
     data() {
         return {
             daftarpengurus: [],
             showcreatepengurus: false,
+            error: '',
             form: {
-                full_name: [],
+                full_name: '',
                 username: '',
                 password: '',
-                superUser: [],
+                superUser: '',
             },
-        }
+            formErrors: {
+                username: '',
+                password: '',
+                superUser: '',
+            },
+            currentPage: 1,
+            perPage: 10,
+            totalPages: 0,
+            paginatedData: [],
+            sortColumn: 'no', // Column to sort by
+            sortDirection: 'asc', // Sort direction
+            getRoles: false,
+            currentAdminId: '',
+        };
     },
+
     methods: {
-        createpengurus() {
-            const tokenlogin = VueCookies.get('TokenAuthorization')
-            const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/pengurus/create'
-            axios.post(url, this.form, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
-                .then(response => {
-                    console.log(response.data);
-                    window.location.reload();
-                })
-                .catch(error => {
-                    console.log(error)
-                })
+        async fetchPengurusData(token) {
+            const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/pengurus';
+            return await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
         },
-        toggleModalCreatePengurus: function () {
+
+        initializePengurusData(response) {
+            this.daftarpengurus = response.data.result.data;
+            this.sortPengurusData();
+            this.updatePaginatedData();
+            const superAdmin = VueCookies.get('superAdmin');
+            this.currentAdminId = VueCookies.get('id_user');
+            this.getRoles = superAdmin;
+        },
+
+        sortPengurusData() {
+            this.daftarpengurus.sort((x, y) => x.id - y.id);
+            this.daftarpengurus.forEach((item, index) => {
+                item.no = index + 1;
+            });
+            this.totalPages = Math.ceil(this.daftarpengurus.length / this.perPage);
+        },
+
+        toggleModalCreatePengurus() {
             this.showcreatepengurus = !this.showcreatepengurus;
         },
-        deletepengurus(id) {
-            if (confirm('Apakah kamu yakin untuk menghapus akun pengurus ini?')) {
-                const tokenlogin = VueCookies.get('TokenAuthorization')
-                const url = `https://elgeka-web-api-production.up.railway.app/api/v1/pengurus/${id}`
-                axios.delete(url, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
+
+        validateForm() {
+            let valid = true;
+            this.clearFormErrors();
+
+            if (this.isInvalidUsername(this.form.username)) {
+                valid = false;
+            }
+
+            if (this.isInvalidPassword(this.form.password)) {
+                valid = false;
+            }
+
+            if (!this.form.superUser) {
+                this.formErrors.superUser = 'Role harus dipilih.';
+                valid = false;
+            }
+
+            return valid;
+        },
+
+        clearFormErrors() {
+            this.formErrors.username = '';
+            this.formErrors.password = '';
+            this.formErrors.superUser = '';
+        },
+
+        isInvalidUsername(username) {
+            const toast = useToast();
+            if (username.length < 6 || username.length > 16) {
+                toast.warning('Username harus memiliki panjang antara 6 dan 16 karakter');
+                this.formErrors.username = 'Username harus memiliki panjang antara 6 dan 16 karakter.';
+                return true;
+            } else if (/[A-Z]/.test(username)) {
+                toast.warning('Username tidak boleh mengandung huruf kapital');
+                this.formErrors.username = 'Username tidak boleh mengandung huruf kapital.';
+                return true;
+            }
+            return false;
+        },
+
+        isInvalidPassword(password) {
+            const toast = useToast();
+            const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])/;
+            if (password.length < 8 || !passwordRegex.test(password)) {
+                toast.warning('Password harus memiliki minimal 8 karakter dan mengandung setidaknya satu angka dan satu karakter spesial.');
+                this.formErrors.password = 'Password harus memiliki minimal 8 karakter dan mengandung setidaknya satu angka dan satu karakter spesial.';
+                return true;
+            }
+            return false;
+        },
+
+        createpengurus() {
+            if (this.validateForm()) {
+                const toast = useToast();
+                const tokenlogin = VueCookies.get('TokenAuthorization');
+                const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/pengurus/create';
+                axios.post(url, this.form, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                     .then(response => {
-                        console.log(response.data)
+                        console.log(response.data);
                         window.location.reload();
                     })
                     .catch(error => {
-                        console.log(error)
-                    })
+                        toast.error('Terdapat Kesalahan pada sistem, mohon coba lagi');
+                        console.log(error);
+                    });
             }
         },
 
-    }
-}
+        deletepengurus(id) {
+            if (confirm('Apakah kamu yakin untuk menghapus akun pengurus ini?')) {
+                const tokenlogin = VueCookies.get('TokenAuthorization');
+                const url = `https://elgeka-web-api-production.up.railway.app/api/v1/pengurus/${id}`;
+                axios.delete(url, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
+                    .then(response => {
+                        console.log(response.data);
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            }
+        },
+
+        updatePaginatedData() {
+            const start = (this.currentPage - 1) * this.perPage;
+            const end = this.currentPage * this.perPage;
+            this.paginatedData = this.daftarpengurus.slice(start, end);
+        },
+
+        goToPage(pageNumber) {
+            this.currentPage = pageNumber;
+            this.updatePaginatedData();
+        },
+
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                this.updatePaginatedData();
+            }
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.updatePaginatedData();
+            }
+        },
+        sortData(column) {
+            if (this.sortColumn === column) {
+                this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                this.sortColumn = column;
+                this.sortDirection = 'asc';
+            }
+            this.daftarpengurus.sort((a, b) => {
+                let compareA, compareB;
+                if (column === 'no') {
+                    compareA = a.no;
+                    compareB = b.no;
+                } else if (column === 'Date') {
+                    compareA = new Date(a.Date);
+                    compareB = new Date(b.Date);
+                } else if (column === 'Status') {
+                    compareA = a.is_active ? 1 : 0;
+                    compareB = b.is_active ? 1 : 0;
+                } else if (column === 'Roles') {
+                    compareA = a.superUser ? 1 : 0;
+                    compareB = b.superUser ? 1 : 0;
+                }
+                if (this.sortDirection === 'asc') {
+                    return compareA > compareB ? 1 : -1;
+                } else {
+                    return compareA < compareB ? 1 : -1;
+                }
+            });
+            this.updatePaginatedData();
+        },
+        
+        canEditOrDelete(data) {
+            const superAdmin = this.getRoles === 'true';
+            const currentUserId = this.currentAdminId;
+            if (superAdmin) {
+                return (data.is_active || !data.is_active) && (data.superUser === false || data.id === currentUserId);
+            } else {
+                return data.id === currentUserId;
+            }
+        }
+    },
+};
 </script>
 
 <template>
-    <div class="flex bg-offwhite">
+    <div class="flex">
         <Sidebar />
-
-        <div class="ml-8">
-            <p class="text-[30px] text-teal font-bold pt-8">Kelola Akun</p>
+        <div class="px-8">
+            <p class="text-[30px] text-teal font-poppins font-bold">Kelola Akun Pengurus</p>
             <hr>
-
-            <p class="font-normal text-[20px] leading-5 text-blueblack pt-4">Akun Pengurus</p>
-            <table class="min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px] mt-4">
-                <thead>
-                    <tr class="border-b-[0.5px] border-b-teal">
-                        <th scope="col" class="px-6 py-3 text-left font-normal font-poppins  text-sulfurblack text-base">
-                            NO
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal font-poppins  text-sulfurblack text-base">
-                            Nama Lengkap
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal font-poppins  text-sulfurblack text-base">
-                            Username
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal font-poppins  text-sulfurblack text-base">
-                            Status
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left font-normal font-poppins  text-sulfurblack text-base">
-                            Roles
-                        </th>
-                        <th scope="col" class="">
-                            <button v-on:click="toggleModalCreatePengurus()"
-                                class="font-poppins bg-teal px-4 py-1 rounded-md text-left  font-semibold text-white text-base">Tambah</button>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody v-for="data in daftarpengurus" :key="data.id" class=" divide-y divide-gray-200">
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap font-poppins font-normal  text-sulfurblack text-base">
-                            {{ data.no }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="">
-                                    <div class="font-poppins font-normal text-sulfurblack text-base">
-                                        {{ data.full_name }}
+            <div>
+                <table class="min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
+                    <thead class="bg-gray-50">
+                        <tr class="border-b-[0.5px]">
+                            <th @click="sortData('no')" scope="col"
+                                class="cursor-pointer px-3 py-3 max-w-[50px] text-left font-bold font-poppins text-black text-base">
+                                No
+                                <span v-if="sortColumn === 'no'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                                <span v-else>
+                                    <svg fill="none" height="16" viewBox="0 0 512 512" width="16"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M476.843 57.6L326.333 274.77L326.182 274.99C320.698 282.603 317.745 291.747 317.743 301.13V407.39C317.746 410.792 316.882 414.138 315.232 417.113C313.582 420.088 311.201 422.592 308.313 424.39L212.483 484C204.823 488.77 193.723 487.19 193.773 478.17V301.13C193.77 291.747 190.818 282.603 185.333 274.99L185.183 274.77L34.6728 57.6C28.7267 48.5695 35.1696 36.1 46.4405 36.1H465.554C476.824 36.1 483.266 48.5695 477.32 57.6H476.843Z"
+                                            fill="#000000" />
+                                    </svg>
+                                </span>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left font-bold font-poppins text-black text-base">
+                                Name
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left font-bold font-poppins text-black text-base">
+                                Username
+                            </th>
+                            <th @click="sortData('Status')" scope="col"
+                                class="cursor-pointer px-6 py-3 text-left font-bold font-poppins text-black text-base">
+                                Status
+                                <span v-if="sortColumn === 'Status'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                                <span v-else>
+                                    <svg fill="none" height="16" viewBox="0 0 512 512" width="16"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M476.843 57.6L326.333 274.77L326.182 274.99C320.698 282.603 317.745 291.747 317.743 301.13V407.39C317.746 410.792 316.882 414.138 315.232 417.113C313.582 420.088 311.201 422.592 308.313 424.39L212.483 484C204.823 488.77 193.723 487.19 193.773 478.17V301.13C193.77 291.747 190.818 282.603 185.333 274.99L185.183 274.77L34.6728 57.6C28.7267 48.5695 35.1696 36.1 46.4405 36.1H465.554C476.824 36.1 483.266 48.5695 477.32 57.6H476.843Z"
+                                            fill="#000000" />
+                                    </svg>
+                                </span>
+                            </th>
+                            <th @click="sortData('Roles')" scope="col"
+                                class="cursor-pointer px-6 py-3 text-left font-bold font-poppins text-black text-base">
+                                Roles
+                                <span v-if="sortColumn === 'Roles'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                                <span v-else>
+                                    <svg fill="none" height="16" viewBox="0 0 512 512" width="16"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M476.843 57.6L326.333 274.77L326.182 274.99C320.698 282.603 317.745 291.747 317.743 301.13V407.39C317.746 410.792 316.882 414.138 315.232 417.113C313.582 420.088 311.201 422.592 308.313 424.39L212.483 484C204.823 488.77 193.723 487.19 193.773 478.17V301.13C193.77 291.747 190.818 282.603 185.333 274.99L185.183 274.77L34.6728 57.6C28.7267 48.5695 35.1696 36.1 46.4405 36.1H465.554C476.824 36.1 483.266 48.5695 477.32 57.6H476.843Z"
+                                            fill="#000000" />
+                                    </svg>
+                                </span>
+                            </th>
+                            <th v-if="getRoles === 'true'" scope="col" class="">
+                                <button @click="toggleModalCreatePengurus"
+                                    class="bg-teal px-4 py-1 rounded-md text-left font-inter font-semibold text-white text-base">Tambah</button>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="data in paginatedData" :key="data.id" class="bg-white">
+                            <td
+                                class="px-6 py-4 border-b border-gray-200 whitespace-nowrap font-poppins font-normal text-sulfurblack text-base">
+                                {{ data.no }}</td>
+                            <td class="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="font-poppins font-normal text-sulfurblack text-base">{{ data.full_name }}
                                     </div>
                                 </div>
+                            </td>
+                            <td class="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
+                                <p class="font-poppins font-normal text-sulfurblack text-base underline">{{ data.username }}
+                                </p>
+                            </td>
+                            <td class="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
+                                <span v-if="data.is_active"
+                                    class="inline-flex font-inter text-base text-[#52FF00] leading-5 font-extrabold rounded-md">Aktif</span>
+                                <span v-else
+                                    class="inline-flex font-inter text-base text-red leading-5 font-extrabold rounded-md">Nonaktif</span>
+                            </td>
+                            <td class="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
+                                <span v-if="data.superUser"
+                                    class="inline-flex font-inter text-base leading-5 font-bold rounded-md">Super
+                                    Admin</span>
+                                <span v-else
+                                    class="inline-flex font-inter text-base leading-5 font-bold rounded-md">Admin</span>
+                            </td>
+                            <td v-if="canEditOrDelete(data)" class="px-6 py-4 border-b border-gray-200 whitespace-nowrap text-sm font-medium">
+                                <a :href="'editpengurus/' + data.id">
+                                    <button
+                                        class="py-1 px-8 rounded-[5px] bg-teal font-inter font-bold text-base text-white">Edit</button>
+                                </a>
+                                <button @click="deletepengurus(data.id)"
+                                    class="py-1 px-8 rounded-[5px] bg-semitransparentwhite ml-2 shadow-xl  bg-opacity-64 text-teal font-inter font-bold text-base">Hapus</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="flex justify-center mt-4">
+                    <button @click="prevPage" :disabled="currentPage === 1"
+                        class="px-4 py-2 mr-2 bg-teal text-white rounded-md">Previous</button>
+                    <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
+                        :class="{ 'bg-teal text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
+                        class="px-4 py-2 mr-2">{{ pageNumber }}</button>
+                    <button @click="nextPage" :disabled="currentPage === totalPages"
+                        class="px-4 py-2 bg-teal text-white rounded-md">Next</button>
+                </div>
+
+                <div v-if="showcreatepengurus"
+                    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div class="bg-white p-8 rounded-md min-w-[700px] max-w-[750px] min-h-[500px] max-h-[520px]">
+                        <h2 class="text-2xl text-teal font-poppins font-semibold mb-4">Tambah Pengurus</h2>
+                        <form @submit.prevent="createpengurus">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-teal">Nama Lengkap</label>
+                                <input type="text" v-model="form.full_name"
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    required />
                             </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <p class="font-poppins font-normal text-sulfurblack text-base underline">{{ data.username }}</p>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span v-if="data.is_active === true"
-                                class="font-poppins inline-flex  text-base text-[#52FF00] leading-5 font-extrabold rounded-md">
-                                Aktif
-                            </span>
-
-                            <span v-if="data.is_active === false"
-                                class="font-poppins inline-flex  text-base text-red leading-5 font-extrabold rounded-md">
-                                Nonaktif
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span v-if="data.superUser === true"
-                                class="font-poppins inline-flex  text-base leading-5 font-bold rounded-md">
-                                Super Admin
-                            </span>
-
-                            <span v-else class="font-poppins inline-flex  text-base leading-5 font-bold rounded-md">
-                                Admin
-                            </span>
-                        </td>
-                        <td class="font-poppins px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a :href="'editpengurus/' + data.id">
-                                <button class="font-poppins py-1 px-8 rounded-[5px] bg-teal font-bold text-base text-white">Edit</button>
-                            </a>
-                            <button href="#" @click="deletepengurus(data.id)"
-                                class=" font-poppins py-1 px-8 rounded-[5px] ml-2 shadow-xl bg-offwhite text-white bg-teal font-bold text-base ">Hapus</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Modal Create Pengurus -->
-            <div>
-                <form v-if="showcreatepengurus" @submit.prevent="createpengurus()"
-                    class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
-                    <div class="relative w-auto my-6 mx-auto max-w-6xl">
-                        <!--content-->
-                        <div
-                            class="border border-red rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                            <!--header-->
-                            <div class="flex items-start justify-between p-5 border-b-2 border-black rounded-t">
-                                <h3 class="text-[40px] text-teal font-semibold font-poppins">
-                                    Akun Pengurus
-                                </h3>
-                                <button
-                                    class="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                                    v-on:click="toggleModalCreatePengurus()">
-                                    <span
-                                        class="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
-                                    </span>
-                                </button>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-teal">Username</label>
+                                <input type="text" v-model="form.username"
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    required />
+                                <p v-if="formErrors.username" class="text-red text-sm mt-1">{{ formErrors.username }}</p>
                             </div>
-                            <!--body-->
-                            <div class="flex flex-col gap-8 relative p-6">
-                                <div class="flex gap-2 flex-col">
-                                    <label for="nama lengkap" class="font-poppins font-bold text-base text-teal">Nama
-                                        Lengkap</label>
-                                    <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
-                                        name="nama lengkap" id="" v-model="form.full_name"
-                                        placeholder="Muhammad Abieb Basnuril">
-                                </div>
-                                <div class="flex gap-2 flex-col">
-                                    <label for="username"
-                                        class="font-poppins font-bold text-base text-teal">username</label>
-                                    <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
-                                        name="username" id="" v-model="form.username" placeholder="admin abib">
-                                </div>
-
-                                <div class="flex gap-2 flex-col">
-                                    <label for="Password"
-                                        class="font-poppins font-bold text-base text-teal">Password</label>
-                                    <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="password"
-                                        name="Password" id="" v-model="form.password" placeholder="Masukkan Password">
-                                </div>
-
-                                <div class="flex gap-2 flex-col">
-                                    <label for="Status" class="font-poppins font-bold text-base text-teal">Status</label>
-                                    <!-- <input class="border border-black py-4 min-w-[550px] pr-2 rounded-md" type="text" name="nama lengkap" id="" placeholder="  Muhammad Abieb Basnuril"> -->
-                                    <select
-                                        class="border bg-white border-black py-4 min-w-[550px] pl-2 rounded-md font-poppins font-medium text-base text-[#00000080]"
-                                        name="Status" id="" v-model="form.superUser">
-                                        <option value="true">SuperAdmin</option>
-                                        <option value="false">Admin</option>
-                                    </select>
-                                </div>
-
-
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-teal">Password</label>
+                                <input type="password" v-model="form.password"
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    required />
+                                <p v-if="formErrors.password" class="text-red text-sm mt-1">{{ formErrors.password }}</p>
                             </div>
-                            <!--footer-->
-                            <div class="flex items-center justify-center p-6 border-t-2 border-black rounded-b">
-                                <button
-                                    class="text-white bg-teal border hover:text-white active:bg-teal-600 font-bold uppercase text-sm px-12 py-3 rounded outline-none focus:outline-none mr-1 mb-1   "
-                                    type="submit">
-                                    Simpan
-                                </button>
-                                <button
-                                    class="text-teal bg-white border active:bg-teal-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
-                                    type="button" v-on:click="toggleModalCreatePengurus()">
-                                    Batal
-                                </button>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-teal">Roles</label>
+                                <select v-model="form.superUser"
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    required>
+                                    <option value="">Select Role</option>
+                                    <option value="true">Super Admin</option>
+                                    <option value="false">Admin</option>
+                                </select>
+                                <p v-if="formErrors.superUser" class="text-red text-sm mt-1">{{ formErrors.superUser }}</p>
                             </div>
-                        </div>
+                            <div class="flex justify-end gap-2">
+                                <button type="submit" class="px-4 py-2 bg-teal text-white rounded-md">Simpan</button>
+                                <button @click="toggleModalCreatePengurus" type="button"
+                                    class="mr-4 px-4 py-2 bg-white border border-teal text-teal rounded-md">Batal</button>
+                            </div>
+                        </form>
                     </div>
-                </form>
-                <div v-if="showcreatepengurus" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
+                </div>
             </div>
         </div>
     </div>

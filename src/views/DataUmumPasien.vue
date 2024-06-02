@@ -73,7 +73,7 @@ export default {
             responseData.forEach(item => {
                 const district = item.District;
                 const province = item.Province;
-                if (province === "32" && district !== "") { // Tambahkan kondisi disini
+                if (province === "Jawa Barat" && district !== "") { // Tambahkan kondisi disini
                     districtCounts[district] = (districtCounts[district] || 0) + 1;
                 }
             });
@@ -330,7 +330,7 @@ export default {
     <div class="flex bg-offwhite">
         <Sidebar />
 
-        <div class="flex flex-col gap-4 pt-4 pl-4 h-full">
+        <div class="flex flex-col gap-4 pt-4 pl-4">
             <div class="flex gap-4 items-center">
                 <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 py-4 pr-8">
                     <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 pl-8">Grafik
@@ -341,7 +341,7 @@ export default {
                 </div>
 
                 <div
-                    class="flex flex-col justify-between pl-4 bg-work bg-no-repeat bg-center bg-cover h-full max-h-[282px] min-w-[509px] max-w-[510px]">
+                    class="flex flex-col justify-between pl-4 bg-work bg-no-repeat bg-center bg-cover h-full rounded-md max-h-[900px] min-w-[509px] max-w-[700px]">
                     <div class="flex flex-col gap-4">
                         <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA UMUM PASIEN</p>
                         <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang data

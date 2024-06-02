@@ -15,6 +15,7 @@ export default {
         's': '2px 1px 5px 0px rgba(0, 0, 0, 0.25)',
       },
       colors: {
+        'red': '#8B1A0F',
         'orange': '#FF914C',
         'teal': '#0A6B77',
         'bluegray': '#667085',
