@@ -18,6 +18,7 @@ export default {
             PoliPerMedicineData: [],
             StatisticsPatientData: [],
             MedicineOptions: {
+                indexAxis: 'y',
                 scales: {
                     x: {
                         ticks: {
