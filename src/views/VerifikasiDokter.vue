@@ -138,7 +138,7 @@ export default {
     <div class="flex bg-offwhite">
         <Sidebar />
 
-        <div>
+        <div class="bg-offwhite">
             <!-- Your content -->
             <div class="ml-8 flex items-center justify-between border-b border-lightgray">
                 <p class="font-bold font-gotham text-[30px] mt-4 py-4 leading-6 text-blueblack">Verifikasi Dokter</p>

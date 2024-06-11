@@ -14,16 +14,21 @@ export default {
             const tokenlogin = VueCookies.get('TokenAuthorization');
             if (tokenlogin) {
                 const response = await this.fetchPengurusData(tokenlogin);
-                this.initializePengurusData(response);
-                if (response.data.message === "Get All Pengurus Successfully") {
-                    const toast = useToast();
-                    toast.success('Data Admin berhasil dimuat!');
+                if (response && response.data && response.data.result && response.data.result.data) {
+                    this.initializePengurusData(response);
+                    if (response.data.message === "Get All Pengurus Successfully") {
+                        const toast = useToast();
+                        toast.success('Data Admin berhasil dimuat!');
+                    }
+                } else {
+                    this.error = 'Failed to load pengurus data';
                 }
             } else {
                 this.error = 'dilarang akses halaman ini';
             }
         } catch (error) {
             console.error(error);
+            this.error = 'An error occurred while fetching pengurus data';
         }
     },
 
@@ -47,8 +52,8 @@ export default {
             perPage: 10,
             totalPages: 0,
             paginatedData: [],
-            sortColumn: 'no', // Column to sort by
-            sortDirection: 'asc', // Sort direction
+            sortColumn: 'no',
+            sortDirection: 'asc',
             getRoles: false,
             currentAdminId: '',
         };
@@ -65,7 +70,7 @@ export default {
         },
 
         initializePengurusData(response) {
-            this.daftarpengurus = response.data.result.data;
+            this.daftarpengurus = response.data.result.data || [];
             this.sortPengurusData();
             this.updatePaginatedData();
             const superAdmin = VueCookies.get('superAdmin');
@@ -234,6 +239,7 @@ export default {
     },
 };
 </script>
+
 
 <template>
     <div class="flex">

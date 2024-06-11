@@ -35,28 +35,31 @@ export default {
                                 <details class="group">
                                     <summary
                                         class="flex gap-2 items-center justify-between font-medium marker:content-none hover:text-midnightshadow py-2  hover:cursor-pointer ">
-                                        <span class="flex gap-2 hover:text-midnightshadow hover:bg-white focus:text-midnightshadow">
+                                        <span
+                                            class="flex gap-2 hover:text-midnightshadow hover:bg-white focus:text-midnightshadow">
                                             <span
                                                 class="w-full hover:text-midnightshadow focus:text-midnightshadow focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter">
                                                 Data Umum
                                             </span>
                                         </span>
-                                        <svg class="w-5 h-5 text-gray-500 transition group-open:rotate-90" width="8" height="8" viewBox="0 0 15 15" fill="none"
+                                        <svg width="25" height="24" viewBox="0 0 25 24" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path
-                                                d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
-                                                stroke="#111111" stroke-width="2" stroke-linecap="round" />
+                                                d="M18.75 10L13.2366 15.2929C12.8298 15.6834 12.1702 15.6834 11.7634 15.2929L6.25 10"
+                                                stroke="white" stroke-width="2" stroke-linecap="round" />
                                         </svg>
 
                                     </summary>
                                     <article class="px-4 pb-4 bg-whisperingsilver rounded-lg">
                                         <ul class="flex flex-col gap-4 pl-2 mt-4 pt-2">
-                                            <li class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                            <li
+                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                 <a href="/dataumumpasien">
                                                     Data Pasien
                                                 </a>
                                             </li>
-                                            <li class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                            <li
+                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                 <a href="/dataumumdokter">
                                                     Data Dokter
                                                 </a>
@@ -72,48 +75,55 @@ export default {
                                 <details class="group">
                                     <summary
                                         class="flex gap-2 items-center justify-between font-medium marker:content-none hover:text-midnightshadow py-2  hover:cursor-pointer ">
-                                        <span class="flex gap-2 hover:text-midnightshadow hover:bg-white focus:text-midnightshadow">
+                                        <span
+                                            class="flex gap-2 hover:text-midnightshadow hover:bg-white focus:text-midnightshadow">
                                             <span
                                                 class="w-full hover:text-midnightshadow focus:text-midnightshadow focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter">
                                                 Data Hasil Lab
                                             </span>
                                         </span>
-                                        <svg class="w-5 h-5 text-gray-500 transition group-open:rotate-90" width="8" height="8" viewBox="0 0 15 15" fill="none"
+                                        <svg width="25" height="24" viewBox="0 0 25 24" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path
-                                                d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
-                                                stroke="#111111" stroke-width="2" stroke-linecap="round" />
+                                                d="M18.75 10L13.2366 15.2929C12.8298 15.6834 12.1702 15.6834 11.7634 15.2929L6.25 10"
+                                                stroke="white" stroke-width="2" stroke-linecap="round" />
                                         </svg>
 
                                     </summary>
                                     <article class="px-4 pb-4 bg-whisperingsilver rounded-lg">
                                         <ul class="flex flex-col gap-4 pl-2 mt-4 pt-2">
-                                            <li class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                            <li
+                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                 <a href="/HasilLabBCRABL">
                                                     BCR-ABL
                                                 </a>
                                             </li>
-                                            <li class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                            <li
+                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                 <a href="/HasilLabLeukocytes">
                                                     Leukosit
                                                 </a>
                                             </li>
-                                            <li class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                            <li
+                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                 <a href="/HasilLabPotentialHydrogen">
                                                     Potential Hydrogen
                                                 </a>
                                             </li>
-                                            <li class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                            <li
+                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                 <a href="/HasilLabHemoglobin">
                                                     Hemoglobin
                                                 </a>
                                             </li>
-                                            <li class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                            <li
+                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                 <a href="/HasilLabHeartRate">
                                                     Heart Rate
                                                 </a>
                                             </li>
-                                            <li class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                            <li
+                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                 <a href="/HasilLabBloodPressure">
                                                     Blood Pressure
                                                 </a>
@@ -159,6 +169,7 @@ export default {
                         <p @click="logout" class="text-white font-bold text-base">Keluar</p>
                     </div>
                 </router-link>
+            </div>
         </div>
     </div>
-</div></template>
+</template>
