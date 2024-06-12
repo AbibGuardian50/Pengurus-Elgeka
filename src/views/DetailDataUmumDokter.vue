@@ -51,9 +51,47 @@ export default {
             paginatedInfoPatient: [],
             hospitalNames: [], // To store unique hospital names
             selectedHospital: '', // Selected hospital for sorting
+            isConfirmationModalOpen: false,
+            doctorIdToDeactivate: null,
+            searchQuery: ''
         }
     },
     methods: {
+        async DeactivateDoctor(id) {
+            const toast = useToast();
+            if (confirm('Apakah kamu yakin untuk mengubah status dokter ini menjadi nonaktif?')) {
+                try {
+                    const tokenlogin = VueCookies.get('TokenAuthorization');
+                    console.log('Token:', tokenlogin); // Log token untuk debugging
+
+                    if (!tokenlogin) {
+                        toast.error('Token tidak ditemukan, mohon login kembali');
+                        return;
+                    }
+
+                    const url = `https://elgeka-mobile-production.up.railway.app/api/doctor/deactivate/account/website/${id}`;
+                    const response = await axios.post(url, null, {
+                        headers: {
+                            Authorization: `Bearer ${tokenlogin}`
+                        }
+                    });
+                    console.log(response);
+
+                    if (response.data.Message === "Success to Deactivate Doctor Account") {
+                        toast.success('Dokter berhasil dinonaktifkan');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        toast.error('Gagal menonaktifkan dokter, coba lagi nanti');
+                    }
+
+                } catch (error) {
+                    toast.error('Terdapat kesalahan, mohon coba lagi');
+                    console.error(error);
+                }
+            }
+        },
         sortNoColumn() {
             if (this.sortOrder === 'asc') {
                 this.InfoPatient.sort((a, b) => a.no - b.no);
@@ -64,7 +102,6 @@ export default {
             }
             this.updatePaginatedData();
         },
-
         formatDate(dateString) {
             return format(new Date(dateString), 'dd MMMM yyyy', { locale: idLocale });
         },
@@ -104,10 +141,20 @@ export default {
             this.currentPage = 1;
             this.updatePaginatedData();
         },
+        updateSearch() {
+            // Filter data berdasarkan nama dokter
+            this.InfoPatient = this.originalInfoPatient.filter(patient =>
+                patient.Name.toLowerCase().includes(this.searchQuery.toLowerCase())
+            );
+            // Reset pagination
+            this.currentPage = 1;
+            this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage);
+            this.updatePaginatedData();
+        },
         getHospitalNames() {
             const hospitals = this.originalInfoPatient.map(item => item.HospitalName);
             this.hospitalNames = [...new Set(hospitals)];
-        }
+        },
     }
 }
 </script>
@@ -117,7 +164,7 @@ export default {
     <div class="flex bg-offwhite">
         <Sidebar />
 
-        <div>
+        <div class="bg-offwhite mb-8">
             <!-- Your content -->
             <div class="ml-8 flex items-center justify-between border-b border-lightgray">
                 <p class="font-bold font-poppins text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Dokter</p>
@@ -162,6 +209,13 @@ export default {
                     <option v-for="hospital in hospitalNames" :key="hospital" :value="hospital">{{ hospital }}</option>
                 </select>
             </div>
+
+            <div class="ml-8 my-4">
+                <label for="searchDoctor" class="font-bold font-poppins text-blueblack">Cari Nama Dokter:</label>
+                <input type="text" id="searchDoctor" v-model="searchQuery" @input="updateSearch"
+                    class="ml-2 border border-gray-300 p-2 rounded">
+            </div>
+
 
             <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
                 <thead class="bg-gray-50">
@@ -210,10 +264,16 @@ export default {
                             class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
                             Rumah Sakit
                         </th>
+
+                        <th scope="col"
+                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                            Status Dokter
+                        </th>
+
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(data, index) in paginatedInfoPatient" :key="index"
+                    <tr v-for="(data, index) in paginatedInfoPatient" :key="data.ID"
                         class="bg-offwhite divide-y divide-gray-200">
                         <td
                             class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-normal leading-4 text-black text-base">
@@ -233,11 +293,11 @@ export default {
                                 class="font-poppins font-normal leading-4 text-black text-base">Perempuan</p>
                             <p v-else-if="data.Gender === 'male'"
                                 class="font-poppins font-normal leading-4 text-black text-base">Laki-Laki</p>
-                                <p v-else
-                                class="font-poppins font-normal leading-4 text-black text-base">Tidak Diketahui</p>
+                            <p v-else class="font-poppins font-normal leading-4 text-black text-base">Tidak Diketahui</p>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p v-if="data.PhoneNumber" class="font-poppins font-normal leading-4 text-black text-base">{{ data.PhoneNumber }}</p>
+                            <p v-if="data.PhoneNumber" class="font-poppins font-normal leading-4 text-black text-base">{{
+                                data.PhoneNumber }}</p>
                             <p v-else class="font-poppins font-normal leading-4 text-black text-base">Tidak Diketahui</p>
                         </td>
                         <td class="px-3 py-4 min-w-[220px] max-w-[221px] break-words">
@@ -251,12 +311,79 @@ export default {
                         <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
                             <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.HospitalName }}</p>
                         </td>
+                        <td class="px-3 py-4 text-center max-w-[201px]">
+                            <div class="relative">
+                                <button @click="DeactivateDoctor(data.ID)"
+                                    class="flex gap-2 bg-teal items-center justify-between py-2 px-1 rounded-md">
+                                    <span class="flex gap-2">
+                                        <span
+                                            class="w-full focus:bg-teal px-4 focus:text-black text-white font-semibold font-poppins">
+                                            Aktif
+                                        </span>
+                                    </span>
+                                    <svg width="25" height="24" viewBox="0 0 25 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M18.75 10L13.2366 15.2929C12.8298 15.6834 12.1702 15.6834 11.7634 15.2929L6.25 10"
+                                            stroke="white" stroke-width="2" stroke-linecap="round" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                        <!-- Modal Konfirmasi -->
+                        <!-- <div v-if="isConfirmationModalOpen" class="fixed inset-0 z-10 overflow-y-auto"
+                            aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                            <div
+                                class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true">
+                                </div>
+                                <span class="hidden sm:inline-block sm:align-middle sm:h-screen"
+                                    aria-hidden="true">&#8203;</span>
+                                <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
+                                    role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+                                    <div>
+                                        <div
+                                            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                                            
+                                            <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 9v2m0 4h.01m-6.938-4H18m5 0a7 7 0 11-14 0h0z" />
+                                            </svg>
+                                        </div>
+                                        <div class="mt-3 text-center sm:mt-5">
+                                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+                                                Nonaktifkan Dokter
+                                            </h3>
+                                            <div class="mt-2">
+                                                <p class="text-sm text-gray-500">
+                                                    Apakah Anda yakin ingin menonaktifkan dokter ini?
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-5 flex flex-col gap-2 sm:mt-6">
+                                        <button @click="isConfirmationModalOpen = false"
+                                            class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-200 text-base font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
+                                            Tidak
+                                        </button>
+                                        <button @click="DeactivateDoctor(data.ID)"
+                                            class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-200 text-base font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
+                                            Ya
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
                     </tr>
                 </tbody>
             </table>
 
+
+
+
             <!-- Pagination navigation -->
-            <div class="flex justify-center">
+            <div class="flex justify-center mt-8">
                 <button @click="prevPage" :disabled="currentPage === 1"
                     class="px-4 py-2 mr-2 bg-teal text-white font-poppins font-normal rounded-md">Previous</button>
                 <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
@@ -267,5 +394,6 @@ export default {
             </div>
 
 
+        </div>
     </div>
-</div></template>
+</template>
