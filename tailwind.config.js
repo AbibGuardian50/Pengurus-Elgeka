@@ -42,6 +42,7 @@ export default {
         'midnightshadow': '#070707',
         'azurebreeze': '#4AD0E0',
         'deepseateal': '#0A6B77',
+        'verylightgray': '#EEEEED',
       }
     },
     fontFamily: {

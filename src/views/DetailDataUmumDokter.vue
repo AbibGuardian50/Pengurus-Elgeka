@@ -164,9 +164,9 @@ export default {
     <div class="flex bg-offwhite">
         <Sidebar />
 
-        <div class="bg-offwhite mb-8">
+        <div class="bg-offwhite ml-8 max-lg:ml-4 max-md:ml-2 max-sm:ml-1 mb-8 w-full">
             <!-- Your content -->
-            <div class="ml-8 flex items-center justify-between border-b border-lightgray">
+            <div class=" flex items-center justify-between border-b border-lightgray">
                 <p class="font-bold font-poppins text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Dokter</p>
                 <a href="/dataumumdokter"
                     class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg
@@ -176,32 +176,10 @@ export default {
                                 fill="#1E1E1E" />
                         </svg>
                     </span> Kembali ke Grafik</a>
-                <!-- <form class="relative w-max flex flex-row rounded-md pl-4 mt-4 py-4 bg-offwhite">
-                    <div>
-                        <form action="" class="max-w-[480px] w-full px-4">
-                            <div class="relative bg-offwhite">
-                                <input type="text" name="q" class="w-full border bg-offwhite h-12 shadow py-2 px-4 rounded-lg"
-                                    placeholder="Quick Find">
-                                <button type="submit">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                        class="text-gray-400 h-5 w-5 absolute top-3.5 right-3 fill-current"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                            d="M4.64286 7.92857C4.64286 3.82588 7.96874 0.5 12.0714 0.5C16.1741 0.5 19.5 3.82588 19.5 7.92857C19.5 12.0313 16.1741 15.3571 12.0714 15.3571C10.3811 15.3571 8.82147 14.7917 7.57333 13.8409L2.20711 19.2071C1.81658 19.5976 1.18342 19.5976 0.792893 19.2071C0.402369 18.8166 0.402369 18.1834 0.792893 17.7929L6.15912 12.4267C5.20834 11.1785 4.64286 9.61894 4.64286 7.92857ZM12.0714 2.5C9.07331 2.5 6.64286 4.93045 6.64286 7.92857C6.64286 9.42791 7.24938 10.7837 8.23285 11.7672C9.21632 12.7506 10.5721 13.3571 12.0714 13.3571C15.0695 13.3571 17.5 10.9267 17.5 7.92857C17.5 4.93045 15.0695 2.5 12.0714 2.5Z"
-                                            fill="black" />
-                                    </svg>
-
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </form> -->
             </div>
-
-            <p class="ml-8 font-light font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Dokter</p>
-
+            <p class=" font-light font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Dokter</p>
             <!-- Fitur Sortir -->
-            <div class="ml-8 my-4">
+            <div class=" my-4">
                 <label for="sortHospital" class="font-bold font-poppins text-blueblack">Sortir Berdasarkan Rumah
                     Sakit:</label>
                 <select id="sortHospital" @change="sortDataByHospital" class="ml-2 border border-gray-300 p-2 rounded">
@@ -209,175 +187,123 @@ export default {
                     <option v-for="hospital in hospitalNames" :key="hospital" :value="hospital">{{ hospital }}</option>
                 </select>
             </div>
-
-            <div class="ml-8 my-4">
+            <div class=" my-4">
                 <label for="searchDoctor" class="font-bold font-poppins text-blueblack">Cari Nama Dokter:</label>
                 <input type="text" id="searchDoctor" v-model="searchQuery" @input="updateSearch"
                     class="ml-2 border border-gray-300 p-2 rounded">
             </div>
 
 
-            <table class="ml-8 min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
-                <thead class="bg-gray-50">
-                    <tr class="bg-offwhite border-b-[0.5px] border-b-lightgray">
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[50px] flex items-center gap-1 text-left font-bold font-poppins text-black text-base cursor-pointer"
-                            @click="sortNoColumn">
-                            No
-                            <span v-if="sortOrder === 'asc'">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                    fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M12 19V6M5 12l7-7 7 7" />
-                                </svg>
-                            </span>
-                            <span v-else>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                    fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M12 5v13M5 12l7 7 7-7" />
-                                </svg>
-                            </span>
-                        </th>
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
-                            Nama
-                        </th>
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
-                            Gender
-                        </th>
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
-                            Nomor HP
-                        </th>
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
-                            Email
-                        </th>
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
-                            Poli
-                        </th>
-
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
-                            Rumah Sakit
-                        </th>
-
-                        <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
-                            Status Dokter
-                        </th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(data, index) in paginatedInfoPatient" :key="data.ID"
-                        class="bg-offwhite divide-y divide-gray-200">
-                        <td
-                            class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-normal leading-4 text-black text-base">
-                            {{ data.no }}
-                        </td>
-                        <td class="px-3 py-4 min-w-[200px] max-w-[251px]">
-                            <div class="flex items-center">
-                                <div>
-                                    <div class="font-poppins font-normal leading-4 text-black text-base">
-                                        {{ data.Name }}
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p v-if="data.Gender === 'female'"
-                                class="font-poppins font-normal leading-4 text-black text-base">Perempuan</p>
-                            <p v-else-if="data.Gender === 'male'"
-                                class="font-poppins font-normal leading-4 text-black text-base">Laki-Laki</p>
-                            <p v-else class="font-poppins font-normal leading-4 text-black text-base">Tidak Diketahui</p>
-                        </td>
-                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p v-if="data.PhoneNumber" class="font-poppins font-normal leading-4 text-black text-base">{{
-                                data.PhoneNumber }}</p>
-                            <p v-else class="font-poppins font-normal leading-4 text-black text-base">Tidak Diketahui</p>
-                        </td>
-                        <td class="px-3 py-4 min-w-[220px] max-w-[221px] break-words">
-                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.Email }}</p>
-                        </td>
-
-                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.PolyName }}</p>
-                        </td>
-
-                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.HospitalName }}</p>
-                        </td>
-                        <td class="px-3 py-4 text-center max-w-[201px]">
-                            <div class="relative">
-                                <button @click="DeactivateDoctor(data.ID)"
-                                    class="flex gap-2 bg-teal items-center justify-between py-2 px-1 rounded-md">
-                                    <span class="flex gap-2">
-                                        <span
-                                            class="w-full focus:bg-teal px-4 focus:text-black text-white font-semibold font-poppins">
-                                            Aktif
-                                        </span>
-                                    </span>
-                                    <svg width="25" height="24" viewBox="0 0 25 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M18.75 10L13.2366 15.2929C12.8298 15.6834 12.1702 15.6834 11.7634 15.2929L6.25 10"
-                                            stroke="white" stroke-width="2" stroke-linecap="round" />
+            <div class="overflow-x-auto max-w-full">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr class="bg-offwhite border-b-[0.5px] border-b-lightgray">
+                            <th scope="col"
+                                class="px-3 py-3 max-w-[50px] flex items-center gap-1 text-left font-bold font-poppins text-black text-base cursor-pointer"
+                                @click="sortNoColumn">
+                                No
+                                <span v-if="sortOrder === 'asc'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M12 19V6M5 12l7-7 7 7" />
                                     </svg>
-                                </button>
-                            </div>
-                        </td>
-                        <!-- Modal Konfirmasi -->
-                        <!-- <div v-if="isConfirmationModalOpen" class="fixed inset-0 z-10 overflow-y-auto"
-                            aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                            <div
-                                class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true">
-                                </div>
-                                <span class="hidden sm:inline-block sm:align-middle sm:h-screen"
-                                    aria-hidden="true">&#8203;</span>
-                                <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
-                                    role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+                                </span>
+                                <span v-else>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M12 5v13M5 12l7 7 7-7" />
+                                    </svg>
+                                </span>
+                            </th>
+                            <th scope="col" class="th-general max-lg:px-1">
+                                Nama
+                            </th>
+                            <th scope="col" class="th-general max-lg:px-1">
+                                Gender
+                            </th>
+                            <th scope="col" class="th-general max-lg:px-1">
+                                Nomor HP
+                            </th>
+                            <th scope="col" class="th-general max-lg:px-1">
+                                Email
+                            </th>
+                            <th scope="col" class="th-general max-lg:px-1">
+                                Poli
+                            </th>
+
+                            <th scope="col" class="th-general max-lg:px-1">
+                                Rumah Sakit
+                            </th>
+
+                            <th scope="col" class="th-general max-lg:px-1">
+                                Status Dokter
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(data, index) in paginatedInfoPatient" :key="data.ID"
+                            class="bg-offwhite divide-y divide-gray-200">
+                            <td
+                                class="px-3 py-4 max-lg:px-1">
+                                {{ data.no }}
+                            </td>
+                            <td class="px-3 py-4 max-lg:px-1">
+                                <div class="flex items-center">
                                     <div>
-                                        <div
-                                            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                                            
-                                            <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 9v2m0 4h.01m-6.938-4H18m5 0a7 7 0 11-14 0h0z" />
-                                            </svg>
+                                        <div class="td-text-general">
+                                            {{ data.Name }}
                                         </div>
-                                        <div class="mt-3 text-center sm:mt-5">
-                                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-                                                Nonaktifkan Dokter
-                                            </h3>
-                                            <div class="mt-2">
-                                                <p class="text-sm text-gray-500">
-                                                    Apakah Anda yakin ingin menonaktifkan dokter ini?
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mt-5 flex flex-col gap-2 sm:mt-6">
-                                        <button @click="isConfirmationModalOpen = false"
-                                            class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-200 text-base font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
-                                            Tidak
-                                        </button>
-                                        <button @click="DeactivateDoctor(data.ID)"
-                                            class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-200 text-base font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
-                                            Ya
-                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                        </div> -->
-                    </tr>
-                </tbody>
-            </table>
+                            </td>
+                            <td class="px-3 py-4 max-lg:px-1">
+                                <p v-if="data.Gender === 'female'" class="td-text-general">Perempuan</p>
+                                <p v-else-if="data.Gender === 'male'" class="td-text-general">Laki-Laki</p>
+                                <p v-else class="td-text-general">Tidak Diketahui</p>
+                            </td>
+                            <td class="px-3 py-4 max-lg:px-1">
+                                <p v-if="data.PhoneNumber" class="td-text-general">{{
+                                    data.PhoneNumber }}</p>
+                                <p v-else class="td-text-general">Tidak Diketahui</p>
+                            </td>
+                            <td class="px-3 py-4 max-lg:px-1 break-words">
+                                <p class="td-text-general">{{ data.Email }}</p>
+                            </td>
+
+                            <td class="px-3 py-4 max-lg:px-1">
+                                <p class="td-text-general">{{ data.PolyName }}</p>
+                            </td>
+
+                            <td class="px-3 py-4 max-lg:px-1">
+                                <p class="td-text-general">{{ data.HospitalName }}</p>
+                            </td>
+                            <td class="px-3 py-4 max-lg:px-1">
+                                <div class="relative">
+                                    <button @click="DeactivateDoctor(data.ID)"
+                                        class="flex max-lg:gap-0 max-lg:px-0 gap-2 bg-teal items-center justify-between py-2 px-1 rounded-md">
+                                        <span class="flex gap-2">
+                                            <span
+                                                class="w-full focus:bg-teal px-4 focus:text-black text-white font-semibold font-poppins">
+                                                Aktif
+                                            </span>
+                                        </span>
+                                        <svg width="25" height="24" viewBox="0 0 25 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M18.75 10L13.2366 15.2929C12.8298 15.6834 12.1702 15.6834 11.7634 15.2929L6.25 10"
+                                                stroke="white" stroke-width="2" stroke-linecap="round" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
 
 
 

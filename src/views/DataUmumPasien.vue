@@ -115,13 +115,101 @@ export default {
 
                 ]
             };
-            this.loaded = true
+            this.loaded = true;
+
+            // Call updateOptions to set the initial options based on the screen width
+            this.updateOptions();
+            // Add event listener to update options on window resize
+            window.addEventListener('resize', this.updateOptions);
+
         } catch (error) {
             const toast = useToast()
             if (error.message === "Request failed with status code 401") {
                 toast.error('Error code 401, Mohon untuk logout lalu login kembali')
             }
             console.error(error);
+        }
+    },
+    beforeDestroy() {
+        // Remove event listener when component is destroyed
+        window.removeEventListener('resize', this.updateOptions);
+    },
+    methods: {
+        updateOptions() {
+            const width = window.innerWidth;
+            let fontSize;
+            if (width >= 1200) {
+                fontSize = 18;
+            } else if (width >= 768) {
+                fontSize = 16;
+            } else {
+                fontSize = 12;
+            }
+            this.ageOptions = this.getChartOptions(fontSize);
+            this.BloodOptions = this.getChartOptions(fontSize);
+            this.DistrictOptions = this.getChartOptions(fontSize, true);
+        },
+        getChartOptions(fontSize, isHorizontal = false) {
+            const options = {
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#222539',
+                            font: {
+                                size: fontSize
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: isHorizontal ? 'Nama Kota' : 'Range Umur',
+                            font: {
+                                size: fontSize + 2,
+                                weight: 'bold'
+                            }
+                        },
+                    },
+                    y: {
+                        ticks: {
+                            color: '#222539',
+                            font: {
+                                size: fontSize
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Jumlah',
+                            font: {
+                                size: fontSize + 2,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                },
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        titleFont: {
+                            size: fontSize + 2,
+                        },
+                        bodyFont: {
+                            size: fontSize + 1,
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            color: "#222539",
+                            font: {
+                                size: fontSize + 1,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            };
+            if (isHorizontal) {
+                options.indexAxis = 'y';
+            }
+            return options;
         }
     },
     components: {
@@ -168,6 +256,7 @@ export default {
             const jumlahOrangTerlangka = minCount;
             // Format teks yang menampilkan golongan darah dan jumlah orang
             const teksGolonganDarahTerlangka = `${golonganDarahTerlangka} (${jumlahOrangTerlangka} Orang)`;
+
             // Cek jika ada lebih dari satu golongan darah dengan nilai yang sama
             const duplicates = labels.filter(label => BloodGroupCounts[label] === minCount);
             if (duplicates.length > 1) {
@@ -175,156 +264,23 @@ export default {
                 return duplicates.sort()[0];
             }
             return teksGolonganDarahTerlangka;
-        }
+        },
     },
     data() {
         return {
+            TotalGeneralPatient: 0,
+            BloodData: {},
+            ageData: {},
+            DistrictData: {},
             loaded: false,
-            BloodData: [],
-            ageData: [],
-            DistrictData: [],
-            TotalGeneralPatient: '',
-            ageOptions: {
-                scales: {
-                    x: {
-                        ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Range Umur',
-                            font: {
-                                size: 22,
-                                weight: 'bold'
-                            }
-                        },
-                    },
-                    y: {
-                        ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Jumlah',
-                            font: {
-                                size: 22,
-                                weight: 'bold'
-                            }
-                        }
-                    },
-                },
-                responsive: true,
-                plugins: {
-                    tooltip: {
-                        titleFont: {
-                            size: 22,
-                        },
-                        bodyFont: {
-                            size: 22,
-                        }
-                    },
-                    legend: {
-                        labels: {
-                            color: "#222539",
-                            font: {
-                                size: 22,
-                                weight: 'bold'
-                            }
-                        }
-                    }
-                }
-            },
-            BloodOptions: {
-                responsive: true,
-                plugins: {
-                    tooltip: {
-                        titleFont: {
-                            size: 22,
-                        },
-                        bodyFont: {
-                            size: 22,
-                        }
-                    },
-                    legend: {
-                        labels: {
-                            color: "#222539",
-                            font: {
-                                size: 22,
-                                weight: 'bold'
-                            }
-                        }
-                    }
-                }
-            },
-            DistrictOptions: {
-                scales: {
-                    x: {
-                        ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Nama Kota',
-                            font: {
-                                size: 22,
-                                weight: 'bold'
-                            }
-                        },
-                    },
-                    y: {
-                        ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Jumlah',
-                            font: {
-                                size: 22,
-                                weight: 'bold'
-                            }
-                        }
-                    },
-                },
-                responsive: true,
-                plugins: {
-                    tooltip: {
-                        titleFont: {
-                            size: 22,
-                        },
-                        bodyFont: {
-                            size: 22,
-                        }
-                    },
-                    legend: {
-                        labels: {
-                            color: "#222539",
-                            font: {
-                                size: 22,
-                                weight: 'bold'
-                            }
-                        }
-                    }
-                }
-            }
-
+            ageOptions: {},
+            BloodOptions: {},
+            DistrictOptions: {},
         }
-    },
-
-    name: 'BarChart',
+    }
 }
 </script>
+
 
 <template>
     <div class="flex bg-offwhite">
@@ -333,11 +289,11 @@ export default {
         <div class="flex flex-col gap-4 pt-4 pl-4 w-full lg:w-auto max-md:w-[95%]">
             <div class="flex flex-col gap-4 min-[1400px]:flex-row">
                 <div
-                    class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 w-full max-[1400px]:w-[800px] max-[1000px]:max-w-[600px] max-md:w-[95%] lg:pl-8 lg:py-4 lg:pr-8">
+                    class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 max-sm:p-1 w-full max-[1400px]:w-[800px] max-[1000px]:max-w-[600px] max-md:w-[95%] lg:pl-8 lg:py-4 lg:pr-8">
                     <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 lg:pl-8">Grafik
                         Pasien berdasarkan Kabupaten</p>
                     <Bar v-if="loaded" :data="DistrictData" :options="DistrictOptions"
-                        class="border border-lightsilver rounded-md w-full lg:max-w-[900px] lg:min-h-[400px] lg:max-h-[450px] text-white p-4" />
+                        class="border border-lightsilver rounded-md w-full lg:max-w-[900px] lg:min-h-[400px] lg:max-h-[450px] text-white max-sm:p-0 p-4" />
                 </div>
 
                 <div
@@ -379,21 +335,24 @@ export default {
                     </div>
                 </div>
 
-                <div class="flex flex-col items-center justify-center gap-4 w-full lg:w-auto lg:pr-8 max-md:w-[95%]">
-                    <div class="bg-white py-4 w-full">
-                        <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pb-2 pl-8">Grafik
-                            Pasien berdasarkan Umur</p>
-                        <Bar v-if="loaded" :data="ageData" :options="ageOptions"
-                            class="w-full border border-lightsilver rounded-lg p-4 lg:max-w-[700px] min-h-[340px] max-h-[350px] text-white mx-4" />
+                <div class="flex flex-col items-center justify-center gap-4 w-full lg:w-[] lg:pr-8 max-md:w-[95%]">
+                    <div
+                        class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 max-sm:p-1 w-full max-[1400px]:w-[800px] max-[1000px]:max-w-[600px] max-md:w-[100%] lg:pl-8 lg:py-4 lg:pr-8">
+                        <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 lg:pl-8">
+                            Grafik
+                            Pasien berdasarkan Kabupaten</p>
+                        <Bar v-if="loaded" :data="ageData" :options="DistrictOptions"
+                            class="border border-lightsilver rounded-md w-full lg:max-w-[900px] lg:min-h-[400px] lg:max-h-[450px] text-white max-sm:p-0 p-4" />
                     </div>
                     <div class="flex flex-col py-4 w-full">
                         <div class="bg-white rounded-lg shadow-[0_0_12px_0_rgba(0,0,0,0.04)] p-4 flex flex-col">
                             <p class="font-opensans text-black font-semibold text-[16px] leading-[52px]">Total Pasien: {{
-                            TotalGeneralPatient }}</p>
+                                TotalGeneralPatient }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div></template>
+</template>
 

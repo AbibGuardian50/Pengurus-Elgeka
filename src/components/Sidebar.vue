@@ -56,7 +56,7 @@ export default {
                                         <span
                                             class="flex gap-2 hover:text-midnightshadow hover:bg-white focus:text-midnightshadow">
                                             <span
-                                                class="w-full hover:text-midnightshadow focus:text-midnightshadow focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter">
+                                                class="w-full hover:text-midnightshadow focus:text-midnightshadow focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter">
                                                 Data Umum
                                             </span>
                                         </span>
@@ -96,7 +96,7 @@ export default {
                                         <span
                                             class="flex gap-2 hover:text-midnightshadow hover:bg-white focus:text-midnightshadow">
                                             <span
-                                                class="w-full hover:text-midnightshadow focus:text-midnightshadow focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter">
+                                                class="w-full hover:text-midnightshadow focus:text-midnightshadow focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter">
                                                 Data Hasil Lab
                                             </span>
                                         </span>
@@ -154,25 +154,25 @@ export default {
 
                         <router-link to="/DataKepemilikanObat">
                             <button
-                                class="focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Kepemilikan
+                                class="focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Kepemilikan
                                 Obat</button>
                         </router-link>
 
                         <router-link to="/datarumahsakit">
                             <button
-                                class="focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Data
+                                class="focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Data
                                 Rumah Sakit</button>
                         </router-link>
 
                         <router-link to="/kelolaakun">
                             <button
-                                class="focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Kelola
+                                class="focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Kelola
                                 Akun</button>
                         </router-link>
 
                         <router-link to="/verifikasidokter">
                             <button
-                                class="focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Verifikasi
+                                class="focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Verifikasi
                                 Dokter</button>
                         </router-link>
 
@@ -237,7 +237,7 @@ export default {
                                                         <span
                                                             class="flex gap-2 hover:text-midnightshadow hover:bg-white focus:text-midnightshadow">
                                                             <span
-                                                                class="w-full hover:text-midnightshadow focus:text-midnightshadow focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter">
+                                                                class="w-full hover:text-midnightshadow focus:text-midnightshadow focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter">
                                                                 Data Umum
                                                             </span>
                                                         </span>
@@ -277,7 +277,7 @@ export default {
                                                         <span
                                                             class="flex gap-2 hover:text-midnightshadow hover:bg-white focus:text-midnightshadow">
                                                             <span
-                                                                class="w-full hover:text-midnightshadow focus:text-midnightshadow focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter">
+                                                                class="w-full hover:text-midnightshadow focus:text-midnightshadow focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter">
                                                                 Data Hasil Lab
                                                             </span>
                                                         </span>
@@ -335,25 +335,25 @@ export default {
 
                                         <router-link to="/DataKepemilikanObat">
                                             <button
-                                                class="focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Kepemilikan
+                                                class="focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Kepemilikan
                                                 Obat</button>
                                         </router-link>
 
                                         <router-link to="/datarumahsakit">
                                             <button
-                                                class="focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Data
+                                                class="focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Data
                                                 Rumah Sakit</button>
                                         </router-link>
 
                                         <router-link to="/kelolaakun">
                                             <button
-                                                class="focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Kelola
+                                                class="focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Kelola
                                                 Akun</button>
                                         </router-link>
 
                                         <router-link to="/verifikasidokter">
                                             <button
-                                                class="focus:bg-[#EEEEED] px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Verifikasi
+                                                class="focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Verifikasi
                                                 Dokter</button>
                                         </router-link>
 

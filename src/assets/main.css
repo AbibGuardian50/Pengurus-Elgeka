@@ -4,3 +4,14 @@
 @tailwind components;
 @tailwind utilities;
 
+
+@layer components {
+    .th-general {
+        @apply px-3 py-3 text-left font-bold font-poppins text-black text-base
+    }
+
+    .td-text-general {
+        @apply font-poppins font-normal leading-4 text-black text-[16px] max-[1200px]:text-[13px]
+    }
+    
+}
