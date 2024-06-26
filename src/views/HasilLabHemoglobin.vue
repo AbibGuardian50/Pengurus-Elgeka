@@ -87,30 +87,30 @@ export default {
                         ticks: {
                             color: '#222539',  // Mengubah warna font pada sumbu X
                             font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
+                                size: 14  // Mengubah ukuran font pada sumbu X
                             }
                         },
                         title: {
                             display: true,
                             text: 'Nilai',
                             font: {
-                                size: 22,
+                                size: 16,
                                 weight: 'bold'
                             }
                         },
                     },
                     y: {
                         ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
+                            color: '#222539',  // Mengubah warna font pada sumbu Y
                             font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
+                                size: 14  // Mengubah ukuran font pada sumbu Y
                             }
                         },
                         title: {
                             display: true,
                             text: 'Jumlah',
                             font: {
-                                size: 22,
+                                size: 16,
                                 weight: 'bold'
                             }
                         }
@@ -120,17 +120,17 @@ export default {
                 plugins: {
                     tooltip: {
                         titleFont: {
-                            size: 22,
+                            size: 16,
                         },
                         bodyFont: {
-                            size: 22,
+                            size: 14,
                         }
                     },
                     legend: {
                         labels: {
                             color: "#222539",
                             font: {
-                                size: 22,
+                                size: 16,
                                 weight: 'bold'
                             }
                         }
@@ -147,33 +147,39 @@ export default {
     <div class="flex bg-offwhite">
         <Sidebar />
 
-        <div class="flex flex-col gap-4 pt-4 pl-4">
-            <div class="flex gap-4 items-center">
-                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 pr-8">
-                    <p class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">GRAFIK DATA HEMOGLOBIN</p>
+        <div class="flex flex-col gap-4 pt-4 pl-4 w-full">
+            <div class="flex flex-col md:flex-row gap-4 items-center">
+                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 w-full md:w-2/3">
+                    <p
+                        class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 border-b border-[#3347E6]">
+                        GRAFIK DATA HEMOGLOBIN</p>
                     <Bar v-if="loaded" :data="DataLabHemoglobin" :options="HasilLabHemoglobinOptions"
-                        class="min-w-[700px] max-w-[1000px] min-h-[350px] max-h-[650px] text-white ml-8" />
+                        class="w-full h-64 md:h-96" />
                 </div>
 
                 <div
-                    class="flex flex-col justify-between pl-4 bg-work bg-no-repeat bg-center bg-cover h-full rounded-md max-h-[900px] min-w-[509px] max-w-[700px]">
+                    class="flex flex-col justify-between p-4 bg-work bg-no-repeat bg-center bg-cover h-full rounded-md w-full md:w-1/3">
                     <div class="flex flex-col gap-4">
-                        <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA HEMOGLOBIN KESELURUHAN</p>
+                        <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA HEMOGLOBIN KESELURUHAN
+                        </p>
                         <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang data
                             Hemoglobin</p>
                     </div>
                     <div class="">
-                        <a href="/DetailHasilLabHemoglobin"><button class="font-opensans text-white flex items-center gap-2 pb-4">Read
-                                more <svg width="12" height="11" viewBox="0 0 12 11" fill="none"
+                        <a href="/DetailHasilLabHemoglobin">
+                            <button class="font-opensans text-white flex items-center gap-2 pb-4">
+                                Read more
+                                <svg width="12" height="11" viewBox="0 0 12 11" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M1 6.00156H8.586L6.293 8.29456C6.03304 8.54563 5.92879 8.91743 6.0203 9.26706C6.11182 9.61669 6.38486 9.88974 6.73449 9.98125C7.08412 10.0728 7.45593 9.96851 7.707 9.70856L11.707 5.70856C11.8951 5.52095 12.0008 5.26621 12.0008 5.00056C12.0008 4.7349 11.8951 4.48017 11.707 4.29256L7.707 0.292556C7.31598 -0.097909 6.68247 -0.0974613 6.292 0.293556C5.90153 0.684574 5.90198 1.31809 6.293 1.70856L8.586 4.00156H1C0.447715 4.00156 0 4.44927 0 5.00156C0 5.55384 0.447715 6.00156 1 6.00156Z"
                                         fill="white" />
                                 </svg>
-                            </button></a>
+                            </button>
+                        </a>
                     </div>
                 </div>
             </div>
-        </div>
     </div>
+</div>
 </template>

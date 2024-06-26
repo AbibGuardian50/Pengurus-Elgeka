@@ -154,22 +154,57 @@ export default {
             TotalPoliDoctor: 0,
             TotalDoctorOptions: {
                 responsive: true,
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#222539',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                            })
+                        },
+                        title: {
+                            display: true,
+                            text: 'Nilai',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
+                                weight: 'bold'
+                            })
+                        },
+                    },
+                    y: {
+                        ticks: {
+                            color: '#222539',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                            })
+                        },
+                        title: {
+                            display: true,
+                            text: 'Jumlah',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
+                                weight: 'bold'
+                            })
+                        }
+                    },
+                },
+                responsive: true,
                 plugins: {
                     tooltip: {
-                        titleFont: {
-                            size: 18,
-                        },
-                        bodyFont: {
-                            size: 18,
-                        }
+                        titleFont: (context) => ({
+                            size: Math.min(Math.max(context.chart.width / 30, 14), 22)
+                        }),
+                        bodyFont: (context) => ({
+                            size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                        })
                     },
                     legend: {
                         labels: {
                             color: "#222539",
-                            font: {
-                                size: 18,
-                                weight: 'bold',
-                            }
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20),
+                                weight: 'bold'
+                            })
                         }
                     }
                 }
@@ -178,54 +213,54 @@ export default {
                 scales: {
                     x: {
                         ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
-                            }
+                            color: '#222539',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                            })
                         },
                         title: {
                             display: true,
-                            text: 'Nama Rumah Sakit',
-                            font: {
-                                size: 22,
+                            text: 'Nilai',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
                                 weight: 'bold'
-                            }
+                            })
                         },
                     },
                     y: {
                         ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
-                            }
+                            color: '#222539',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                            })
                         },
                         title: {
                             display: true,
                             text: 'Jumlah',
-                            font: {
-                                size: 22,
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
                                 weight: 'bold'
-                            }
+                            })
                         }
                     },
                 },
                 responsive: true,
                 plugins: {
                     tooltip: {
-                        titleFont: {
-                            size: 22,
-                        },
-                        bodyFont: {
-                            size: 22,
-                        }
+                        titleFont: (context) => ({
+                            size: Math.min(Math.max(context.chart.width / 30, 14), 22)
+                        }),
+                        bodyFont: (context) => ({
+                            size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                        })
                     },
                     legend: {
                         labels: {
                             color: "#222539",
-                            font: {
-                                size: 22,
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20),
                                 weight: 'bold'
-                            }
+                            })
                         }
                     }
                 }
@@ -234,54 +269,54 @@ export default {
                 scales: {
                     x: {
                         ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
-                            }
+                            color: '#222539',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                            })
                         },
                         title: {
                             display: true,
-                            text: 'Jenis Poli',
-                            font: {
-                                size: 22,
+                            text: 'Nilai',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
                                 weight: 'bold'
-                            }
+                            })
                         },
                     },
                     y: {
                         ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
-                            }
+                            color: '#222539',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                            })
                         },
                         title: {
                             display: true,
                             text: 'Jumlah',
-                            font: {
-                                size: 22,
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
                                 weight: 'bold'
-                            }
+                            })
                         }
                     },
                 },
                 responsive: true,
                 plugins: {
                     tooltip: {
-                        titleFont: {
-                            size: 22,
-                        },
-                        bodyFont: {
-                            size: 22,
-                        }
+                        titleFont: (context) => ({
+                            size: Math.min(Math.max(context.chart.width / 30, 14), 22)
+                        }),
+                        bodyFont: (context) => ({
+                            size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                        })
                     },
                     legend: {
                         labels: {
                             color: "#222539",
-                            font: {
-                                size: 22,
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20),
                                 weight: 'bold'
-                            }
+                            })
                         }
                     }
                 }
@@ -314,9 +349,9 @@ export default {
     <div class="flex bg-offwhite">
         <Sidebar />
 
-        <div class="flex flex-col gap-4 pt-4 pl-4">
-            <div class="flex gap-4 items-center">
-                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg ">
+        <div class="flex flex-col gap-4 pt-4 pl-4 w-full">
+            <div class="flex flex-col md:flex-row gap-4 items-center">
+                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 w-full md:w-2/3">
                     <p
                         class="font-opensans text-[18px] font-bold leading-5 text-midnightblue w-full px-8 pt-4 pb-8 border-b border-teal">
                         Grafik Dokter Berdasarkan Rumah Sakit</p>
@@ -325,7 +360,7 @@ export default {
                 </div>
 
                 <div
-                    class="flex flex-col justify-between pl-4 bg-work bg-no-repeat bg-center bg-cover h-full max-h-[282px] min-w-[509px] max-w-[510px]">
+                    class="flex flex-col justify-between p-4 bg-work bg-no-repeat bg-center bg-cover h-full rounded-md w-full md:w-1/3">
                     <div class="flex flex-col gap-4">
                         <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA UMUM DOKTER</p>
                         <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang data

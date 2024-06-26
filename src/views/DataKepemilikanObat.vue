@@ -17,63 +17,7 @@ export default {
             HospitalPerMedicineData: [],
             PoliPerMedicineData: [],
             StatisticsPatientData: [],
-            MedicineOptions: {
-                indexAxis: 'y',
-                scales: {
-                    x: {
-                        ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Nama Obat',
-                            font: {
-                                size: 22,
-                                weight: 'bold'
-                            }
-                        },
-                    },
-                    y: {
-                        ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Jumlah',
-                            font: {
-                                size: 22,
-                                weight: 'bold'
-                            }
-                        }
-                    },
-                },
-                responsive: true,
-                plugins: {
-                    tooltip: {
-                        titleFont: {
-                            size: 22,
-                        },
-                        bodyFont: {
-                            size: 22,
-                        }
-                    },
-                    legend: {
-                        labels: {
-                            color: "#222539",
-                            font: {
-                                size: 22,
-                                weight: 'bold'
-                            }
-                        }
-                    }
-                }
-            }
+            MedicineOptions: this.getMedicineOptions()
         }
     },
     async created() {
@@ -99,6 +43,12 @@ export default {
                 toast.error('Error code 401, Mohon untuk logout lalu login kembali')
             }
         }
+
+        // Add resize event listener to update chart font sizes on window resize
+        window.addEventListener('resize', this.updateChartFontSizes);
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.updateChartFontSizes);
     },
     components: {
         Sidebar,
@@ -107,6 +57,82 @@ export default {
         Doughnut,
     },
     methods: {
+        getResponsiveFontSize() {
+            const width = window.innerWidth;
+            if (width < 640) return 12;  // Font size for small screens (mobile)
+            if (width < 1024) return 16; // Font size for medium screens (tablet)
+            return 20;                   // Font size for large screens (desktop)
+        },
+        getMedicineOptions() {
+            const fontSize = this.getResponsiveFontSize();
+            return {
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#222539',  // Mengubah warna font pada sumbu X
+                            font: {
+                                size: fontSize  // Menggunakan ukuran font responsif
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Nama Obat',
+                            font: {
+                                size: fontSize + 2,
+                                weight: 'bold'
+                            }
+                        },
+                    },
+                    y: {
+                        ticks: {
+                            color: '#222539',  // Mengubah warna font pada sumbu Y
+                            font: {
+                                size: fontSize  // Menggunakan ukuran font responsif
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Jumlah',
+                            font: {
+                                size: fontSize + 2,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                },
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        titleFont: {
+                            size: fontSize + 2,
+                        },
+                        bodyFont: {
+                            size: fontSize + 2,
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            color: "#222539",
+                            font: {
+                                size: fontSize + 2,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        updateChartFontSizes() {
+            const fontSize = this.getResponsiveFontSize();
+            this.MedicineOptions.scales.x.ticks.font.size = fontSize;
+            this.MedicineOptions.scales.y.ticks.font.size = fontSize;
+            this.MedicineOptions.scales.x.title.font.size = fontSize + 2;
+            this.MedicineOptions.scales.y.title.font.size = fontSize + 2;
+            this.MedicineOptions.plugins.tooltip.titleFont.size = fontSize + 2;
+            this.MedicineOptions.plugins.tooltip.bodyFont.size = fontSize + 2;
+            this.MedicineOptions.plugins.legend.labels.font.size = fontSize + 2;
+        },
         async fetchPatientData(token) {
             const toast = useToast()
             const url = 'https://elgeka-mobile-production.up.railway.app/api/user/medicine/list_patient/website'
@@ -202,17 +228,18 @@ export default {
 }
 </script>
 
-<template>
-    <div class="flex bg-offwhite">
-        <Sidebar />
 
-        <div class="flex flex-col">
-            <div class="border-b border-lightgray pt-12 ml-4 pb-4">
+<template>
+    <div class="flex bg-offwhite min-h-screen">
+        <Sidebar class="lg:w-1/5" />
+
+        <div class="flex flex-col lg:w-4/5 w-full">
+            <div class="border-b border-lightgray pt-12 pb-4 ml-4">
                 <p class="font-gotham font-bold text-blueblack text-[30px] leading-5">Data Kepemilikan Obat</p>
             </div>
 
-            <div class="flex gap-4 py-4 pl-4">
-                <div class="flex flex-col gap-4">
+            <div class="flex flex-col lg:flex-row gap-4 py-4 pl-4">
+                <div class="flex flex-col gap-4 lg:w-2/3">
                     <div class="flex flex-col items-center gap-4 bg-white rounded-lg">
                         <div class="border-b border-teal w-full pb-4">
                             <p class="font-assistant text-[24px] font-bold leading-5 text-teal w-full pt-4 pl-8">
@@ -221,9 +248,9 @@ export default {
                                 Total Pasien: {{ TotalPatientWithMedicine }}</p>
                         </div>
 
-                        <div class="flex">
+                        <div class="flex w-full overflow-x-auto">
                             <Bar v-if="loaded" :data="MedicineData" :options="MedicineOptions"
-                                class="min-w-[1200px] rounded-lg p-4 max-w-[1300px] min-h-[540px] max-h-[550px] text-white mx-4" />
+                                class="w-full p-4 max-sm:p-1 min-w-[300px] min-h-[300px] max-h-[550px] text-white" />
                             <div v-else>
                                 Tabel Sedang Dimuat.....
                             </div>
@@ -242,7 +269,7 @@ export default {
                                     TotalPatientWithMedicine }}</p>
                             </div>
 
-                            <div class="w-full px-4">
+                            <div class="w-full px-4 overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr class="hover:bg-[#ddd]">
@@ -297,30 +324,31 @@ export default {
 
                         </div>
                     </div>
-                    <div
-                class="flex flex-col justify-between pl-4 bg-seeingstatistics bg-no-repeat bg-center bg-cover rounded-md h-full max-h-[1000px] w-full">
-                <div class="flex flex-col gap-4">
-                    <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA UMUM KEPEMILIKAN
-                        OBAT</p>
-                    <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang
-                        data umum kepemilikan obat</p>
                 </div>
-                <div>
-                    <a href="/detaildataumumkepemilikanobat">
-                        <button class="font-opensans text-white flex items-center gap-2 pb-4">
-                            Read more
-                            <svg width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                d="M1 6.00156H8.586L6.293 8.29456C6.03304 8.54563 5.92879 8.91743 6.0203 9.26706C6.11182 9.61669 6.38486 9.88974 6.73449 9.98125C7.08412 10.0728 7.45593 9.96851 7.707 9.70856L11.707 5.70856C11.8951 5.52095 12.0008 5.26621 12.0008 5.00056C12.0008 4.7349 11.8951 4.48017 11.707 4.29256L7.707 0.292556C7.31598 -0.097909 6.68247 -0.0974613 6.292 0.293556C5.90153 0.684574 5.90198 1.31809 6.293 1.70856L8.586 4.00156H1C0.447715 4.00156 0 4.44927 0 5.00156C0 5.55384 0.447715 6.00156 1 6.00156Z"
-                                fill="white" />
-                        </svg>
-                    </button>
-                </a>
+                <div
+                    class="flex flex-col justify-between p-4 bg-seeingstatistics bg-no-repeat bg-center bg-cover rounded-md h-full max-h-[1000px] w-full lg:w-1/3">
+                    <div class="flex flex-col gap-4">
+                        <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA UMUM KEPEMILIKAN
+                            OBAT</p>
+                        <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang
+                            data umum kepemilikan obat</p>
+                    </div>
+                    <div>
+                        <a href="/detaildataumumkepemilikanobat">
+                            <button class="font-opensans text-white flex items-center gap-2 pb-4">
+                                Read more
+                                <svg width="12" height="11" viewBox="0 0 12 11" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M1 6.00156H8.586L6.293 8.29456C6.03304 8.54563 5.92879 8.91743 6.0203 9.26706C6.11182 9.61669 6.38486 9.88974 6.73449 9.98125C7.08412 10.0728 7.45593 9.96851 7.707 9.70856L11.707 5.70856C11.8951 5.52095 12.0008 5.26621 12.0008 5.00056C12.0008 4.7349 11.8951 4.48017 11.707 4.29256L7.707 0.292556C7.31598 -0.097909 6.68247 -0.0974613 6.292 0.293556C5.90153 0.684574 5.90198 1.31809 6.293 1.70856L8.586 4.00156H1C0.447715 4.00156 0 4.44927 0 5.00156C0 5.55384 0.447715 6.00156 1 6.00156Z"
+                                        fill="white" />
+                                </svg>
+                            </button>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-                </div>
-
-            </div>
-            
     </div>
-</div></template>
+</template>
+

@@ -253,13 +253,13 @@ export default {
 
 
 <template>
-    <div class="flex bg-offwhite">
+    <div class="flex ">
         <Sidebar />
-        <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
+        <div class="ml-8 max-sm:ml-2 pt-4 w-full ">
             <p class="text-[30px] text-teal font-poppins font-bold">Kelola Akun Pengurus</p>
             <hr>
             <div class="container-table-general max-[700px]:max-w-[95%]">
-                <table class="table-general bg-offwhite">
+                <table class="table-general ">
                     <thead>
                         <tr class="border-b-[0.5px]">
                             <th scope="col"
@@ -371,8 +371,8 @@ export default {
                 </div>
 
                 <div v-if="showcreatepengurus"
-                    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div class=" p-8 rounded-md min-w-[700px] max-w-[750px] min-h-[500px] max-h-[520px]">
+                    class="fixed inset-0 flex items-center justify-center max-md:justify-start max-md:items-start max-md:pt-4 max-md:pl-6 bg-black bg-opacity-50 max-md:z-50">
+                    <div class=" p-8 rounded-md min-w-[700px] max-md:min-w-[75%] max-w-[750px] bg-white min-h-[500px]  max-h-[520px]">
                         <h2 class="text-2xl text-teal font-poppins font-semibold mb-4">Tambah Pengurus</h2>
                         <form @submit.prevent="createpengurus">
                             <div class="mb-4">

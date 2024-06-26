@@ -145,10 +145,10 @@ export default {
 </script>
 
 <template>
-    <div class="flex bg-offwhite">
+    <div class="flex">
         <Sidebar />
 
-        <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
+        <div class="ml-8 max-sm:ml-2 pt-4 w-full">
             <!-- Your content -->
             <div class="heading-div-general">
                 <p class="title-heading-general max-md:text-[25px]">Verifikasi Dokter</p>

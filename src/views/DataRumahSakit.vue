@@ -183,17 +183,17 @@ export default {
 </script>
 
 <template >
-    <div class="flex bg-offwhite">
+    <div class="flex ">
         <Sidebar />
 
-        <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
+        <div class="ml-8 max-sm:ml-2 pt-4 w-full ">
             <div class="heading-div-general">
                 <p class="title-heading-general">Data Rumah Sakit</p>
             </div>
 
             <div class="container-table-general">
                 <table class="table-general">
-                    <thead class="bg-offwhite">
+                    <thead class="">
                         <tr class="border-b-[0.5px] border-b-lightgray">
                             <th scope="col"
                                 class="px-3 py-3 max-[1300px]:pb-0 max-[1200px]:pl-0 max-w-[50px] flex items-center gap-1 text-left font-bold font-poppins text-black text-base cursor-pointer"
@@ -289,11 +289,11 @@ export default {
             <!-- Modal Create Rumah Sakit -->
             <div>
                 <form v-if="showcreatehospital" @submit.prevent="createhospital()"
-                    class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
-                    <div class="relative w-auto my-6 mx-auto max-w-6xl">
+                    class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center max-[600px]:justify-start max-[600px]:items-start items-center flex">
+                    <div class="relative w-auto my-6 max-[600px]:my-0 mx-auto max-w-6xl">
                         <!--content-->
                         <div
-                            class="border border-red rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                            class="border border-red rounded-lg shadow-lg relative flex flex-col w-full max-[600px]:w-[85%] bg-white outline-none focus:outline-none">
                             <!--header-->
                             <div class="flex items-start justify-between p-5 border-b-2 border-black rounded-t">
                                 <h3 class="text-[40px] text-teal font-semibold font-poppins">
@@ -312,20 +312,20 @@ export default {
                                 <div class="flex gap-2 flex-col">
                                     <label for="nama lengkap"
                                         class="font-poppins font-bold text-base text-teal">Nama</label>
-                                    <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
+                                    <input class="border border-black py-4 min-w-[550px] max-md:min-w-full pl-2 rounded-md" type="text"
                                         required name="nama lengkap" id="" v-model="form.nama_rs"
                                         placeholder="Nama Rumah Sakit">
                                 </div>
                                 <div class="flex gap-2 flex-col">
                                     <label for="alamat" class="font-poppins font-bold text-base text-teal">Alamat</label>
-                                    <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
+                                    <input class="border border-black py-4 min-w-[550px] max-md:min-w-full pl-2 rounded-md" type="text"
                                         required name="alamat" id="" v-model="form.lokasi_rs"
                                         placeholder="Contoh format: Jatiwaringin, Kota Bekasi">
                                 </div>
 
                                 <div class="flex gap-2 flex-col">
                                     <label for="Kontak" class="font-poppins font-bold text-base text-teal">Kontak</label>
-                                    <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text"
+                                    <input class="border border-black py-4 min-w-[550px] max-md:min-w-full pl-2 rounded-md" type="text"
                                         required name="Kontak" id="" v-model="form.info_kontak"
                                         placeholder="Nomor Telepon Rumah Sakit">
                                 </div>
@@ -379,7 +379,7 @@ export default {
                                     <label for="Foto Profil" class="font-poppins font-bold text-base text-teal">Gambar
                                         Lengkap</label>
                                     <input @change="handleFileChange"
-                                        class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="file" required
+                                        class="border border-black py-4 min-w-[550px] max-md:min-w-full pl-2 rounded-md" type="file" required
                                         name="Foto Profil" id="">
                                     <div v-if="errorMessage" class="text-red text-sm font-bold mb-4">{{ errorMessage }}
                                     </div>

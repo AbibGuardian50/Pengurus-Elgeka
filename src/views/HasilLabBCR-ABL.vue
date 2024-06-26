@@ -44,7 +44,7 @@ export default {
                         DataLabBcrAblCounts['0.01-0.1']++;
                     } else if (DataLabBCR <= 0.001) {
                         DataLabBcrAblCounts['0.001-0.0032']++;
-                    } else if (DataLabBCR <= 0.0032){
+                    } else if (DataLabBCR <= 0.0032) {
                         DataLabBcrAblCounts['< 0.0032']++;
                     }
                 }
@@ -83,54 +83,54 @@ export default {
                 scales: {
                     x: {
                         ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
-                            }
+                            color: '#222539',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                            })
                         },
                         title: {
                             display: true,
                             text: 'Nilai',
-                            font: {
-                                size: 22,
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
                                 weight: 'bold'
-                            }
+                            })
                         },
                     },
                     y: {
                         ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 20  // Mengubah ukuran font pada sumbu X
-                            }
+                            color: '#222539',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                            })
                         },
                         title: {
                             display: true,
                             text: 'Jumlah',
-                            font: {
-                                size: 22,
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
                                 weight: 'bold'
-                            }
+                            })
                         }
                     },
                 },
                 responsive: true,
                 plugins: {
                     tooltip: {
-                        titleFont: {
-                            size: 22,
-                        },
-                        bodyFont: {
-                            size: 22,
-                        }
+                        titleFont: (context) => ({
+                            size: Math.min(Math.max(context.chart.width / 30, 14), 22)
+                        }),
+                        bodyFont: (context) => ({
+                            size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                        })
                     },
                     legend: {
                         labels: {
                             color: "#222539",
-                            font: {
-                                size: 22,
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20),
                                 weight: 'bold'
-                            }
+                            })
                         }
                     }
                 }
@@ -145,23 +145,27 @@ export default {
     <div class="flex bg-offwhite">
         <Sidebar />
 
-        <div class="flex flex-col gap-4 pt-4 pl-4">
-            <div class="flex gap-4 items-center">
-                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg pl-4 pr-8">
-                    <p class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">GRAFIK DATA BCR-ABL</p>
+        <div class="flex flex-col gap-4 pt-4 pl-4 w-full">
+            <div class="flex flex-col md:flex-row gap-4 items-center">
+                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 w-full md:w-2/3">
+                    <p
+                        class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
+                        GRAFIK DATA BCR-ABL</p>
                     <Bar v-if="loaded" :data="DataLabBcrAbl" :options="HasilLabBCRABLOptions"
-                        class="min-w-[700px] max-w-[1000px] min-h-[350px] max-h-[650px] text-white ml-8" />
+                        class="w-full h-64 md:h-96" />
                 </div>
 
                 <div
-                    class="flex flex-col justify-between pl-4 bg-work bg-no-repeat bg-center bg-cover rounded-md h-full max-h-[900px] min-w-[509px] max-w-[700px]">
+                    class="flex flex-col justify-between p-4 bg-work bg-no-repeat bg-center bg-cover h-full rounded-md w-full md:w-1/3">
                     <div class="flex flex-col gap-4">
-                        <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA BCR-ABL KESELURUHAN</p>
+                        <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA BCR-ABL KESELURUHAN
+                        </p>
                         <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang data
                             BCR-ABL</p>
                     </div>
                     <div class="">
-                        <a href="/DetailHasilLabBCRABL"><button class="font-opensans text-white flex items-center gap-2 pb-4">Read
+                        <a href="/DetailHasilLabBCRABL"><button
+                                class="font-opensans text-white flex items-center gap-2 pb-4">Read
                                 more <svg width="12" height="11" viewBox="0 0 12 11" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -173,5 +177,4 @@ export default {
                 </div>
             </div>
         </div>
-    </div>
-</template>
+</div></template>

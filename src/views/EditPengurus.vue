@@ -78,14 +78,14 @@ export default {
 <template>
     <div>
         <form v-if="daftarpengurus" @submit.prevent="editpengurus(daftarpengurus.id)"
-            class="overflow-x-hidden overflow-y-auto inset-0 justify-center items-center flex">
-            <div class="relative w-auto my-6 mx-auto max-w-6xl flex flex-col-reverse">
+            class="fixed inset-0 flex justify-center items-center max-md:items-start max-md:justify-start overflow-y-auto overflow-x-hidden">
+            <div class="relative w-full max-w-6xl mx-auto my-6 max-md:my-0 flex flex-col">
                 <!--content-->
                 <div
                     class="border border-red rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                     <!--header-->
                     <div class="flex items-start justify-between p-5 border-b-2 border-black rounded-t">
-                        <h3 class="text-[40px] text-teal font-semibold font-poppins">
+                        <h3 class="text-2xl md:text-3xl lg:text-[40px] text-teal font-semibold font-poppins">
                             Edit Akun Pengurus
                         </h3>
                         <button
@@ -97,25 +97,26 @@ export default {
                         </button>
                     </div>
                     <!--body-->
-                    <div class="flex flex-col gap-8 relative p-6">
-                        <div class="flex gap-2 flex-col">
+                    <div class="flex flex-col gap-4 md:gap-6 lg:gap-8 relative p-6">
+                        <div class="flex flex-col gap-2">
                             <label for="nama lengkap" class="font-poppins font-bold text-base text-teal">Nama
                                 Lengkap</label>
-                            <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text" required
-                                v-model="daftarpengurus.full_name" name="nama lengkap" id="">
+                            <input
+                                class="border border-black py-2 md:py-3 lg:py-4 w-full min-w-[250px] md:min-w-[400px] lg:min-w-[550px] pl-2 rounded-md"
+                                type="text" required v-model="daftarpengurus.full_name" name="nama lengkap" id="">
                         </div>
 
-                        <div class="flex gap-2 flex-col">
+                        <div class="flex flex-col gap-2">
                             <label for="username" class="font-poppins font-bold text-base text-teal">Username</label>
-                            <input class="border border-black py-4 min-w-[550px] pl-2 rounded-md" type="text" required
-                                name="username" v-model="daftarpengurus.username" id="" >
+                            <input
+                                class="border border-black py-2 md:py-3 lg:py-4 w-full min-w-[250px] md:min-w-[400px] lg:min-w-[550px] pl-2 rounded-md"
+                                type="text" required name="username" v-model="daftarpengurus.username" id="">
                         </div>
 
-                        <div class="flex gap-2 flex-col">
+                        <div class="flex flex-col gap-2">
                             <label for="Status" class="font-poppins font-bold text-base text-teal">Status Aktif</label>
-                            <!-- <input class="border border-black py-4 min-w-[550px] pr-2 rounded-md" type="text" name="nama lengkap" id="" placeholder="  Muhammad Abieb Basnuril"> -->
-                            <select required 
-                            class="border border-black py-4 min-w-[550px] pl-2 rounded-md"
+                            <select required
+                                class="border border-black py-2 md:py-3 lg:py-4 w-full min-w-[250px] md:min-w-[400px] lg:min-w-[550px] pl-2 rounded-md"
                                 name="Status" id="" v-model="daftarpengurus.is_active">
                                 <option value="false">Nonaktif</option>
                                 <option value="true">Aktif</option>
@@ -125,39 +126,20 @@ export default {
                     <!--footer-->
                     <div class="flex items-center justify-center p-6 border-t-2 border-black rounded-b">
                         <button
-                            class="text-white bg-teal border hover:text-white active:bg-teal-600 font-bold uppercase text-sm px-12 py-3 rounded outline-none focus:outline-none mr-1 mb-1   "
+                            class="text-white bg-teal border hover:text-white active:bg-teal-600 font-bold uppercase text-sm px-6 py-3 md:px-10 md:py-4 lg:px-12 lg:py-4 rounded outline-none focus:outline-none mr-1 mb-1"
                             type="submit">
                             Simpan
                         </button>
                         <router-link to="/kelolaakun">
                             <button
-                                class="text-teal bg-white border active:bg-teal-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
+                                class="text-teal bg-white border active:bg-teal-600 font-bold uppercase text-sm px-6 py-3 md:px-10 md:py-4 lg:px-6 lg:py-3 rounded outline-none focus:outline-none mr-1 mb-1"
                                 type="button">
-                                batal
+                                Batal
                             </button>
                         </router-link>
                     </div>
                 </div>
-                <!-- <div v-if="resulterror.message === 'Error Update Admin by ID: Unauthorized, Superadmins cannot update other superadmins'"
-                    class="px-2 mt-4">
-                    
-                    <div class="bg-[#fecdd3] px-6 py-4 mx-2 my-4 rounded-md text-lg flex items-center mx-auto max-w-lg">
-                        <svg viewBox="0 0 24 24" class="text-[#dc2626] w-5 h-5 sm:w-5 sm:h-5 mr-3">
-                            <path fill="currentColor"
-                                d="M11.983,0a12.206,12.206,0,0,0-8.51,3.653A11.8,11.8,0,0,0,0,12.207,11.779,11.779,0,0,0,11.8,24h.214A12.111,12.111,0,0,0,24,11.791h0A11.766,11.766,0,0,0,11.983,0ZM10.5,16.542a1.476,1.476,0,0,1,1.449-1.53h.027a1.527,1.527,0,0,1,1.523,1.47,1.475,1.475,0,0,1-1.449,1.53h-.027A1.529,1.529,0,0,1,10.5,16.542ZM11,12.5v-6a1,1,0,0,1,2,0v6a1,1,0,1,1-2,0Z">
-                            </path>
-                        </svg>
-                        <span class="text-[#991b1b]">Error, superadmin tidak bisa edit superadmin lainnya</span>
-                    </div>
-                    
-                </div> -->
             </div>
-            <!-- <div v-else>
-                <p class="font-bold font-poppins text-5xl">Dilarang Akses Halaman Ini</p>
-                <a href="/kelolaakun" class="hover:text-teal hover:underline font-bold font-poppins text-5xl">Klik Disini
-                    Untuk Kembali ke Halaman Sebelumnya</a>
-            </div> -->
         </form>
         <div v-if="showeditadmin" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
-    </div>
-</template>
+    </div></template>
