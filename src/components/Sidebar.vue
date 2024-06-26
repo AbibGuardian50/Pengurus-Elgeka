@@ -32,7 +32,7 @@ export default {
     <!-- > 768 px screen and laptop screen -->
     <div class="flex max-[520px]:max-w-[230px] max-[520px]:min-w-[25%] max-md:hidden">
         <div
-            class="bg-teal flex flex-col items-center pt-8 md:w-full max-[520px]:min-w-[70px] min-w-[70px] max-[1800px]:h-full h-screen">
+            class="bg-teal flex flex-col items-center pt-8 md:w-full max-[520px]:min-w-[70px] min-w-[70px] h-full">
             <div class="flex flex-col items-center">
                 <img class="mb-8 rounded-md flex items-center justify-center max-md:w-[60px] max-md:h-[60px]"
                     src="../assets/logoElgekaPutih1.png" alt="">

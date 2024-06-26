@@ -73,7 +73,7 @@ export default {
                             toast.success('Dokter berhasil diverifikasi');
                             window.location.reload();
                         }
-                        
+
                     })
                     .catch(error => {
                         toast.error('Dokter gagal diverifikasi, mohon coba lagi');
@@ -129,7 +129,17 @@ export default {
                 }
             });
             this.updatePaginatedData();
-        }
+        },
+        sortNoColumn() {
+            if (this.sortOrder === 'asc') {
+                this.InfoDoctor.sort((a, b) => a.no - b.no);
+                this.sortOrder = 'desc';
+            } else {
+                this.InfoDoctor.sort((a, b) => b.no - a.no);
+                this.sortOrder = 'asc';
+            }
+            this.updatePaginatedData();
+        },
     }
 }
 </script>
@@ -138,56 +148,63 @@ export default {
     <div class="flex bg-offwhite">
         <Sidebar />
 
-        <div class="bg-offwhite">
+        <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
             <!-- Your content -->
-            <div class="ml-8 flex items-center justify-between border-b border-lightgray">
-                <p class="font-bold font-gotham text-[30px] mt-4 py-4 leading-6 text-blueblack">Verifikasi Dokter</p>
+            <div class="heading-div-general">
+                <p class="title-heading-general max-md:text-[25px]">Verifikasi Dokter</p>
             </div>
 
-            <p class="ml-8 font-light font-gotham text-[20px] leading-7 text-blueblack mt-4">Biodata Dokter</p>
+            <p class="font-light font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Dokter</p>
 
-            <table class="ml-8 min-w-full overflow-x-auto w-[1200px]">
+            <div class="container-table-general">
+                <table class="table-general">
                 <thead class="border-b border-teal">
                     <tr>
-                        <th @click="sortData('no')" scope="col"
-                            class="cursor-pointer flex items-center gap-1 px-3 py-3 max-w-[50px] text-left font-bold font-poppins text-black text-base">
+                        <th scope="col"
+                            class="px-3 py-3 max-[1300px]:pb-0 max-[1200px]:pl-0 max-md:pt-8 max-w-[50px] flex items-center gap-1 text-left font-bold font-poppins text-black text-base cursor-pointer"
+                            @click="sortNoColumn">
                             No
-                            <span v-if="sortColumn === 'no'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                            <span v-if="sortOrder === 'asc'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M12 19V6M5 12l7-7 7 7" />
+                                </svg>
+                            </span>
                             <span v-else>
-                                <svg fill="none" height="16" viewBox="0 0 512 512" width="16"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M476.843 57.6L326.333 274.77L326.182 274.99C320.698 282.603 317.745 291.747 317.743 301.13V407.39C317.746 410.792 316.882 414.138 315.232 417.113C313.582 420.088 311.201 422.592 308.313 424.39L212.483 484C204.823 488.77 193.723 487.19 193.773 478.17V301.13C193.77 291.747 190.818 282.603 185.333 274.99L185.183 274.77L34.6825 57.6C32.5751 54.5817 31.3216 51.0505 31.0541 47.379C30.7866 43.7075 31.5149 40.0319 33.1625 36.74C34.7471 33.5274 37.1963 30.8204 40.2348 28.9231C43.2732 27.0259 46.7806 26.0136 50.3627 26H127.593C129.846 26.0026 132.007 26.899 133.6 28.4925C135.193 30.086 136.09 32.2465 136.093 34.5V46C136.093 51.3043 138.2 56.3914 141.951 60.1421C145.701 63.8929 150.788 66 156.093 66H355.093C360.397 66 365.484 63.8929 369.235 60.1421C372.985 56.3914 375.093 51.3043 375.093 46V34.5C375.093 32.2457 375.988 30.0837 377.582 28.4896C379.176 26.8955 381.338 26 383.593 26L461.162 26C464.744 26.0147 468.251 27.0275 471.289 28.9246C474.328 30.8218 476.777 33.5281 478.363 36.74C480.008 40.0325 480.736 43.7077 480.468 47.3788C480.201 51.0498 478.948 54.5808 476.843 57.6V57.6Z"
-                                        fill="black" />
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M12 5v13M5 12l7 7 7-7" />
                                 </svg>
                             </span>
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="th-general">
                             Nama
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="th-general">
                             Gender
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="th-general">
                             Nomor HP
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="th-general">
                             Email
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="th-general">
                             Poli
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="th-general">
                             Nama Rumah Sakit
                         </th>
                         <th scope="col"
-                            class="px-3 py-3 max-w-[250px] text-left font-bold font-gotham text-black text-base">
+                            class="th-general">
                             Status
                         </th>
 
@@ -196,44 +213,44 @@ export default {
                 <tbody v-if="InfoDoctor">
                     <tr v-for="(data, index) in paginatedInfoDoctor" :key="index" class="divide-y divide-gray-200">
                         <td
-                            class="px-3 py-4 whitespace-nowrap font-gotham min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
+                            class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
                             {{ data.no }}
                         </td>
-                        <td class="px-3 py-4 min-w-[200px] max-w-[251px]">
+                        <td class="td-general">
                             <div class="flex items-center">
                                 <div>
-                                    <div class="font-gotham font-light leading-4 text-black text-base">
+                                    <div class="font-poppins font-light leading-4 text-black text-base">
                                         {{ data.Name }}
                                     </div>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
+                        <td class="td-general">
                             <p v-if="data.Gender === 'female'"
-                                class="font-gotham font-light leading-4 text-black text-base">Perempuan</p>
+                                class="font-poppins font-light leading-4 text-black text-base">Perempuan</p>
                             <p v-else-if="data.Gender === 'male'"
-                                class="font-gotham font-light leading-4 text-black text-base">Laki-Laki</p>
-                            <p v-else-if="!data.Gender" class="font-gotham font-light leading-4 text-black text-base">Tidak
+                                class="font-poppins font-light leading-4 text-black text-base">Laki-Laki</p>
+                            <p v-else-if="!data.Gender" class="font-poppins font-light leading-4 text-black text-base">Tidak
                                 Diketahui</p>
                         </td>
-                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p v-if="data.PhoneNumber" class="font-gotham font-light leading-4 text-black text-base">{{
+                        <td class="td-general">
+                            <p v-if="data.PhoneNumber" class="font-poppins font-light leading-4 text-black text-base">{{
                                 data.PhoneNumber }}</p>
-                            <p v-else-if="!data.PhoneNumber" class="font-gotham font-light leading-4 text-black text-base">
+                            <p v-else-if="!data.PhoneNumber" class="font-poppins font-light leading-4 text-black text-base">
                                 Tidak Diketahui</p>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[221px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.Email }}</p>
+                            <p class="font-poppins font-light leading-4 text-black text-base">{{ data.Email }}</p>
                         </td>
-                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.PolyName }}</p>
+                        <td class="td-general">
+                            <p class="font-poppins font-light leading-4 text-black text-base">{{ data.PolyName }}</p>
                         </td>
-                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                            <p class="font-gotham font-light leading-4 text-black text-base">{{ data.HospitalName }}</p>
+                        <td class="td-general">
+                            <p class="font-poppins font-light leading-4 text-black text-base">{{ data.HospitalName }}</p>
                         </td>
-                        <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
+                        <td class="td-general">
                             <div>
-                                <p class="bg-teal pl-2 py-2 rounded-lg text-white font-gotham">
+                                <p class="bg-teal pl-2 py-2 rounded-lg text-white font-poppins">
                                     Not Verified
                                 </p>
                             </div>
@@ -247,6 +264,8 @@ export default {
                     </tr>
                 </tbody>
             </table>
+            </div>
+            
 
             <!-- Pagination navigation -->
             <div class="ml-8 mt-4 flex justify-center">

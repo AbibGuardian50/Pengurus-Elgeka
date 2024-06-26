@@ -13,5 +13,25 @@
     .td-text-general {
         @apply font-poppins font-normal leading-4 text-black text-[16px] max-[1200px]:text-[13px]
     }
+
+    .td-general {
+        @apply px-3 py-4 max-[1200px]:px-1
+    }
+
+    .heading-div-general {
+        @apply flex items-center justify-between max-md:justify-start max-md:items-center max-md:gap-2 max-[500px]:flex-col max-[500px]:items-start max-[500px]:pb-4  border-b border-lightgray
+    }
+
+    .title-heading-general {
+        @apply font-bold font-poppins text-[30px] py-4 leading-6 text-blueblack max-md:text-[20px]
+    }
+    
+    .table-general {
+        @apply min-w-full divide-y divide-gray-200 overflow-x-auto
+    }
+
+    .container-table-general {
+        @apply overflow-x-auto max-w-full max-[700px]:max-w-[85%]
+    }
     
 }

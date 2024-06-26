@@ -83,6 +83,7 @@ export default {
                 this.updatePaginatedData(); // Update paginated data when navigating to previous page
             }
         },
+
     }
 }
 </script>
@@ -91,9 +92,9 @@ export default {
     <div class="flex bg-offwhite">
         <Sidebar />
 
-        <div class="w-full">
-            <div class="ml-8 flex items-center justify-between border-b border-lightgray">
-                <p class="font-bold font-poppins text-2xl mt-4 py-4 leading-6 text-blueblack">Data Umum Pasien</p>
+        <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
+            <div class="heading-div-general max-[1400px]:justify-start max-[1400px]:gap-4 max-md:gap-2">
+                <p class="title-heading-general">Data Umum Pasien</p>
                 <a href="/dataumumpasien"
                     class="flex items-center gap-2 font-inter font-medium text-lg leading-5 text-blueblack"><span><svg
                             width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -104,14 +105,14 @@ export default {
                     </span> Kembali ke Grafik</a>
             </div>
 
-            <p class="ml-8 font-normal font-poppins text-xl leading-7 text-blueblack mt-4">Biodata Pasien</p>
+            <p class="font-normal font-poppins text-xl leading-7 text-blueblack mt-4">Biodata Pasien</p>
 
             <div class="overflow-x-auto">
-                <table class="ml-8 min-w-full divide-y divide-gray-200">
+                <table class="min-w-full divide-y divide-gray-200">
                     <thead>
                         <tr class="border-b-[0.5px] border-b-lightgray">
                             <th scope="col"
-                                class="px-3 py-3 text-left flex font-bold font-poppins text-black text-base cursor-pointer"
+                                class="px-3 py-3 max-[1300px]:pb-0 max-[1300px]:pt-6 max-[1200px]:pl-0 max-w-[50px] flex items-center gap-1 text-left font-bold font-poppins text-black text-base cursor-pointer"
                                 @click="sortNoColumn">
                                 No
                                 <span v-if="sortOrder === 'asc'">
@@ -171,10 +172,8 @@ export default {
                                 <p class="td-text-general">{{ data.Address }}</p>
                             </td>
                             <td class="px-3 py-4">
-                                <p v-if="data.Gender === 'female'"
-                                    class="td-text-general">Perempuan</p>
-                                <p v-else-if="data.Gender === 'male'"
-                                    class="td-text-general">Laki-Laki</p>
+                                <p v-if="data.Gender === 'female'" class="td-text-general">Perempuan</p>
+                                <p v-else-if="data.Gender === 'male'" class="td-text-general">Laki-Laki</p>
                             </td>
                             <td class="px-3 py-4">
                                 <p class="td-text-general">{{
@@ -235,4 +234,5 @@ export default {
         padding: 0.25rem;
         font-size: 0.75rem;
     }
-}</style>
+}
+</style>

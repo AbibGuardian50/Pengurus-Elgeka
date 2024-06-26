@@ -226,7 +226,7 @@ export default {
             });
             this.updatePaginatedData();
         },
-        
+
         canEditOrDelete(data) {
             const superAdmin = this.getRoles === 'true';
             const currentUserId = this.currentAdminId;
@@ -235,43 +235,60 @@ export default {
             } else {
                 return data.id === currentUserId;
             }
-        }
+        },
+        sortNoColumn() {
+            if (this.sortOrder === 'asc') {
+                this.daftarpengurus.sort((a, b) => a.no - b.no);
+                this.sortOrder = 'desc';
+            } else {
+                this.daftarpengurus.sort((a, b) => b.no - a.no);
+                this.sortOrder = 'asc';
+            }
+            this.updatePaginatedData();
+        },
+
     },
 };
 </script>
 
 
 <template>
-    <div class="flex">
+    <div class="flex bg-offwhite">
         <Sidebar />
-        <div class="px-8">
+        <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
             <p class="text-[30px] text-teal font-poppins font-bold">Kelola Akun Pengurus</p>
             <hr>
-            <div>
-                <table class="min-w-full divide-y divide-gray-200 overflow-x-auto w-[1200px]">
-                    <thead class="bg-gray-50">
+            <div class="container-table-general max-[700px]:max-w-[95%]">
+                <table class="table-general bg-offwhite">
+                    <thead>
                         <tr class="border-b-[0.5px]">
-                            <th @click="sortData('no')" scope="col"
-                                class="cursor-pointer px-3 py-3 max-w-[50px] text-left font-bold font-poppins text-black text-base">
+                            <th scope="col"
+                                class="cursor-pointer px-3 py-3 max-w-[50px] text-left font-bold font-poppins text-black text-base"
+                                @click="sortNoColumn">
                                 No
-                                <span v-if="sortColumn === 'no'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                                <span v-if="sortOrder === 'asc'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M12 19V6M5 12l7-7 7 7" />
+                                    </svg>
+                                </span>
                                 <span v-else>
-                                    <svg fill="none" height="16" viewBox="0 0 512 512" width="16"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M476.843 57.6L326.333 274.77L326.182 274.99C320.698 282.603 317.745 291.747 317.743 301.13V407.39C317.746 410.792 316.882 414.138 315.232 417.113C313.582 420.088 311.201 422.592 308.313 424.39L212.483 484C204.823 488.77 193.723 487.19 193.773 478.17V301.13C193.77 291.747 190.818 282.603 185.333 274.99L185.183 274.77L34.6728 57.6C28.7267 48.5695 35.1696 36.1 46.4405 36.1H465.554C476.824 36.1 483.266 48.5695 477.32 57.6H476.843Z"
-                                            fill="#000000" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M12 5v13M5 12l7 7 7-7" />
                                     </svg>
                                 </span>
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left font-bold font-poppins text-black text-base">
+                            <th scope="col" class="th-general px-1">
                                 Name
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left font-bold font-poppins text-black text-base">
+                            <th scope="col" class="th-general px-1">
                                 Username
                             </th>
                             <th @click="sortData('Status')" scope="col"
-                                class="cursor-pointer px-6 py-3 text-left font-bold font-poppins text-black text-base">
+                                class="cursor-pointer th-general px-1">
                                 Status
                                 <span v-if="sortColumn === 'Status'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                 <span v-else>
@@ -284,7 +301,7 @@ export default {
                                 </span>
                             </th>
                             <th @click="sortData('Roles')" scope="col"
-                                class="cursor-pointer px-6 py-3 text-left font-bold font-poppins text-black text-base">
+                                class="cursor-pointer th-general px-1">
                                 Roles
                                 <span v-if="sortColumn === 'Roles'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                 <span v-else>
@@ -303,34 +320,35 @@ export default {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="data in paginatedData" :key="data.id" class="bg-white">
+                        <tr v-for="data in paginatedData" :key="data.id" class="">
                             <td
-                                class="px-6 py-4 border-b border-gray-200 whitespace-nowrap font-poppins font-normal text-sulfurblack text-base">
+                                class="td-general td-text-general">
                                 {{ data.no }}</td>
-                            <td class="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
+                            <td class="td-general">
                                 <div class="flex items-center">
-                                    <div class="font-poppins font-normal text-sulfurblack text-base">{{ data.full_name }}
+                                    <div class="td-text-general">{{ data.full_name }}
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
-                                <p class="font-poppins font-normal text-sulfurblack text-base underline">{{ data.username }}
+                            <td class="td-general">
+                                <p class="td-text-general underline">{{ data.username }}
                                 </p>
                             </td>
-                            <td class="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
+                            <td class="td-general">
                                 <span v-if="data.is_active"
                                     class="inline-flex font-inter text-base text-[#52FF00] leading-5 font-extrabold rounded-md">Aktif</span>
                                 <span v-else
                                     class="inline-flex font-inter text-base text-red leading-5 font-extrabold rounded-md">Nonaktif</span>
                             </td>
-                            <td class="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
+                            <td class="td-general">
                                 <span v-if="data.superUser"
                                     class="inline-flex font-inter text-base leading-5 font-bold rounded-md">Super
                                     Admin</span>
                                 <span v-else
                                     class="inline-flex font-inter text-base leading-5 font-bold rounded-md">Admin</span>
                             </td>
-                            <td v-if="canEditOrDelete(data)" class="px-6 py-4 border-b border-gray-200 whitespace-nowrap text-sm font-medium">
+                            <td v-if="canEditOrDelete(data)"
+                                class="td-general text-sm font-medium max-[1050px]:flex max-md:flex-col max-md:items-center max-md:gap-2">
                                 <a :href="'editpengurus/' + data.id">
                                     <button
                                         class="py-1 px-8 rounded-[5px] bg-teal font-inter font-bold text-base text-white">Edit</button>
@@ -346,7 +364,7 @@ export default {
                     <button @click="prevPage" :disabled="currentPage === 1"
                         class="px-4 py-2 mr-2 bg-teal text-white rounded-md">Previous</button>
                     <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
-                        :class="{ 'bg-teal text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
+                        :class="{ 'bg-teal text-white rounded-md': pageNumber === currentPage, ' text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
                         class="px-4 py-2 mr-2">{{ pageNumber }}</button>
                     <button @click="nextPage" :disabled="currentPage === totalPages"
                         class="px-4 py-2 bg-teal text-white rounded-md">Next</button>
@@ -354,7 +372,7 @@ export default {
 
                 <div v-if="showcreatepengurus"
                     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div class="bg-white p-8 rounded-md min-w-[700px] max-w-[750px] min-h-[500px] max-h-[520px]">
+                    <div class=" p-8 rounded-md min-w-[700px] max-w-[750px] min-h-[500px] max-h-[520px]">
                         <h2 class="text-2xl text-teal font-poppins font-semibold mb-4">Tambah Pengurus</h2>
                         <form @submit.prevent="createpengurus">
                             <div class="mb-4">
@@ -391,7 +409,7 @@ export default {
                             <div class="flex justify-end gap-2">
                                 <button type="submit" class="px-4 py-2 bg-teal text-white rounded-md">Simpan</button>
                                 <button @click="toggleModalCreatePengurus" type="button"
-                                    class="mr-4 px-4 py-2 bg-white border border-teal text-teal rounded-md">Batal</button>
+                                    class="mr-4 px-4 py-2  border border-teal text-teal rounded-md">Batal</button>
                             </div>
                         </form>
                     </div>

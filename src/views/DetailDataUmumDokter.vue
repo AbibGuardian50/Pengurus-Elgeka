@@ -164,10 +164,10 @@ export default {
     <div class="flex bg-offwhite">
         <Sidebar />
 
-        <div class="bg-offwhite ml-8 max-lg:ml-4 max-md:ml-2 max-sm:ml-1 mb-8 w-full">
+        <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
             <!-- Your content -->
-            <div class=" flex items-center justify-between border-b border-lightgray">
-                <p class="font-bold font-poppins text-[30px] mt-4 py-4 leading-6 text-blueblack">Data Umum Dokter</p>
+            <div class="heading-div-general max-[1400px]:justify-start max-[1400px]:gap-4 max-md:gap-2">
+                <p class="title-heading-general">Data Umum Dokter</p>
                 <a href="/dataumumdokter"
                     class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg
                             width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -177,7 +177,7 @@ export default {
                         </svg>
                     </span> Kembali ke Grafik</a>
             </div>
-            <p class=" font-light font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Dokter</p>
+            <p class="font-light font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Dokter</p>
             <!-- Fitur Sortir -->
             <div class=" my-4">
                 <label for="sortHospital" class="font-bold font-poppins text-blueblack">Sortir Berdasarkan Rumah
@@ -199,7 +199,7 @@ export default {
                     <thead class="bg-gray-50">
                         <tr class="bg-offwhite border-b-[0.5px] border-b-lightgray">
                             <th scope="col"
-                                class="px-3 py-3 max-w-[50px] flex items-center gap-1 text-left font-bold font-poppins text-black text-base cursor-pointer"
+                                class="px-3 py-3 max-[1300px]:pb-0 max-[1300px]:pt-6 max-[1200px]:pl-0 max-w-[50px] flex items-center gap-1 text-left font-bold font-poppins text-black text-base cursor-pointer"
                                 @click="sortNoColumn">
                                 No
                                 <span v-if="sortOrder === 'asc'">
@@ -247,10 +247,10 @@ export default {
                         <tr v-for="(data, index) in paginatedInfoPatient" :key="data.ID"
                             class="bg-offwhite divide-y divide-gray-200">
                             <td
-                                class="px-3 py-4 max-lg:px-1">
+                                class="td-general">
                                 {{ data.no }}
                             </td>
-                            <td class="px-3 py-4 max-lg:px-1">
+                            <td class="td-general">
                                 <div class="flex items-center">
                                     <div>
                                         <div class="td-text-general">
@@ -259,28 +259,28 @@ export default {
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-3 py-4 max-lg:px-1">
+                            <td class="td-general">
                                 <p v-if="data.Gender === 'female'" class="td-text-general">Perempuan</p>
                                 <p v-else-if="data.Gender === 'male'" class="td-text-general">Laki-Laki</p>
                                 <p v-else class="td-text-general">Tidak Diketahui</p>
                             </td>
-                            <td class="px-3 py-4 max-lg:px-1">
+                            <td class="td-general">
                                 <p v-if="data.PhoneNumber" class="td-text-general">{{
                                     data.PhoneNumber }}</p>
                                 <p v-else class="td-text-general">Tidak Diketahui</p>
                             </td>
-                            <td class="px-3 py-4 max-lg:px-1 break-words">
+                            <td class="td-general break-words">
                                 <p class="td-text-general">{{ data.Email }}</p>
                             </td>
 
-                            <td class="px-3 py-4 max-lg:px-1">
+                            <td class="td-general">
                                 <p class="td-text-general">{{ data.PolyName }}</p>
                             </td>
 
-                            <td class="px-3 py-4 max-lg:px-1">
+                            <td class="td-general">
                                 <p class="td-text-general">{{ data.HospitalName }}</p>
                             </td>
-                            <td class="px-3 py-4 max-lg:px-1">
+                            <td class="td-general">
                                 <div class="relative">
                                     <button @click="DeactivateDoctor(data.ID)"
                                         class="flex max-lg:gap-0 max-lg:px-0 gap-2 bg-teal items-center justify-between py-2 px-1 rounded-md">
