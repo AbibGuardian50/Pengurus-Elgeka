@@ -194,7 +194,7 @@ export default {
             </div>
 
 
-            <div class="overflow-x-auto max-w-full">
+            <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr class="bg-offwhite border-b-[0.5px] border-b-lightgray">

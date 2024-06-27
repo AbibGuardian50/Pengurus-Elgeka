@@ -194,7 +194,7 @@ export default {
     <!-- 768 px screen < and mobile -->
     <div class="flex md:hidden">
         <!-- Sidebar -->
-        <div class="flex top-0 h-screen z-20 bg-teal" :class="[right ? 'right-0 flex-row' : 'left-0 flex-row-reverse']">
+        <div class="flex top-0 h-full z-20 bg-teal" :class="[right ? 'right-0 flex-row' : 'left-0 flex-row-reverse']">
             <!--Drawer -->
             <span class="block transform origin-center font-bold flex flex-col items-center w-[60px]">
                 <img class="mb-8 rounded-md flex items-center justify-center max-md:w-[50px] max-md:h-[50px]"

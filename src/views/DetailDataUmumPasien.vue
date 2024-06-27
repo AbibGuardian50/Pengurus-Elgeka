@@ -107,7 +107,7 @@ export default {
 
             <p class="font-normal font-poppins text-xl leading-7 text-blueblack mt-4">Biodata Pasien</p>
 
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead>
                         <tr class="border-b-[0.5px] border-b-lightgray">
