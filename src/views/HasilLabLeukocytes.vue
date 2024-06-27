@@ -64,7 +64,7 @@ export default {
                 labels: Object.keys(DataLabLeukocytesCounts),
                 datasets: [{
                     label: 'Jumlah Orang',
-                    backgroundColor: '#56B4E9',
+                    backgroundColor: '#0A6B77',
                     borderWidth: 1,
                     data: Object.values(DataLabLeukocytesCounts),
                 }],

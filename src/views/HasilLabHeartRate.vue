@@ -61,7 +61,7 @@ export default {
                 labels: Object.keys(DataLabHeartRateCounts),
                 datasets: [{
                     label: 'Jumlah Orang',
-                    backgroundColor: '#56B4E9',
+                    backgroundColor: '#0A6B77',
                     borderWidth: 1,
                     data: Object.values(DataLabHeartRateCounts),
                 }],

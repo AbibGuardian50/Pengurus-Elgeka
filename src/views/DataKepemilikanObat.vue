@@ -59,8 +59,8 @@ export default {
     methods: {
         getResponsiveFontSize() {
             const width = window.innerWidth;
-            if (width < 640) return 12;  // Font size for small screens (mobile)
-            if (width < 1024) return 16; // Font size for medium screens (tablet)
+            if (width < 640) return 10;  // Font size for small screens (mobile)
+            if (width < 1024) return 14; // Font size for medium screens (tablet)
             return 20;                   // Font size for large screens (desktop)
         },
         getMedicineOptions() {
@@ -222,8 +222,12 @@ export default {
             }
         },
         generateRandomColor() {
-            return '#' + Math.floor(Math.random() * 16777215).toString(16)
+            const hue = Math.floor(Math.random() * 360);
+            const saturation = Math.floor(Math.random() * 50) + 50; // Saturation between 50% and 100%
+            const lightness = Math.floor(Math.random() * 30) + 50; // Lightness between 50% and 80%
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
         }
+
     }
 }
 </script>
@@ -233,12 +237,12 @@ export default {
     <div class="flex bg-offwhite min-h-screen">
         <Sidebar class="lg:w-1/5" />
 
-        <div class="flex flex-col lg:w-4/5 w-full">
+        <div class="flex flex-col max-md:w-[90%] lg:w-4/5 w-full">
             <div class="border-b border-lightgray pt-12 pb-4 ml-4">
                 <p class="font-gotham font-bold text-blueblack text-[30px] leading-5">Data Kepemilikan Obat</p>
             </div>
 
-            <div class="flex flex-col lg:flex-row gap-4 py-4 pl-4">
+            <div class="flex flex-col lg:flex-row gap-4 py-4 pl-4 max-md:max-w-[90%]">
                 <div class="flex flex-col gap-4 lg:w-2/3">
                     <div class="flex flex-col items-center gap-4 bg-white rounded-lg">
                         <div class="border-b border-teal w-full pb-4">
@@ -248,9 +252,9 @@ export default {
                                 Total Pasien: {{ TotalPatientWithMedicine }}</p>
                         </div>
 
-                        <div class="flex w-full overflow-x-auto">
+                        <div class="flex w-full max-md:min-w-[90%] overflow-x-auto">
                             <Bar v-if="loaded" :data="MedicineData" :options="MedicineOptions"
-                                class="w-full p-4 max-sm:p-1 min-w-[300px] min-h-[300px] max-h-[550px] text-white" />
+                                class="w-full  p-4 max-sm:p-1 min-w-[300px] min-h-[300px] max-h-[550px] text-white" />
                             <div v-else>
                                 Tabel Sedang Dimuat.....
                             </div>
@@ -262,45 +266,41 @@ export default {
                         <p class="font-bebasneue font-normal text-[24px] text-charcoalgray">Statistik Pasien</p>
                         <div
                             class="bg-white rounded-lg shadow-[0_0_12px_0_rgba(0,0,0,0.04)] px-2 pt-2 items-start flex flex-col">
-                            <div class="border-b border-teal w-full pl-2">
+                            <div class="border-b border-teal w-full pl-2 max-md:max-w-[90%]">
                                 <p class="font-hindsiliguri text-teal font-medium text-[12px] leading-[18px] pb-4">Total
                                     Pasien:</p>
                                 <p class="font-hindsiliguri text-charcoalgray font-bold text-[32px] leading-[18px] pb-4">{{
                                     TotalPatientWithMedicine }}</p>
                             </div>
 
-                            <div class="w-full px-4 overflow-x-auto">
+                            <div class="w-full max-md:px-0 px-4 overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr class="hover:bg-[#ddd]">
-                                            <th
-                                                class="px-6 py-3 text-left text-[20px] font-extrabold text-black font-assistant uppercase tracking-wider">
+                                            <th class="th-general">
                                                 PASIEN</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-[20px] font-extrabold text-black font-assistant uppercase tracking-wider">
+                                            <th class="th-general">
                                                 OBAT</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-[20px] font-extrabold text-black font-assistant uppercase tracking-wider">
+                                            <th class="th-general">
                                                 JUMLAH</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         <tr v-for="patient in StatisticsPatientData" :key="patient.id"
                                             class="hover:bg-[#ddd]">
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap font-normal font-assistant text-black text-[20px]">
+                                            <td class="td-general max-md:pl-3 td-text-general">
                                                 {{ patient.Name }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="td-general max-md:pl-3">
                                                 <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => med.Stock < 10)"
                                                     :key="mIndex" class="flex">
-                                                    <p class="font-normal font-assistant text-black text-[20px]">- {{
+                                                    <p class="td-text-general">- {{
                                                         medicine.Name }}</p>
                                                 </div>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="td-general max-md:pl-3">
                                                 <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => med.Stock < 10)"
                                                     :key="mIndex" class="flex py-[0.2rem]">
-                                                    <p class="font-bold font-assistant text-black text-[20px]">{{
+                                                    <p class="td-text-general">{{
                                                         medicine.Stock }}</p>
                                                 </div>
                                             </td>
@@ -327,7 +327,7 @@ export default {
                 </div>
                 <div
                     class="flex flex-col justify-between p-4 bg-seeingstatistics bg-no-repeat bg-center bg-cover rounded-md h-full max-h-[1000px] w-full lg:w-1/3">
-                    <div class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-4 max-lg:pb-8">
                         <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA UMUM KEPEMILIKAN
                             OBAT</p>
                         <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang

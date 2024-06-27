@@ -148,7 +148,7 @@ export default {
     <div class="flex">
         <Sidebar />
 
-        <div class="ml-8 max-sm:ml-2 pt-4 w-full">
+        <div class="pl-8 max-sm:pl-2 pt-4 w-full bg-offwhite">
             <!-- Your content -->
             <div class="heading-div-general">
                 <p class="title-heading-general max-md:text-[25px]">Verifikasi Dokter</p>
@@ -156,7 +156,7 @@ export default {
 
             <p class="font-light font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Dokter</p>
 
-            <div class="container-table-general">
+            <div class="container-table-general bg-offwhite">
                 <table class="table-general">
                 <thead class="border-b border-teal">
                     <tr>
@@ -180,31 +180,31 @@ export default {
                             </span>
                         </th>
                         <th scope="col"
-                            class="th-general">
+                            class="th-general max-md:px-1">
                             Nama
                         </th>
                         <th scope="col"
-                            class="th-general">
+                            class="th-general max-md:px-1">
                             Gender
                         </th>
                         <th scope="col"
-                            class="th-general">
+                            class="th-general max-md:px-1">
                             Nomor HP
                         </th>
                         <th scope="col"
-                            class="th-general">
+                            class="th-general max-md:px-1">
                             Email
                         </th>
                         <th scope="col"
-                            class="th-general">
+                            class="th-general max-md:px-1">
                             Poli
                         </th>
                         <th scope="col"
-                            class="th-general">
+                            class="th-general max-md:px-1">
                             Nama Rumah Sakit
                         </th>
                         <th scope="col"
-                            class="th-general">
+                            class="th-general max-md:px-1">
                             Status
                         </th>
 
@@ -219,7 +219,7 @@ export default {
                         <td class="td-general">
                             <div class="flex items-center">
                                 <div>
-                                    <div class="font-poppins font-light leading-4 text-black text-base">
+                                    <div class="td-text-general">
                                         {{ data.Name }}
                                     </div>
                                 </div>
@@ -227,30 +227,30 @@ export default {
                         </td>
                         <td class="td-general">
                             <p v-if="data.Gender === 'female'"
-                                class="font-poppins font-light leading-4 text-black text-base">Perempuan</p>
+                                class="td-text-general">Perempuan</p>
                             <p v-else-if="data.Gender === 'male'"
-                                class="font-poppins font-light leading-4 text-black text-base">Laki-Laki</p>
-                            <p v-else-if="!data.Gender" class="font-poppins font-light leading-4 text-black text-base">Tidak
+                                class="td-text-general">Laki-Laki</p>
+                            <p v-else-if="!data.Gender" class="td-text-general">Tidak
                                 Diketahui</p>
                         </td>
                         <td class="td-general">
-                            <p v-if="data.PhoneNumber" class="font-poppins font-light leading-4 text-black text-base">{{
+                            <p v-if="data.PhoneNumber" class="td-text-general">{{
                                 data.PhoneNumber }}</p>
-                            <p v-else-if="!data.PhoneNumber" class="font-poppins font-light leading-4 text-black text-base">
+                            <p v-else-if="!data.PhoneNumber" class="td-text-general">
                                 Tidak Diketahui</p>
                         </td>
                         <td class="px-3 py-4 min-w-[200px] max-w-[221px]">
-                            <p class="font-poppins font-light leading-4 text-black text-base">{{ data.Email }}</p>
+                            <p class="td-text-general">{{ data.Email }}</p>
                         </td>
                         <td class="td-general">
-                            <p class="font-poppins font-light leading-4 text-black text-base">{{ data.PolyName }}</p>
+                            <p class="td-text-general">{{ data.PolyName }}</p>
                         </td>
                         <td class="td-general">
-                            <p class="font-poppins font-light leading-4 text-black text-base">{{ data.HospitalName }}</p>
+                            <p class="td-text-general">{{ data.HospitalName }}</p>
                         </td>
                         <td class="td-general">
                             <div>
-                                <p class="bg-teal pl-2 py-2 rounded-lg text-white font-poppins">
+                                <p class="bg-teal pl-2 max-sm:pr-2 py-2 rounded-lg text-white font-poppins">
                                     Not Verified
                                 </p>
                             </div>
@@ -268,7 +268,7 @@ export default {
             
 
             <!-- Pagination navigation -->
-            <div class="ml-8 mt-4 flex justify-center">
+            <div class="ml-8 my-8 flex justify-center">
                 <button @click="prevPage" :disabled="currentPage === 1"
                     class="px-4 py-2 mr-2 bg-teal  text-white rounded-md">Previous</button>
                 <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"

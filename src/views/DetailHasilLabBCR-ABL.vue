@@ -188,7 +188,7 @@ export default {
                     </thead>
                     <tbody>
                         <tr v-for="(data, index) in paginatedInfoPatient" :key="index" class="divide-y divide-gray-200">
-                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[4%]">
+                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[4%] td-text-general">
                                 {{ data.no }}
                             </td>
                             <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[5%]">

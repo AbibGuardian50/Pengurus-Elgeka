@@ -64,7 +64,7 @@ export default {
                     labels: Object.keys(DataLabBcrAblCountsDataDia),
                     datasets: [{
                         label: 'Data Dia',
-                        backgroundColor: '#56B4E9',
+                        backgroundColor: '#0A6B77',
                         borderWidth: 1,
                         data: Object.values(DataLabBcrAblCountsDataDia),
                     }],
@@ -75,7 +75,7 @@ export default {
                     labels: Object.keys(DataLabBcrAblCountsDataSys),
                     datasets: [{
                         label: 'Data Sys',
-                        backgroundColor: '#56B4E9',
+                        backgroundColor: '#0A6B77',
                         borderWidth: 1,
                         data: Object.values(DataLabBcrAblCountsDataSys),
                     }],

@@ -2,7 +2,7 @@
 import Sidebar from "../components/Sidebar.vue"
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
-import { Bar, Pie, Doughnut } from 'vue-chartjs'
+import { Bar, Pie } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js'
 import { useToast } from 'vue-toastification';
 
@@ -10,11 +10,11 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale,
 
 export default {
     async created() {
-        this.loaded = false
+        this.loaded = false;
         try {
             const toast = useToast();
-            const tokenlogin = VueCookies.get('TokenAuthorization')
-            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/list/website'
+            const tokenlogin = VueCookies.get('TokenAuthorization');
+            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/list/website';
             const response = await axios.get(url, {
                 headers: {
                     Authorization: `Bearer ${tokenlogin}`
@@ -25,13 +25,7 @@ export default {
             if (response.data.Message === "Success to Get Patient List") {
                 toast.success('Data Pasien Berhasil Dimuat');
             }
-            // Hitung total pasien
             this.TotalGeneralPatient = responseData.length;
-
-            // Sekarang TotalPasienUmum berisi jumlah total pasien dari respons API
-            console.log('Total Pasien:', this.TotalGeneralPatient);
-            // Data Pengelompokan Umur
-            // const ageCounts = {};
 
             const ageCounts = {
                 '1-20': 0,
@@ -60,7 +54,7 @@ export default {
                 labels: Object.keys(ageCounts),
                 datasets: [{
                     label: 'Umur',
-                    backgroundColor: 'rgba(123, 228, 241, 1)',
+                    backgroundColor: '#0A6B77',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1,
                     data: Object.values(ageCounts),
@@ -68,32 +62,47 @@ export default {
                 }],
             };
 
-            // Data Kabupaten
             const districtCounts = {};
             responseData.forEach(item => {
                 const district = item.District;
                 const province = item.Province;
-                if (province === "Jawa Barat" && district !== "") { // Tambahkan kondisi disini
+                if (province === "32" && district !== "") {
                     districtCounts[district] = (districtCounts[district] || 0) + 1;
                 }
             });
+
+            const provinceId = '32'; // Replace with actual province ID if necessary
+            const districtUrl = `https://abibguardian50.github.io/api-wilayah-indonesia/api/regencies/${provinceId}.json`;
+            const districtResponse = await axios.get(districtUrl);
+            const districts = districtResponse.data;
+            const districtMapping = {};
+            districts.forEach(district => {
+                districtMapping[district.id] = district.name;
+            });
+
+            const mappedDistrictCounts = {};
+            Object.keys(districtCounts).forEach(districtId => {
+                const districtName = districtMapping[districtId];
+                if (districtName) {
+                    mappedDistrictCounts[districtName] = districtCounts[districtId];
+                }
+            });
+
             this.DistrictData = {
-                labels: Object.keys(districtCounts),
+                labels: Object.keys(mappedDistrictCounts),
                 datasets: [{
                     label: 'Kabupaten',
-                    backgroundColor: '#F0E442',
+                    backgroundColor: '#0A6B77',
                     borderWidth: 1,
-                    data: Object.values(districtCounts),
+                    data: Object.values(mappedDistrictCounts),
                     color: 'yellow',
                 }],
             };
 
-            // Data Golongan Darah
             const labels = ['A', 'AB', 'B', 'O'];
             const BloodGroups = responseData.map(item => item.BloodGroup);
             const BloodGroupCounts = {}
             labels.forEach(label => {
-                // Counting non-null values only
                 BloodGroupCounts[label] = BloodGroups.filter(group => group === label && group !== null).length;
             });
             const backgroundColors = {
@@ -112,26 +121,22 @@ export default {
                         backgroundColor: Object.keys(BloodGroupCounts).map(label => backgroundColors[label]),
                         data: Object.values(BloodGroupCounts)
                     },
-
                 ]
             };
             this.loaded = true;
 
-            // Call updateOptions to set the initial options based on the screen width
             this.updateOptions();
-            // Add event listener to update options on window resize
             window.addEventListener('resize', this.updateOptions);
 
         } catch (error) {
-            const toast = useToast()
+            const toast = useToast();
             if (error.message === "Request failed with status code 401") {
-                toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+                toast.error('Error code 401, Mohon untuk logout lalu login kembali');
             }
             console.error(error);
         }
     },
     beforeDestroy() {
-        // Remove event listener when component is destroyed
         window.removeEventListener('resize', this.updateOptions);
     },
     methods: {
@@ -146,8 +151,33 @@ export default {
                 fontSize = 12;
             }
             this.ageOptions = this.getChartOptions(fontSize);
-            this.BloodOptions = this.getChartOptions(fontSize);
+            this.BloodOptions = this.getBloodOptions(fontSize);
             this.DistrictOptions = this.getChartOptions(fontSize, true);
+        },
+        getBloodOptions(fontSize) {
+            const options = {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        titleFont: {
+                            size: fontSize + 2,
+                        },
+                        bodyFont: {
+                            size: fontSize + 1,
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            color: "#222539",
+                            font: {
+                                size: fontSize + 1,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                }
+            };
+            return options;
         },
         getChartOptions(fontSize, isHorizontal = false) {
             const options = {
@@ -160,8 +190,6 @@ export default {
                             }
                         },
                         title: {
-                            display: true,
-                            text: isHorizontal ? 'Nama Kota' : 'Range Umur',
                             font: {
                                 size: fontSize + 2,
                                 weight: 'bold'
@@ -177,7 +205,6 @@ export default {
                         },
                         title: {
                             display: true,
-                            text: 'Jumlah',
                             font: {
                                 size: fontSize + 2,
                                 weight: 'bold'
@@ -212,11 +239,11 @@ export default {
             return options;
         }
     },
+
     components: {
         Sidebar,
         Bar,
         Pie,
-        Doughnut,
     },
     computed: {
         TotalGolonganDarah() {
@@ -231,15 +258,10 @@ export default {
             const maxCount = Math.max(...BloodGroupCounts);
             const indexOfMaxCount = BloodGroupCounts.indexOf(maxCount);
             const golonganDarahTerbanyak = labels[indexOfMaxCount];
-
-            // Menghitung jumlah orang dengan golongan darah terbanyak
             const jumlahOrangTerbanyak = maxCount;
             const teksGolonganDarahTerbanyak = `${golonganDarahTerbanyak} (${jumlahOrangTerbanyak} Orang)`;
-
-            // Cek jika ada lebih dari satu golongan darah dengan nilai yang sama
             const duplicates = labels.filter(label => BloodGroupCounts[label] === maxCount);
             if (duplicates.length > 1) {
-                // Jika ada lebih dari satu, ambil yang pertama secara alfabetis
                 return duplicates.sort()[0];
             }
             return teksGolonganDarahTerbanyak;
@@ -251,16 +273,10 @@ export default {
             const minCount = Math.min(...BloodGroupCounts);
             const indexOfMinCount = BloodGroupCounts.indexOf(minCount);
             const golonganDarahTerlangka = labels[indexOfMinCount];
-
-            // Menghitung jumlah orang dengan golongan darah terlangka
             const jumlahOrangTerlangka = minCount;
-            // Format teks yang menampilkan golongan darah dan jumlah orang
             const teksGolonganDarahTerlangka = `${golonganDarahTerlangka} (${jumlahOrangTerlangka} Orang)`;
-
-            // Cek jika ada lebih dari satu golongan darah dengan nilai yang sama
             const duplicates = labels.filter(label => BloodGroupCounts[label] === minCount);
             if (duplicates.length > 1) {
-                // Jika ada lebih dari satu, ambil yang pertama secara alfabetis
                 return duplicates.sort()[0];
             }
             return teksGolonganDarahTerlangka;
@@ -281,13 +297,43 @@ export default {
 }
 </script>
 
+<style>
+
+.container {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.page-container {
+    display: flex;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 0;
+}
+
+h1 {
+    font-weight: bold;
+    color: #222539;
+    font-size: 24px;
+}
+
+p {
+    color: #767A8A;
+    font-size: 14px;
+}
+</style>
+
+
 
 <template>
     <div class="flex bg-offwhite">
         <Sidebar />
 
         <div class="flex flex-col gap-4 pt-4 pl-4 w-full lg:w-auto max-md:w-[95%]">
-            <div class="flex flex-col gap-4 min-[1400px]:flex-row">
+            <div class="flex flex-col gap-4 min-[1400px]:flex-row max-w-[1100px]">
                 <div
                     class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 max-sm:p-1 w-full max-[1400px]:w-[800px] max-[1000px]:max-w-[600px] max-md:w-[95%] lg:pl-8 lg:py-4 lg:pr-8">
                     <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 lg:pl-8">Grafik
@@ -319,23 +365,23 @@ export default {
                 </div>
             </div>
 
-            <div class="flex flex-col gap-4 lg:flex-row pb-8">
+            <div class="flex flex-col gap-4 lg:flex-row pb-8 max-w-[1100px]">
                 <div
-                    class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 w-full lg:w-auto lg:pr-8 max-md:w-[95%]">
+                    class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-2 w-full lg:w-auto max-md:w-[95%]">
                     <p class="font-assistant text-[18px] font-semibold leading-5 text-midnightblue pt-4">Grafik Pasien
                         berdasarkan Golongan Darah</p>
                     <Pie v-if="loaded" :data="BloodData" :options="BloodOptions"
-                        class="border border-lightsilver rounded-lg w-full max-w-[350px] h-full max-h-[350px] text-white" />
+                        class="border border-lightsilver rounded-lg w-full min-w-[30%] max-w-[550px] p-2 h-full max-h-[350px] text-white" />
                     <div class="pb-4">
-                        <p class="font-opensans font-bold text-black text-[20px]">Golongan Darah Terbanyak: {{
+                        <p class="font-opensans font-bold text-black text-[16px]">Golongan Darah Terbanyak: {{
                             golonganDarahTerbanyak }}</p>
-                        <p class="font-opensans font-bold text-black text-[20px]">Golongan Darah Terlangka: {{
+                        <p class="font-opensans font-bold text-black text-[16px]">Golongan Darah Terlangka: {{
                             golonganDarahTerlangka }}</p>
-                        <p class="font-opensans font-bold text-black text-[20px]">Total : {{ TotalGeneralPatient }}</p>
+                        <p class="font-opensans font-bold text-black text-[16px]">Total : {{ TotalGeneralPatient }}</p>
                     </div>
                 </div>
 
-                <div class="flex flex-col items-center justify-center gap-4 w-full lg:w-[] lg:pr-8 max-md:w-[95%]">
+                <div class="flex flex-col items-center justify-center gap-4 w-[70%] max-md:w-[95%]">
                     <div
                         class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 max-sm:p-1 w-full max-[1400px]:w-[800px] max-[1000px]:max-w-[600px] max-md:w-[100%] lg:pl-8 lg:py-4 lg:pr-8">
                         <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 lg:pl-8">

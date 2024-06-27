@@ -186,12 +186,12 @@ export default {
     <div class="flex ">
         <Sidebar />
 
-        <div class="ml-8 max-sm:ml-2 pt-4 w-full ">
+        <div class="pl-8 max-sm:pl-2 pt-4 w-full bg-offwhite">
             <div class="heading-div-general">
                 <p class="title-heading-general">Data Rumah Sakit</p>
             </div>
 
-            <div class="container-table-general">
+            <div class="container-table-general bg-offwhite">
                 <table class="table-general">
                     <thead class="">
                         <tr class="border-b-[0.5px] border-b-lightgray">

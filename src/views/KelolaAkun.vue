@@ -255,15 +255,15 @@ export default {
 <template>
     <div class="flex ">
         <Sidebar />
-        <div class="ml-8 max-sm:ml-2 pt-4 w-full ">
+        <div class="pl-8 max-sm:pl-2 pt-4 w-full bg-offwhite">
             <p class="text-[30px] text-teal font-poppins font-bold">Kelola Akun Pengurus</p>
             <hr>
-            <div class="container-table-general max-[700px]:max-w-[95%]">
+            <div class="container-table-general max-[700px]:max-w-[85%] bg-offwhite">
                 <table class="table-general ">
                     <thead>
                         <tr class="border-b-[0.5px]">
                             <th scope="col"
-                                class="cursor-pointer px-3 py-3 max-w-[50px] text-left font-bold font-poppins text-black text-base"
+                                class="cursor-pointer px-3 max-sm:pl-0 py-3 max-w-[50px] text-left font-bold font-poppins text-black text-base"
                                 @click="sortNoColumn">
                                 No
                                 <span v-if="sortOrder === 'asc'">

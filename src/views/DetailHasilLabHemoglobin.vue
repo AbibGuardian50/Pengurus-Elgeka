@@ -157,27 +157,27 @@ export default {
                                 </span>
                             </th>
                             <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                                class="th-general max-md:pl-0">
                                 Nama
                             </th>
                             <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                                class="th-general max-md:pl-0">
                                 Email
                             </th>
                             <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                                class="th-general max-md:pl-0">
                                 Handphone
                             </th>
                             <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                                class="th-general max-md:pl-0">
                                 Data
                             </th>
                             <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                                class="th-general max-md:pl-0">
                                 Notes
                             </th>
                             <th @click="sortData('Date')" scope="col"
-                                class="cursor-pointer flex items-center gap-1 px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                                class="cursor-pointer flex items-center gap-1 th-general max-md:pl-0">
                                 Tanggal
                                 <span v-if="sortColumn === 'Date'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                 <span v-else>
@@ -198,30 +198,30 @@ export default {
                                 class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-normal leading-4 text-black text-base">
                                 {{ data.no }}
                             </td>
-                            <td class="px-3 py-4 min-w-[200px] max-w-[251px]">
+                            <td class="td-general">
                                 <div class="flex items-center">
                                     <div>
-                                        <div class="font-poppins font-normal leading-4 text-black text-base">
+                                        <div class="td-text-general">
                                             {{ data.Name }}
                                         </div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-3 py-4 min-w-[250px] max-w-[301px]">
-                                <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.Email }}</p>
+                            <td class="td-general">
+                                <p class="td-text-general">{{ data.Email }}</p>
                             </td>
-                            <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                                <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.PhoneNumber }}
+                            <td class="td-general">
+                                <p class="td-text-general">{{ data.PhoneNumber }}
                                 </p>
                             </td>
-                            <td class="px-3 py-4 min-w-[250px] max-w-[251px]">
-                                <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.Data }}</p>
+                            <td class="td-general">
+                                <p class="td-text-general">{{ data.Data }}</p>
                             </td>
-                            <td class="px-3 py-4 min-w-[250px] max-w-[251px]">
-                                <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.Notes }}</p>
+                            <td class="td-general">
+                                <p class="td-text-general">{{ data.Notes }}</p>
                             </td>
-                            <td class="px-3 py-4 min-w-[250px] max-w-[251px]">
-                                <p class="font-poppins font-normal leading-4 text-black text-base">{{ formatDate(data.Date)
+                            <td class="td-general">
+                                <p class="td-text-general">{{ formatDate(data.Date)
                                 }}</p>
                             </td>
                         </tr>
