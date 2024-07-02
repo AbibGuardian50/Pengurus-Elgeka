@@ -12,8 +12,8 @@ export default {
     data() {
         return {
             loaded: false,
-            DataLabBcrAbl: null,
-            DataLabBcrAblDataDia: null,
+            DataLabSystole: { labels: [], datasets: [] },
+            DataLabDiastole: { labels: [], datasets: [] },
             HasilLabBloodPressureOptions: this.getChartOptions(),
         }
     },
@@ -38,50 +38,67 @@ export default {
                 if (response.data.Message === "Success to Get Blood Pressure Data") {
                     toast.success('Data Hasil Lab Blood Pressure Berhasil Dimuat');
                 }
-                const responseData = response.data.Data;
+                const responseData = response.data.Data || [];
 
-                const DataLabBcrAblCountsDataSys = {};
-                responseData.forEach(item => {
-                    const dataValue = item.DataSys.toString();
-                    if (DataLabBcrAblCountsDataSys[dataValue]) {
-                        DataLabBcrAblCountsDataSys[dataValue]++;
-                    } else {
-                        DataLabBcrAblCountsDataSys[dataValue] = 1;
-                    }
-                });
-
-                const DataLabBcrAblCountsDataDia = {};
-                responseData.forEach(item => {
-                    const dataValue = item.DataDia.toString();
-                    if (DataLabBcrAblCountsDataDia[dataValue]) {
-                        DataLabBcrAblCountsDataDia[dataValue]++;
-                    } else {
-                        DataLabBcrAblCountsDataDia[dataValue] = 1;
-                    }
-                });
-
-                const chartDataDia = {
-                    labels: Object.keys(DataLabBcrAblCountsDataDia),
-                    datasets: [{
-                        label: 'Data Dia',
-                        backgroundColor: '#0A6B77',
-                        borderWidth: 1,
-                        data: Object.values(DataLabBcrAblCountsDataDia),
-                    }],
+                const DataLabSystoleCounts = {
+                    '< 90': 0,
+                    '90 - 120': 0,
+                    '> 120': 0
                 };
-                this.DataLabBcrAblDataDia = chartDataDia;
+                const DataLabDiastoleCounts = {
+                    '< 60': 0,
+                    '60 - 80': 0,
+                    '> 80': 0
+                };
+
+                responseData.forEach(item => {
+                    if (item.DataSys < 90) {
+                        DataLabSystoleCounts['< 90']++;
+                    } else if (item.DataSys <= 120) {
+                        DataLabSystoleCounts['90 - 120']++;
+                    } else {
+                        DataLabSystoleCounts['> 120']++;
+                    }
+
+                    if (item.DataDia < 60) {
+                        DataLabDiastoleCounts['< 60']++;
+                    } else if (item.DataDia <= 80) {
+                        DataLabDiastoleCounts['60 - 80']++;
+                    } else {
+                        DataLabDiastoleCounts['> 80']++;
+                    }
+                });
 
                 const chartDataSys = {
-                    labels: Object.keys(DataLabBcrAblCountsDataSys),
+                    labels: Object.keys(DataLabSystoleCounts),
                     datasets: [{
                         label: 'Data Sys',
-                        backgroundColor: '#0A6B77',
+                        backgroundColor: [
+                        '#FFD700', // kuning untuk < 0.001
+                        '#008000', // hijau untuk 0.001 - 10
+                        '#FF0000'  // merah untuk > 10
+                    ],
                         borderWidth: 1,
-                        data: Object.values(DataLabBcrAblCountsDataSys),
+                        data: Object.values(DataLabSystoleCounts),
                     }],
                 };
+                this.DataLabSystole = chartDataSys;
 
-                this.DataLabBcrAbl = chartDataSys;
+                const chartDataDia = {
+                    labels: Object.keys(DataLabDiastoleCounts),
+                    datasets: [{
+                        label: 'Data Dia',
+                        backgroundColor: [
+                        '#FFD700', // kuning untuk < 0.001
+                        '#008000', // hijau untuk 0.001 - 10
+                        '#FF0000'  // merah untuk > 10
+                    ],
+                        borderWidth: 1,
+                        data: Object.values(DataLabDiastoleCounts),
+                    }],
+                };
+                this.DataLabDiastole = chartDataDia;
+
                 this.loaded = true;
                 this.updateChartFontSize();
             } catch (error) {
@@ -172,7 +189,6 @@ export default {
 }
 </script>
 
-
 <template>
     <div class="flex bg-offwhite">
         <Sidebar class="flex-shrink-0 w-full md:w-1/4 lg:w-1/5 bg-white" />
@@ -184,8 +200,8 @@ export default {
                             class="font-assistant text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
                             GRAFIK DATA TEKANAN DARAH (DataSys)
                         </p>
-                        <Bar v-if="loaded" :data="DataLabBcrAbl" :options="HasilLabBloodPressureOptions"
-                            class="w-full h-96 md:h-[450px] lg:h-[550px] text-white ml-8" />
+                        <Bar v-if="loaded" :data="DataLabSystole" :options="HasilLabBloodPressureOptions"
+                            class="w-full h-96 md:h-[450px] lg:h-[550px] text-white sm:ml-2" />
                     </div>
 
                     <div class="bg-white w-full">
@@ -193,13 +209,13 @@ export default {
                             class="font-assistant text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
                             GRAFIK DATA TEKANAN DARAH (DataDia)
                         </p>
-                        <Bar v-if="loaded" :data="DataLabBcrAblDataDia" :options="HasilLabBloodPressureOptions"
-                            class="w-full h-96 md:h-[450px] lg:h-[550px] text-white ml-8" />
+                        <Bar v-if="loaded" :data="DataLabDiastole" :options="HasilLabBloodPressureOptions"
+                            class="w-full h-96 md:h-[450px] lg:h-[550px] text-white sm:ml-2" />
                     </div>
                 </div>
 
                 <div
-                    class="flex flex-col justify-between p-4 bg-work bg-no-repeat bg-center bg-cover rounded-md w-full md:w-1/4 lg:w-1/5 min-h-[700px] max-md:min-h-[200px] max-h-[1000px]">
+                    class="flex flex-col justify-between p-4 bg-work bg-no-repeat bg-center bg-cover rounded-md w-full md:w-1/4 lg:w-1/5 min-h-full max-md:min-h-[200px] max-h-[1000px]">
                     <div class="flex flex-col gap-4">
                         <p class="pt-8 font-opensans text-white font-bold text-sm sm:text-base md:text-lg">DATA BLOOD
                             PRESSURE KESELURUHAN</p>
@@ -217,10 +233,10 @@ export default {
                                         fill="white" />
                                 </svg>
                             </button>
-                    </a>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div></template>
-
+</template>

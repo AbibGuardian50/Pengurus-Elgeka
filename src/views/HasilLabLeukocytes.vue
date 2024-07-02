@@ -27,34 +27,19 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data
             const DataLabLeukocytesCounts = {
-                '9.500 - 10.500': 0,
-                '8.500 - 9.500': 0,
-                '7.500 - 8.500': 0,
-                '6.500 - 7.500': 0,
-                '5.500 - 6.500': 0,
-                '4.500 - 5.500': 0,
-                '3.500 - 4.500': 0,
                 '< 3500': 0,
+                '3.500 - 10.500': 0,
+                '> 10.500': 0,
             };
             responseData.forEach(item => {
                 const DataLabLeukocytes = item.Data;
                 if (DataLabLeukocytes !== 0 && DataLabLeukocytes !== null) {
                     if (DataLabLeukocytes < 3500) {
                         DataLabLeukocytesCounts['< 3500']++;
-                    } else if (DataLabLeukocytes <= 4500) {
-                        DataLabLeukocytesCounts['3.500 - 4.500']++;
-                    } else if (DataLabLeukocytes <= 5500) {
-                        DataLabLeukocytesCounts['4.500 - 5.500']++;
-                    } else if (DataLabLeukocytes <= 6500) {
-                        DataLabLeukocytesCounts['5.500 - 6.500']++;
-                    } else if (DataLabLeukocytes <= 7500) {
-                        DataLabLeukocytesCounts['6.500 - 7.500']++;
-                    } else if (DataLabLeukocytes <= 8500) {
-                        DataLabLeukocytesCounts['7.500 - 8.500']++;
                     } else if (DataLabLeukocytes <= 9500) {
-                        DataLabLeukocytesCounts['8.500 - 9.500']++;
+                        DataLabLeukocytesCounts['3.500 - 10.500']++;
                     } else if (DataLabLeukocytes <= 10500) {
-                        DataLabLeukocytesCounts['9.500 - 10.500']++;
+                        DataLabLeukocytesCounts['> 10.500']++;
                     }
                 }
             });
@@ -64,7 +49,11 @@ export default {
                 labels: Object.keys(DataLabLeukocytesCounts),
                 datasets: [{
                     label: 'Jumlah Orang',
-                    backgroundColor: '#0A6B77',
+                    backgroundColor: [
+                        '#FFD700', // kuning untuk < 0.001
+                        '#008000', // hijau untuk 0.001 - 10
+                        '#FF0000'  // merah untuk > 10
+                    ],
                     borderWidth: 1,
                     data: Object.values(DataLabLeukocytesCounts),
                 }],
@@ -151,7 +140,7 @@ export default {
 </script>
 
 <template>
-    <div class="flex bg-offwhite">
+    <div class="flex bg-offwhite h-screen">
         <Sidebar />
 
         <div class="flex flex-col gap-4 pt-4 pl-4 w-full">

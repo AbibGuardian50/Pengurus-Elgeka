@@ -32,34 +32,19 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data
             const DataLabPotentialHydrogenCounts = {
-                '14': 0,
-                '11-13': 0,
-                '9-11': 0,
-                '7-9': 0,
-                '5-7': 0,
-                '3-5': 0,
-                '1-3': 0,
-                '< 1': 0,
+                '< 7.35': 0,
+                '7.35 - 7.45': 0,
+                '> 7.45': 0,
             };
             responseData.forEach(item => {
                 const DataLabPotentialHydrogen = item.Data;
                 if (DataLabPotentialHydrogen !== 0 && DataLabPotentialHydrogen !== null) {
-                    if (DataLabPotentialHydrogen < 1) {
-                        DataLabPotentialHydrogenCounts['< 1']++;
-                    } else if (DataLabPotentialHydrogen <= 3) {
-                        DataLabPotentialHydrogenCounts['1-3']++;
-                    } else if (DataLabPotentialHydrogen <= 5) {
-                        DataLabPotentialHydrogenCounts['3-5']++;
-                    } else if (DataLabPotentialHydrogen <= 7) {
-                        DataLabPotentialHydrogenCounts['5-7']++;
-                    } else if (DataLabPotentialHydrogen <= 9) {
-                        DataLabPotentialHydrogenCounts['7-9']++;
-                    } else if (DataLabPotentialHydrogen <= 11) {
-                        DataLabPotentialHydrogenCounts['9-11']++;
-                    } else if (DataLabPotentialHydrogen <= 13) {
-                        DataLabPotentialHydrogenCounts['11-13']++;
-                    } else if (DataLabPotentialHydrogen <= 14) {
-                        DataLabPotentialHydrogenCounts['14']++;
+                    if (DataLabPotentialHydrogen < 7.35) {
+                        DataLabPotentialHydrogenCounts['< 7.35']++;
+                    } else if (DataLabPotentialHydrogen <= 7.45) {
+                        DataLabPotentialHydrogenCounts['7.35 - 7.45']++;
+                    } else if (DataLabPotentialHydrogen > 7.45) {
+                        DataLabPotentialHydrogenCounts['> 7.45']++;
                     }
                 }
             });
@@ -69,7 +54,11 @@ export default {
                 labels: Object.keys(DataLabPotentialHydrogenCounts),
                 datasets: [{
                     label: 'Jumlah Orang',
-                    backgroundColor: '#0A6B77',
+                    backgroundColor: [
+                        '#FFD700',
+                        '#008000',
+                        '#FF0000'  
+                    ],
                     borderWidth: 1,
                     data: Object.values(DataLabPotentialHydrogenCounts),
                 }],
@@ -156,7 +145,7 @@ export default {
 </script>
 
 <template>
-    <div class="flex bg-offwhite">
+    <div class="flex bg-offwhite h-screen">
         <Sidebar />
 
         <div class="flex flex-col gap-4 pt-4 pl-4 w-full">
@@ -192,5 +181,6 @@ export default {
                     </div>
                 </div>
             </div>
+        </div>
     </div>
-</div></template>
+</template>

@@ -26,29 +26,20 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data
             const DataLabHemoglobinCounts = {
-                '9 <': 0,
-                '9-11': 0,
-                '11-13': 0,
-                '13-15': 0,
-                '15-17': 0,
-                '17 >': 0,
+                '< 12': 0,
+                '12 - 17': 0,
+                '> 17': 0,
             };
             responseData.forEach(item => {
                 const DataLabHemoglobin = item.Data;
                 if (DataLabHemoglobin !== 0 && DataLabHemoglobin !== null) {
-                    if (DataLabHemoglobin < 9) {
-                        DataLabHemoglobinCounts['9 <']++;
-                    } else if (DataLabHemoglobin <= 11) {
-                        DataLabHemoglobinCounts['9-11']++;
-                    } else if (DataLabHemoglobin <= 13) {
-                        DataLabHemoglobinCounts['11-13']++;
-                    } else if (DataLabHemoglobin <= 15) {
-                        DataLabHemoglobinCounts['13-15']++;
+                    if (DataLabHemoglobin < 12) {
+                        DataLabHemoglobinCounts['< 12']++;
                     } else if (DataLabHemoglobin <= 17) {
-                        DataLabHemoglobinCounts['15-17']++;
+                        DataLabHemoglobinCounts['12 - 17']++;
                     } else if (DataLabHemoglobin > 17) {
-                        DataLabHemoglobinCounts['17 >']++;
-                    }
+                        DataLabHemoglobinCounts['> 17']++;
+                    } 
                 }
             });
 
@@ -57,7 +48,11 @@ export default {
                 labels: Object.keys(DataLabHemoglobinCounts),
                 datasets: [{
                     label: 'Jumlah Orang',
-                    backgroundColor: '#0A6B77',
+                    backgroundColor: [
+                        '#FFD700', 
+                        '#008000', 
+                        '#FF0000' 
+                    ],
                     borderWidth: 1,
                     data: Object.values(DataLabHemoglobinCounts),
                 }],
@@ -144,7 +139,7 @@ export default {
 </script>
 
 <template>
-    <div class="flex bg-offwhite">
+    <div class="flex bg-offwhite h-screen">
         <Sidebar />
 
         <div class="flex flex-col gap-4 pt-4 pl-4 w-full">

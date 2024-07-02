@@ -79,6 +79,11 @@ const routes = [
     component: () => import('../views/DataKesehatan.vue')
   },
   {
+    path: '/DataObatPengurus',
+    name: 'DataObatPengurus',
+    component: () => import('../views/DataObatPengurus.vue')
+  },
+  {
     path: '/DataRumahSakit',
     name: 'DataRumahSakit',
     component: () => import('../views/DataRumahSakit.vue')
@@ -92,6 +97,11 @@ const routes = [
     path: '/editpengurus/:id',
     name: 'EditPengurus',
     component: () => import('../views/EditPengurus.vue')
+  },
+  {
+    path: '/EditDataObatPengurus/:id',
+    name: 'EditDataObatPengurus',
+    component: () => import('../views/EditDataObatPengurus.vue')
   },
   {
     path: '/EditDataRumahSakit/:id',

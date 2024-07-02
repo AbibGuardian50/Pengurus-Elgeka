@@ -27,31 +27,19 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data
             const DataLabHeartRateCounts = {
-                '60-80': 0,
-                '81-100': 0,
-                '101-120': 0,
-                '121-140': 0,
-                '141-160': 0,
-                '161-180': 0,
-                '180 >': 0,
+                '< 60': 0,
+                '60 - 100': 0,
+                '> 100': 0,
             };
             responseData.forEach(item => {
                 const DataLabHeartRate = item.Data;
                 if (DataLabHeartRate !== 0 && DataLabHeartRate !== null) {
-                    if (DataLabHeartRate < 80) {
-                        DataLabHeartRateCounts['60-80']++;
+                    if (DataLabHeartRate < 60) {
+                        DataLabHeartRateCounts['< 60']++;
                     } else if (DataLabHeartRate <= 100) {
-                        DataLabHeartRateCounts['81-100']++;
-                    } else if (DataLabHeartRate <= 120) {
-                        DataLabHeartRateCounts['101-120']++;
-                    } else if (DataLabHeartRate <= 140) {
-                        DataLabHeartRateCounts['121-140']++;
-                    } else if (DataLabHeartRate <= 160) {
-                        DataLabHeartRateCounts['141-160']++;
-                    } else if (DataLabHeartRate <= 180) {
-                        DataLabHeartRateCounts['161-180']++;
-                    } else if (DataLabHeartRate > 180) {
-                        DataLabHeartRateCounts['180 >']++;
+                        DataLabHeartRateCounts['60 - 100']++;
+                    } else if (DataLabHeartRate > 100) {
+                        DataLabHeartRateCounts['> 100']++;
                     }
                 }
             });
@@ -61,7 +49,11 @@ export default {
                 labels: Object.keys(DataLabHeartRateCounts),
                 datasets: [{
                     label: 'Jumlah Orang',
-                    backgroundColor: '#0A6B77',
+                    backgroundColor: [
+                        '#FFD700', 
+                        '#008000',
+                        '#FF0000'  
+                    ],
                     borderWidth: 1,
                     data: Object.values(DataLabHeartRateCounts),
                 }],

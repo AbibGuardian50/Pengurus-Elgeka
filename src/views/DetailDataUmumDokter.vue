@@ -230,7 +230,7 @@ export default {
                                 Email
                             </th>
                             <th scope="col" class="th-general max-lg:px-1">
-                                Poli
+                                Spesialis
                             </th>
 
                             <th scope="col" class="th-general max-lg:px-1">
@@ -246,8 +246,7 @@ export default {
                     <tbody>
                         <tr v-for="(data, index) in paginatedInfoPatient" :key="data.ID"
                             class="bg-offwhite divide-y divide-gray-200">
-                            <td
-                                class="td-general">
+                            <td class="td-general">
                                 {{ data.no }}
                             </td>
                             <td class="td-general">
@@ -274,7 +273,23 @@ export default {
                             </td>
 
                             <td class="td-general">
-                                <p class="td-text-general">{{ data.PolyName }}</p>
+                                <div class="relative">
+                                    <button
+                                        class="flex max-lg:gap-0 max-lg:px-0 gap-2 bg-teal items-center justify-between py-2 px-1 rounded-md">
+                                        <span class="flex gap-2">
+                                            <span
+                                                class="w-full focus:bg-teal px-4 focus:text-black text-white font-semibold font-poppins">
+                                                {{ data.Specialist }}
+                                            </span>
+                                        </span>
+                                        <svg width="25" height="24" viewBox="0 0 25 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M18.75 10L13.2366 15.2929C12.8298 15.6834 12.1702 15.6834 11.7634 15.2929L6.25 10"
+                                                stroke="white" stroke-width="2" stroke-linecap="round" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </td>
 
                             <td class="td-general">

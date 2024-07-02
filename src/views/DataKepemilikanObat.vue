@@ -77,7 +77,7 @@ export default {
                         },
                         title: {
                             display: true,
-                            text: 'Nama Obat',
+                            text: 'Jumlah',
                             font: {
                                 size: fontSize + 2,
                                 weight: 'bold'
@@ -93,7 +93,7 @@ export default {
                         },
                         title: {
                             display: true,
-                            text: 'Jumlah',
+                            text: 'Nama Obat',
                             font: {
                                 size: fontSize + 2,
                                 weight: 'bold'

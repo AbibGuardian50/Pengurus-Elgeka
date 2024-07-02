@@ -84,19 +84,19 @@ export default {
             this.doctorCount = HospitalPerDoctorCount;
             this.TotalHospitalDoctor = responseListDoctor.length;
 
-            const PoliPerDoctorCount = {};
+            const SpecialistDoctorCount = {};
             responseListDoctor.forEach(doctor => {
-                const polyName = doctor.PolyName;
-                if (PoliPerDoctorCount[polyName]) {
-                    PoliPerDoctorCount[polyName]++;
+                const Specialist = doctor.Specialist;
+                if (SpecialistDoctorCount[Specialist]) {
+                    SpecialistDoctorCount[Specialist]++;
                 } else {
-                    PoliPerDoctorCount[polyName] = 1;
+                    SpecialistDoctorCount[Specialist] = 1;
                 }
             });
-            const labelspoli = Object.keys(PoliPerDoctorCount);
-            const datapoli = Object.values(PoliPerDoctorCount);
+            const labelspoli = Object.keys(SpecialistDoctorCount);
+            const datapoli = Object.values(SpecialistDoctorCount);
 
-            this.PoliPerDoctorData = {
+            this.SpecialistPerDoctorData = {
                 labels: labelspoli,
                 datasets: [
                     {
@@ -107,7 +107,7 @@ export default {
                 ]
             };
             this.loaded = true;
-            this.poliCount = PoliPerDoctorCount;
+            this.SpecialistCount = SpecialistDoctorCount;
             this.TotalPoliDoctor = responseListDoctor.length;
 
         } catch (error) {
@@ -131,9 +131,9 @@ export default {
             DataDoctorGeneral: [],
             TotalPatientDoctorGeneral: [],
             HospitalPerDoctorData: [],
-            PoliPerDoctorData: [],
+            SpecialistPerDoctorData: [],
             HospitalPerDoctorCount: {},
-            PoliPerDoctorCount: {},
+            SpecialistDoctorCount: {},
             TotalHospitalDoctor: 0,
             TotalPoliDoctor: 0,
             TotalDoctorOptions: {
@@ -249,7 +249,7 @@ export default {
                     }
                 }
             },
-            PoliDoctorOptions: {
+            SpecialistDoctorOptions: {
                 scales: {
                     x: {
                         ticks: {
@@ -366,8 +366,8 @@ export default {
                         <Bar :data="HospitalPerDoctorData" :options="HospitalOptions"></Bar>
                     </div>
                     <div class="bg-white max-sm:text-[16px] max-sm:text-center min-w-[50%] max-[1000px]:max-w-[50%] max-md:min-w-[100%] shadow-md rounded-lg p-6 max-sm:p-1 mb-8">
-                        <h2 class="sm:text-2xl font-bold mb-4">Grafik Jumlah Dokter per Poli</h2>
-                        <Bar :data="PoliPerDoctorData" :options="PoliDoctorOptions"></Bar>
+                        <h2 class="sm:text-2xl font-bold mb-4">Grafik Jumlah Dokter per Spesialis</h2>
+                        <Bar :data="SpecialistPerDoctorData" :options="SpecialistDoctorOptions"></Bar>
                     </div>
                 </div>
 

@@ -31,8 +31,7 @@ export default {
 <template>
     <!-- > 768 px screen and laptop screen -->
     <div class="flex max-[520px]:max-w-[230px] max-[520px]:min-w-[25%] max-md:hidden">
-        <div
-            class="bg-teal flex flex-col items-center pt-8 md:w-full max-[520px]:min-w-[70px] min-w-[70px] h-full">
+        <div class="bg-teal flex flex-col items-center pt-8 md:w-full max-[520px]:min-w-[70px] min-w-[70px] h-full">
             <div class="flex flex-col items-center">
                 <img class="mb-8 rounded-md flex items-center justify-center max-md:w-[60px] max-md:h-[60px]"
                     src="../assets/logoElgekaPutih1.png" alt="">
@@ -42,8 +41,8 @@ export default {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
                 <div class="flex flex-col items-start ml-4 mr-32 max-[420px]:mr-4 max-[420px]:text-[14px] max-[420px]:mt-4">
-                    <p class="text-left font-poppins font-semibold  text-white mr-12 hidden min-[965px]:block"
-                        id="menu">General</p>
+                    <p class="text-left font-poppins font-semibold  text-white mr-12 hidden min-[965px]:block" id="menu">
+                        General</p>
                 </div>
 
                 <div class="hidden min-[965px]:block" id="menu-sidebar">
@@ -151,6 +150,12 @@ export default {
                                 </details>
                             </li>
                         </ul>
+
+                        <router-link to="/DataObatPengurus">
+                            <button
+                                class="focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Data
+                                Obat(Pengurus)</button>
+                        </router-link>
 
                         <router-link to="/DataKepemilikanObat">
                             <button
@@ -332,6 +337,12 @@ export default {
                                                 </details>
                                             </li>
                                         </ul>
+
+                                        <router-link to="/DataObat">
+                                            <button
+                                                class="focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Data
+                                                Obat(Pengurus)</button>
+                                        </router-link>
 
                                         <router-link to="/DataKepemilikanObat">
                                             <button

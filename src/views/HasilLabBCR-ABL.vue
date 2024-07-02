@@ -27,25 +27,19 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data
             const DataLabBcrAblCounts = {
-                '1-10': 0,
-                '0.1-1': 0,
-                '0.01-0.1': 0,
-                '0.001-0.0032': 0,
-                '< 0.0032': 0
+                '< 0.001': 0,
+                '0.001 - 10': 0,
+                '> 10': 0,
             };
             responseData.forEach(item => {
                 const DataLabBCR = item.Data;
                 if (DataLabBCR !== 0 && DataLabBCR !== null) {
-                    if (DataLabBCR <= 10) {
-                        DataLabBcrAblCounts['1-10']++;
-                    } else if (DataLabBCR <= 1) {
-                        DataLabBcrAblCounts['0.1-1']++;
-                    } else if (DataLabBCR <= 0.1) {
-                        DataLabBcrAblCounts['0.01-0.1']++;
+                    if (DataLabBCR > 10) {
+                        DataLabBcrAblCounts['> 10']++;
+                    } else if (DataLabBCR <= 10) {
+                        DataLabBcrAblCounts['0.001 - 10']++;
                     } else if (DataLabBCR <= 0.001) {
-                        DataLabBcrAblCounts['0.001-0.0032']++;
-                    } else if (DataLabBCR <= 0.0032) {
-                        DataLabBcrAblCounts['< 0.0032']++;
+                        DataLabBcrAblCounts['< 0.001']++;
                     }
                 }
             });
@@ -55,7 +49,11 @@ export default {
                 labels: Object.keys(DataLabBcrAblCounts),
                 datasets: [{
                     label: 'Jumlah Orang',
-                    backgroundColor: '#0A6B77',
+                    backgroundColor: [
+                        '#FFD700', 
+                        '#008000',
+                        '#FF0000'  
+                    ],
                     borderWidth: 1,
                     data: Object.values(DataLabBcrAblCounts),
                 }],
@@ -67,6 +65,8 @@ export default {
             const toast = useToast()
             if (error.message === "Request failed with status code 401") {
                 toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+            } else {
+                toast.error('Sedang ada gangguan, Mohon coba lagi')
             }
             console.error(error);
         }
@@ -142,17 +142,16 @@ export default {
 </script>
 
 <template>
-    <div class="flex bg-offwhite">
+    <div class="flex bg-offwhite h-screen">
         <Sidebar />
 
-        <div class="flex flex-col gap-4 pt-4 pl-4 w-full">
+        <div class="flex flex-col gap-4 pt-4 pl-4 w-[90%]">
             <div class="flex flex-col md:flex-row gap-4 items-center">
                 <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 w-full md:w-2/3">
                     <p
                         class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
                         GRAFIK DATA BCR-ABL</p>
-                    <Bar v-if="loaded" :data="DataLabBcrAbl" :options="HasilLabBCRABLOptions"
-                        class="w-full h-64 md:h-96" />
+                    <Bar v-if="loaded" :data="DataLabBcrAbl" :options="HasilLabBCRABLOptions" class="w-full h-64 md:h-96" />
                 </div>
 
                 <div
@@ -177,4 +176,5 @@ export default {
                 </div>
             </div>
         </div>
-</div></template>
+    </div>
+</template>
