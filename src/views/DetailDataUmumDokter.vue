@@ -63,12 +63,10 @@ export default {
                 try {
                     const tokenlogin = VueCookies.get('TokenAuthorization');
                     console.log('Token:', tokenlogin); // Log token untuk debugging
-
                     if (!tokenlogin) {
                         toast.error('Token tidak ditemukan, mohon login kembali');
                         return;
                     }
-
                     const url = `https://elgeka-mobile-production.up.railway.app/api/doctor/deactivate/account/website/${id}`;
                     const response = await axios.post(url, null, {
                         headers: {
@@ -76,7 +74,6 @@ export default {
                         }
                     });
                     console.log(response);
-
                     if (response.data.Message === "Success to Deactivate Doctor Account") {
                         toast.success('Dokter berhasil dinonaktifkan');
                         setTimeout(() => {
@@ -85,7 +82,6 @@ export default {
                     } else {
                         toast.error('Gagal menonaktifkan dokter, coba lagi nanti');
                     }
-
                 } catch (error) {
                     toast.error('Terdapat kesalahan, mohon coba lagi');
                     console.error(error);
@@ -319,10 +315,6 @@ export default {
                 </table>
             </div>
 
-
-
-
-
             <!-- Pagination navigation -->
             <div class="flex justify-center mt-8">
                 <button @click="prevPage" :disabled="currentPage === 1"
@@ -333,7 +325,6 @@ export default {
                 <button @click="nextPage" :disabled="currentPage === totalPages"
                     class="px-4 py-2 bg-teal text-white font-poppins font-normal rounded-md">Next</button>
             </div>
-
 
         </div>
     </div>

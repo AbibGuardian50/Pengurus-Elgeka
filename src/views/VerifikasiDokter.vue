@@ -250,17 +250,17 @@ export default {
                         </td>
                         <td class="td-general">
                             <div>
-                                <p class="bg-teal pl-2 max-sm:pr-2 py-2 rounded-lg text-white font-poppins">
+                                <button @click="editstatusdoctor(data.ID)" class="py-1 px-8 rounded-[5px] bg-teal font-poppins font-bold text-base text-white">
                                     Not Verified
-                                </p>
+                                </button>
                             </div>
                         </td>
-                        <td class="px-3 py-4 whitespace-nowrap  text-sm font-medium">
+                        <!-- <td class="px-3 py-4 whitespace-nowrap  text-sm font-medium">
                             <a @click="editstatusdoctor(data.ID)">
                                 <button
                                     class="py-1 px-8 rounded-[5px] bg-teal font-inter font-bold text-base text-white">Edit</button>
                             </a>
-                        </td>
+                        </td> -->
                     </tr>
                 </tbody>
             </table>

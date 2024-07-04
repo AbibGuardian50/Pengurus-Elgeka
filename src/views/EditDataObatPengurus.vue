@@ -130,7 +130,7 @@ export default {
                             type="submit">
                             Simpan
                         </button>
-                        <router-link to="/DataObatPengurus">
+                        <router-link to="/dataobat">
                             <button
                                 class="text-teal bg-white border active:bg-teal-600 font-bold uppercase text-sm px-6 py-3 md:px-10 md:py-4 lg:px-12 lg:py-4 rounded outline-none focus:outline-none mr-1 mb-1"
                                 type="button">

@@ -37,7 +37,7 @@ export default {
             if (error.message === "Request failed with status code 401") {
                 toast.error('Error code 401, Mohon untuk logout lalu login kembali');
             } else {
-                toast.error ('Sedang terjadi gangguan, mohon coba lagi')
+                toast.error('Sedang terjadi gangguan, mohon coba lagi')
             }
             console.error(error);
         }
@@ -54,13 +54,15 @@ export default {
                 kategori: '',
             },
             showcreatemedicine: false,
-            perPage: 10, // Number of items per page
-            currentPage: 1, // Current page
-            totalPages: 0, // Total pages
+            showEditMedicine: false,
+            editMedicineId: null,
+            perPage: 10,
+            currentPage: 1,
+            totalPages: 0,
             paginatedDataMedicine: [],
-            DataMedicine: [], // Paginated data
-            sortColumn: 'no', // Column to sort by
-            sortDirection: 'asc' // Sort direction
+            DataMedicine: [],
+            sortColumn: 'no',
+            sortDirection: 'asc'
         }
     },
     methods: {
@@ -101,8 +103,42 @@ export default {
                     });
             }
         },
+        editmedicine() {
+            const toast = useToast();
+            const tokenlogin = VueCookies.get('TokenAuthorization');
+            const url = `https://elgeka-web-api-production.up.railway.app/api/v1/dataObat/${this.editMedicineId}`;
+            const dataToSend = {
+                ...this.form,
+                list_dosis: this.form.list_dosis.join(', ')
+            };
+            axios.patch(url, dataToSend, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
+                .then(response => {
+                    console.log(response);
+                    if (response.data.message === "Update Data Obat by ID Successfully") {
+                        toast.success('Data Obat Berhasil Diperbarui');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    }
+                })
+                .catch(error => {
+                    toast.error('Terdapat kesalahan pada sistem, mohon coba lagi');
+                    console.log(error);
+                });
+        },
         toggleModalCreateMedicine() {
             this.showcreatemedicine = !this.showcreatemedicine;
+        },
+        toggleModalEditMedicine(medicine) {
+            this.showEditMedicine = !this.showEditMedicine;
+            if (medicine) {
+                this.editMedicineId = medicine.id;
+                this.form = {
+                    nama_obat: medicine.nama_obat,
+                    list_dosis: medicine.list_dosis.split(', '),
+                    kategori: medicine.kategori,
+                };
+            }
         },
         addDosisInput() {
             this.form.list_dosis.push('');
@@ -183,8 +219,7 @@ export default {
                 <table class="min-w-full divide-y divide-gray-200 overflow-x-auto">
                     <thead>
                         <tr class="border-b-[0.5px] border-b-teal">
-                            <th scope="col"
-                                class="th-general max-lg:pl-1 flex items-center cursor-pointer"
+                            <th scope="col" class="th-general max-lg:pl-1 flex items-center cursor-pointer"
                                 @click="sortNoColumn">
                                 No
                                 <span v-if="sortOrder === 'asc'">
@@ -218,7 +253,7 @@ export default {
                         </tr>
                     </thead>
 
-                    <tbody v-for="(data, index) in DataMedicine" :key="index" class="divide-y divide-gray-200">
+                    <tbody v-for="(data, index) in paginatedDataMedicine" :key="index" class="divide-y divide-gray-200">
                         <tr>
                             <td class="td-general td-text-general">
                                 {{ data.no }}
@@ -240,7 +275,7 @@ export default {
                             </td>
                             <td
                                 class="px-3 max-[1075px]:px-2 py-4 flex flex-col gap-2 justify-center items-center whitespace-nowrap text-sm font-medium">
-                                <a :href="'EditDataObatPengurus/' + data.id">
+                                <a @click="toggleModalEditMedicine(data)">
                                     <button
                                         class="py-1 px-8 max-[1075px]:px-0 rounded-[5px] w-[110px] bg-white font-bold text-base text-teal shadow-s">Edit</button>
                                 </a>
@@ -249,6 +284,7 @@ export default {
                             </td>
                         </tr>
                     </tbody>
+
                 </table>
             </div>
 
@@ -270,8 +306,8 @@ export default {
                     <form @submit.prevent="createmedicine">
                         <div class="mb-4">
                             <label for="nama_obat" class="block text-gray-700">Nama Obat:</label>
-                            <input type="text" v-model="form.nama_obat" id="nama_obat" placeholder="Nama obat, misal Parasetamol"
-                                class="w-full px-3 py-2 border rounded">
+                            <input type="text" v-model="form.nama_obat" id="nama_obat"
+                                placeholder="Nama obat, misal Parasetamol" class="w-full px-3 py-2 border rounded">
                         </div>
 
                         <div class="mb-4">
@@ -286,7 +322,8 @@ export default {
                         <div class="mb-4">
                             <label class="block text-gray-700">Dosis:</label>
                             <div v-for="(dosis, index) in form.list_dosis" :key="index" class="flex items-center mb-2">
-                                <input type="text" v-model="form.list_dosis[index]" placeholder="Isi dosis obat, contoh : 300MG"
+                                <input type="text" v-model="form.list_dosis[index]"
+                                    placeholder="Isi dosis obat, contoh : 300MG"
                                     class="w-full px-3 py-2 border rounded mr-2">
                                 <button type="button" @click="removeDosisInput(index)"
                                     class="bg-teal text-white px-3 py-2 rounded">Hapus</button>
@@ -303,6 +340,47 @@ export default {
                     </form>
                 </div>
             </div>
+
+            <!-- Edit Medicine Modal -->
+            <div v-if="showEditMedicine" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+                    <h2 class="text-xl font-bold mb-4 text-teal">Edit Obat</h2>
+                    <form @submit.prevent="editmedicine">
+                        <div class="mb-4">
+                            <label for="nama_obat" class="block text-gray-700">Nama Obat:</label>
+                            <input type="text" v-model="form.nama_obat" id="nama_obat"
+                                class="w-full px-3 py-2 border rounded" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700">Dosis:</label>
+                            <div v-for="(dosis, index) in form.list_dosis" :key="index" class="flex items-center mb-2">
+                                <input type="text" v-model="form.list_dosis[index]"
+                                    class="w-full px-3 py-2 border rounded mr-2" required>
+                                <button type="button" @click="removeDosisInput(index)"
+                                    class="bg-red-500 text-white px-3 py-2 rounded">Hapus</button>
+                            </div>
+                            <button type="button" @click="addDosisInput" class="bg-teal text-white px-4 py-2 rounded">Tambah
+                                Dosis</button>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="kategori" class="block text-gray-700">Kategori:</label>
+                            <select v-model="form.kategori" class="w-full px-3 py-2 border rounded" required>
+                                <option value="CML">CML</option>
+                                <option value="Pendukung">Pendukung</option>
+                            </select>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="button" @click="toggleModalEditMedicine"
+                                class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Batal</button>
+                            <button type="submit" class="bg-teal text-white px-4 py-2 rounded">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
 </template>

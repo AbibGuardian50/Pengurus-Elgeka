@@ -56,6 +56,46 @@ export default {
                                             class="flex gap-2 hover:text-midnightshadow hover:bg-white focus:text-midnightshadow">
                                             <span
                                                 class="w-full hover:text-midnightshadow focus:text-midnightshadow focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter">
+                                                Data General
+                                            </span>
+                                        </span>
+                                        <svg width="25" height="24" viewBox="0 0 25 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M18.75 10L13.2366 15.2929C12.8298 15.6834 12.1702 15.6834 11.7634 15.2929L6.25 10"
+                                                stroke="white" stroke-width="2" stroke-linecap="round" />
+                                        </svg>
+
+                                    </summary>
+                                    <article class="px-4 pb-4 bg-whisperingsilver rounded-lg">
+                                        <ul class="flex flex-col gap-4 pl-2 mt-4 pt-2">
+                                            <li
+                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                                <a href="/dataspesialis">
+                                                    Data Spesialis
+                                                </a>
+                                            </li>
+                                            <li
+                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                                <a href="/dataobat">
+                                                    Data Obat
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </article>
+                                </details>
+                            </li>
+                        </ul>
+
+                        <ul class="flex flex-col gap-2">
+                            <li>
+                                <details class="group">
+                                    <summary
+                                        class="flex gap-2 items-center justify-between font-medium marker:content-none hover:text-midnightshadow py-2  hover:cursor-pointer ">
+                                        <span
+                                            class="flex gap-2 hover:text-midnightshadow hover:bg-white focus:text-midnightshadow">
+                                            <span
+                                                class="w-full hover:text-midnightshadow focus:text-midnightshadow focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter">
                                                 Data Umum
                                             </span>
                                         </span>
@@ -151,12 +191,6 @@ export default {
                             </li>
                         </ul>
 
-                        <router-link to="/DataObatPengurus">
-                            <button
-                                class="focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Data
-                                Obat(Pengurus)</button>
-                        </router-link>
-
                         <router-link to="/DataKepemilikanObat">
                             <button
                                 class="focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Kepemilikan
@@ -234,6 +268,45 @@ export default {
 
                                 <div class="block" id="menu-sidebar">
                                     <div class="flex flex-col gap-2 pt-4 max-[420px]:text-[12px] max-md:text-[14px]">
+                                        <ul class="flex flex-col gap-2">
+                                            <li>
+                                                <details class="group">
+                                                    <summary
+                                                        class="flex gap-2 items-center justify-between font-medium marker:content-none hover:text-midnightshadow py-2  hover:cursor-pointer ">
+                                                        <span
+                                                            class="flex gap-2 hover:text-midnightshadow hover:bg-white focus:text-midnightshadow">
+                                                            <span
+                                                                class="w-full hover:text-midnightshadow focus:text-midnightshadow focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter">
+                                                                Data General
+                                                            </span>
+                                                        </span>
+                                                        <svg width="25" height="24" viewBox="0 0 25 24" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path
+                                                                d="M18.75 10L13.2366 15.2929C12.8298 15.6834 12.1702 15.6834 11.7634 15.2929L6.25 10"
+                                                                stroke="white" stroke-width="2" stroke-linecap="round" />
+                                                        </svg>
+
+                                                    </summary>
+                                                    <article class="px-4 pb-4 bg-whisperingsilver rounded-lg">
+                                                        <ul class="flex flex-col gap-4 pl-2 mt-4 pt-2">
+                                                            <li
+                                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                                                <a href="/dataspesialis">
+                                                                    Data Spesialis
+                                                                </a>
+                                                            </li>
+                                                            <li
+                                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                                                <a href="/dataobat">
+                                                                    Data Obat
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </article>
+                                                </details>
+                                            </li>
+                                        </ul>
                                         <ul class="flex flex-col gap-2">
                                             <li>
                                                 <details class="group">
@@ -337,12 +410,6 @@ export default {
                                                 </details>
                                             </li>
                                         </ul>
-
-                                        <router-link to="/DataObat">
-                                            <button
-                                                class="focus:bg-verylightgray px-4 focus:text-black  focus:font-bold font-bold text-white font-inter ">Data
-                                                Obat(Pengurus)</button>
-                                        </router-link>
 
                                         <router-link to="/DataKepemilikanObat">
                                             <button

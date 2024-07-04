@@ -79,9 +79,14 @@ const routes = [
     component: () => import('../views/DataKesehatan.vue')
   },
   {
-    path: '/DataObatPengurus',
+    path: '/DataObat',
     name: 'DataObatPengurus',
     component: () => import('../views/DataObatPengurus.vue')
+  },
+  {
+    path: '/DataSpesialis',
+    name: 'DataSpesialis',
+    component: () => import('../views/DataSpesialis.vue')
   },
   {
     path: '/DataRumahSakit',
