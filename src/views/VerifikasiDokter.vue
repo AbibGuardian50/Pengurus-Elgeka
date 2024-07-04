@@ -158,114 +158,107 @@ export default {
 
             <div class="container-table-general bg-offwhite">
                 <table class="table-general">
-                <thead class="border-b border-teal">
-                    <tr>
-                        <th scope="col"
-                            class="px-3 py-3 max-[1300px]:pb-0 max-[1200px]:pl-0 max-md:pt-8 max-w-[50px] flex items-center gap-1 text-left font-bold font-poppins text-black text-base cursor-pointer"
-                            @click="sortNoColumn">
-                            No
-                            <span v-if="sortOrder === 'asc'">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                    fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M12 19V6M5 12l7-7 7 7" />
-                                </svg>
-                            </span>
-                            <span v-else>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                    fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M12 5v13M5 12l7 7 7-7" />
-                                </svg>
-                            </span>
-                        </th>
-                        <th scope="col"
-                            class="th-general max-md:px-1">
-                            Nama
-                        </th>
-                        <th scope="col"
-                            class="th-general max-md:px-1">
-                            Gender
-                        </th>
-                        <th scope="col"
-                            class="th-general max-md:px-1">
-                            Nomor HP
-                        </th>
-                        <th scope="col"
-                            class="th-general max-md:px-1">
-                            Email
-                        </th>
-                        <th scope="col"
-                            class="th-general max-md:px-1">
-                            Poli
-                        </th>
-                        <th scope="col"
-                            class="th-general max-md:px-1">
-                            Nama Rumah Sakit
-                        </th>
-                        <th scope="col"
-                            class="th-general max-md:px-1">
-                            Status
-                        </th>
+                    <thead class="border-b border-teal">
+                        <tr>
+                            <th scope="col"
+                                class="px-3 py-3 max-[1300px]:pb-0 max-[1200px]:pl-0 max-md:pt-8 max-w-[50px] flex items-center gap-1 text-left font-bold font-poppins text-black text-base cursor-pointer"
+                                @click="sortNoColumn">
+                                No
+                                <span v-if="sortOrder === 'asc'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M12 19V6M5 12l7-7 7 7" />
+                                    </svg>
+                                </span>
+                                <span v-else>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M12 5v13M5 12l7 7 7-7" />
+                                    </svg>
+                                </span>
+                            </th>
+                            <th scope="col" class="th-general max-md:px-1">
+                                Nama
+                            </th>
+                            <th scope="col" class="th-general max-md:px-1">
+                                Gender
+                            </th>
+                            <th scope="col" class="th-general max-md:px-1">
+                                Nomor HP
+                            </th>
+                            <th scope="col" class="th-general max-md:px-1">
+                                Email
+                            </th>
+                            <th scope="col" class="th-general max-md:px-1">
+                                Poli
+                            </th>
+                            <th scope="col" class="th-general max-md:px-1">
+                                Nama Rumah Sakit
+                            </th>
+                            <th scope="col" class="th-general max-md:px-1">
+                                Status
+                            </th>
 
-                    </tr>
-                </thead>
-                <tbody v-if="InfoDoctor">
-                    <tr v-for="(data, index) in paginatedInfoDoctor" :key="index" class="divide-y divide-gray-200">
-                        <td
-                            class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
-                            {{ data.no }}
-                        </td>
-                        <td class="td-general">
-                            <div class="flex items-center">
-                                <div>
-                                    <div class="td-text-general">
-                                        {{ data.Name }}
+                        </tr>
+                    </thead>
+                    <tbody v-if="InfoDoctor">
+                        <tr v-for="(data, index) in paginatedInfoDoctor" :key="index" class="divide-y divide-gray-200">
+                            <td
+                                class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-light leading-4 text-black text-base">
+                                {{ data.no }}
+                            </td>
+                            <td class="td-general">
+                                <div class="flex items-center">
+                                    <div>
+                                        <div class="td-text-general">
+                                            {{ data.Name }}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </td>
-                        <td class="td-general">
-                            <p v-if="data.Gender === 'female'"
-                                class="td-text-general">Perempuan</p>
-                            <p v-else-if="data.Gender === 'male'"
-                                class="td-text-general">Laki-Laki</p>
-                            <p v-else-if="!data.Gender" class="td-text-general">Tidak
-                                Diketahui</p>
-                        </td>
-                        <td class="td-general">
-                            <p v-if="data.PhoneNumber" class="td-text-general">{{
-                                data.PhoneNumber }}</p>
-                            <p v-else-if="!data.PhoneNumber" class="td-text-general">
-                                Tidak Diketahui</p>
-                        </td>
-                        <td class="px-3 py-4 min-w-[200px] max-w-[221px]">
-                            <p class="td-text-general">{{ data.Email }}</p>
-                        </td>
-                        <td class="td-general">
-                            <p class="td-text-general">{{ data.PolyName }}</p>
-                        </td>
-                        <td class="td-general">
-                            <p class="td-text-general">{{ data.HospitalName }}</p>
-                        </td>
-                        <td class="td-general">
-                            <div>
-                                <button @click="editstatusdoctor(data.ID)" class="py-1 px-8 rounded-[5px] bg-teal font-poppins font-bold text-base text-white">
-                                    Not Verified
-                                </button>
-                            </div>
-                        </td>
-                        <!-- <td class="px-3 py-4 whitespace-nowrap  text-sm font-medium">
-                            <a @click="editstatusdoctor(data.ID)">
-                                <button
-                                    class="py-1 px-8 rounded-[5px] bg-teal font-inter font-bold text-base text-white">Edit</button>
-                            </a>
-                        </td> -->
-                    </tr>
-                </tbody>
-            </table>
+                            </td>
+                            <td class="td-general">
+                                <p v-if="data.Gender === 'female'" class="td-text-general">Perempuan</p>
+                                <p v-else-if="data.Gender === 'male'" class="td-text-general">Laki-Laki</p>
+                                <p v-else-if="!data.Gender" class="td-text-general">Tidak
+                                    Diketahui</p>
+                            </td>
+                            <td class="td-general">
+                                <p v-if="data.PhoneNumber" class="td-text-general">{{
+                                    data.PhoneNumber }}</p>
+                                <p v-else-if="!data.PhoneNumber" class="td-text-general">
+                                    Tidak Diketahui</p>
+                            </td>
+                            <td class="px-3 py-4 min-w-[200px] max-w-[221px]">
+                                <p class="td-text-general">{{ data.Email }}</p>
+                            </td>
+                            <td class="td-general">
+                                <p class="td-text-general">{{ data.PolyName }}</p>
+                            </td>
+                            <td class="td-general">
+                                <p class="td-text-general">{{ data.HospitalName }}</p>
+                            </td>
+                            <td class="td-general">
+                                <div class="py-1 px-2 gap-2 rounded-[5px] bg-teal font-poppins font-bold text-base text-white flex">
+                                    <button @click="editstatusdoctor(data.ID)" class="">
+                                        Not Verified
+                                    </button>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M18 10L12.7071 15.2929C12.3166 15.6834 11.6834 15.6834 11.2929 15.2929L6 10"
+                                            stroke="white" stroke-width="2" stroke-linecap="round" />
+                                    </svg>
+
+                                </div>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            
+
 
             <!-- Pagination navigation -->
             <div class="ml-8 my-8 flex justify-center">
