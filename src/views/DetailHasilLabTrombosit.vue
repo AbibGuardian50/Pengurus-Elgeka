@@ -2,30 +2,30 @@
 import Sidebar from "../components/Sidebar.vue"
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
+import { useToast } from 'vue-toastification';
 import { format } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
-import { useToast } from 'vue-toastification';
 
 export default {
     async created() {
         try {
             const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization')
-            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/potential_hydrogen';
+            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/trombosit';
             const response = await axios.get(url, {
                 headers: {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
-            if (response.data.Message === "Success to Get Potential Hydrogen Data") {
-                toast.success('Detail Data Hasil Lab Potential Hydrogen Berhasil Dimuat');
+            if (response.data.Message === "Success to Get Trombosit Data") {
+                toast.success('Detail Data Hasil Lab Trombosit Berhasil Dimuat');
             }
-            this.InfoLabPotentialHydrogen = response.data.Data;
-            this.InfoLabPotentialHydrogen.sort((x, y) => x.id - y.id)
-            this.InfoLabPotentialHydrogen.forEach((item, index) => {
+            this.InfoPatient = response.data.Data;
+            this.InfoPatient.sort((x, y) => x.id - y.id)
+            this.InfoPatient.forEach((item, index) => {
                 item.no = index + 1;
             });
-            this.totalPages = Math.ceil(this.InfoLabPotentialHydrogen.length / this.perPage); // Calculate total pages
+            this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage); // Calculate total pages
             this.updatePaginatedData(); // Update paginated data
         } catch (error) {
             const toast = useToast()
@@ -40,11 +40,11 @@ export default {
     },
     data() {
         return {
-            InfoLabPotentialHydrogen: [],
+            InfoPatient: [],
             perPage: 10, // Number of items per page
             currentPage: 1, // Current page
             totalPages: 0, // Total pages
-            paginatedInfoLabPotentialHydrogen: [], // Paginated data
+            paginatedInfoPatient: [], // Paginated data
             sortColumn: 'no', // Column to sort by
             sortDirection: 'asc' // Sort direction
         }
@@ -57,7 +57,7 @@ export default {
         updatePaginatedData() {
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
-            this.paginatedInfoLabPotentialHydrogen = this.InfoLabPotentialHydrogen.slice(startIndex, endIndex);
+            this.paginatedInfoPatient = this.InfoPatient.slice(startIndex, endIndex);
         },
         goToPage(pageNumber) {
             this.currentPage = pageNumber; // Set current page to the selected page number
@@ -82,7 +82,7 @@ export default {
                 this.sortColumn = column;
                 this.sortDirection = 'asc';
             }
-            this.InfoLabPotentialHydrogen.sort((a, b) => {
+            this.InfoPatient.sort((a, b) => {
                 let compareA, compareB;
                 if (column === 'no') {
                     compareA = a.no;
@@ -101,10 +101,10 @@ export default {
         },
         sortNoColumn() {
             if (this.sortOrder === 'asc') {
-                this.InfoLabPotentialHydrogen.sort((a, b) => a.no - b.no);
+                this.InfoPatient.sort((a, b) => a.no - b.no);
                 this.sortOrder = 'desc';
             } else {
-                this.InfoLabPotentialHydrogen.sort((a, b) => b.no - a.no);
+                this.InfoPatient.sort((a, b) => b.no - a.no);
                 this.sortOrder = 'asc';
             }
             this.updatePaginatedData();
@@ -120,8 +120,8 @@ export default {
         <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
             <!-- Your content -->
             <div class="heading-div-general max-[1400px]:justify-start max-[1400px]:gap-4 max-md:gap-2">
-                <p class="title-heading-general">Data Hasil Lab Potential Hydrogen</p>
-                <a href="/HasilLabPotentialHydrogen"
+                <p class="title-heading-general">Data Hasil Lab Trombosit</p>
+                <a href="/HasilLabBCRABL"
                     class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg
                             width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -156,28 +156,23 @@ export default {
                                     </svg>
                                 </span>
                             </th>
-                            <th scope="col"
-                                class="th-general">
+                            <th scope="col" class="th-general max-lg:px-1">
                                 Nama
                             </th>
-                            <th scope="col"
-                                class="th-general">
+                            <th scope="col" class="th-general max-lg:px-1">
                                 Email
                             </th>
-                            <th scope="col"
-                                class="th-general">
+                            <th scope="col" class="th-general max-lg:px-1">
                                 Handphone
                             </th>
-                            <th scope="col"
-                                class="th-general">
+                            <th scope="col" class="th-general max-lg:px-1">
                                 Data
                             </th>
-                            <th scope="col"
-                                class="th-general">
+                            <th scope="col" class="th-general max-lg:px-1">
                                 Notes
                             </th>
                             <th @click="sortData('Date')" scope="col"
-                                class="cursor-pointer flex items-center gap-1 th-general">
+                                class="cursor-pointer flex items-center gap-1 th-general max-lg:px-1">
                                 Tanggal
                                 <span v-if="sortColumn === 'Date'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                 <span v-else>
@@ -189,17 +184,14 @@ export default {
                                     </svg>
                                 </span>
                             </th>
-
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(data, index) in paginatedInfoLabPotentialHydrogen" :key="index"
-                            class="divide-y divide-gray-200">
-                            <td
-                                class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-normal leading-4 text-black text-base">
+                        <tr v-for="(data, index) in paginatedInfoPatient" :key="index" class="divide-y divide-gray-200">
+                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[4%] td-text-general">
                                 {{ data.no }}
                             </td>
-                            <td class="td-general">
+                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[5%]">
                                 <div class="flex items-center">
                                     <div>
                                         <div class="td-text-general">
@@ -208,22 +200,21 @@ export default {
                                     </div>
                                 </div>
                             </td>
-                            <td class="td-general">
+                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[10%]">
                                 <p class="td-text-general">{{ data.Email }}</p>
                             </td>
-                            <td class="td-general">
-                                <p class="td-text-general">{{ data.PhoneNumber }}
-                                </p>
+                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[10%]">
+                                <p class="td-text-general">{{ data.PhoneNumber }}</p>
                             </td>
-                            <td class="td-general">
+                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[5%]">
                                 <p class="td-text-general">{{ data.Data }}</p>
                             </td>
-                            <td class="td-general">
+                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[5%]">
                                 <p class="td-text-general">{{ data.Notes }}</p>
                             </td>
-                            <td class="td-general">
-                                <p class="td-text-general">{{ formatDate(data.Date)
-                                }}</p>
+                            <td class="px-3 py-4 max-lg:px-1">
+                                <p class="td-text-general">{{ formatDate(data.Date) }}
+                                </p>
                             </td>
                         </tr>
                     </tbody>
@@ -232,15 +223,16 @@ export default {
 
 
             <!-- Pagination navigation -->
-            <div class="ml-8 mt-4 flex justify-center">
+            <div class=" mt-4 flex justify-center">
                 <button @click="prevPage" :disabled="currentPage === 1"
-                    class="px-4 py-2 mr-2 bg-teal  text-white rounded-md">Previous</button>
+                    class="px-4 py-2 mr-2 bg-teal text-white rounded-md">Previous</button>
                 <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
-                    :class="{ 'bg-teal  text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
+                    :class="{ 'bg-teal text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
                     class="px-4 py-2 mr-2">{{ pageNumber }}</button>
                 <button @click="nextPage" :disabled="currentPage === totalPages"
-                    class="px-4 py-2 bg-teal  text-white rounded-md">Next</button>
+                    class="px-4 py-2 bg-teal text-white rounded-md">Next</button>
             </div>
         </div>
     </div>
 </template>
+

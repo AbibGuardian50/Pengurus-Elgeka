@@ -10,64 +10,7 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 export default {
     async created() {
-        try {
-            const toast = useToast();
-            const tokenlogin = VueCookies.get('TokenAuthorization');
-            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/leukocytes';
-            const response = await axios.get(url, {
-                headers: {
-                    Authorization: `Bearer ${tokenlogin}`
-                },
-            });
-            const responseData = response.data.Data;
-            console.log(response);
-            if (response.data.Message === "Success to Get Leukocytes Data") {
-                toast.success('Data Hasil Lab Leukocytes Berhasil Dimuat');
-            }
-
-            // Menghitung jumlah kemunculan setiap nilai Data
-            const DataLabLeukocytesCounts = {
-                '< 3500': 0,
-                '3.500 - 10.500': 0,
-                '> 10.500': 0,
-            };
-            responseData.forEach(item => {
-                const DataLabLeukocytes = item.Data;
-                if (DataLabLeukocytes !== 0 && DataLabLeukocytes !== null) {
-                    if (DataLabLeukocytes < 3500) {
-                        DataLabLeukocytesCounts['< 3500']++;
-                    } else if (DataLabLeukocytes <= 9500) {
-                        DataLabLeukocytesCounts['3.500 - 10.500']++;
-                    } else if (DataLabLeukocytes <= 10500) {
-                        DataLabLeukocytesCounts['> 10.500']++;
-                    }
-                }
-            });
-
-            // Persiapkan data untuk chart
-            const chartData = {
-                labels: Object.keys(DataLabLeukocytesCounts),
-                datasets: [{
-                    label: 'Jumlah Orang',
-                    backgroundColor: [
-                        '#FFD700', // kuning untuk < 0.001
-                        '#008000', // hijau untuk 0.001 - 10
-                        '#FF0000'  // merah untuk > 10
-                    ],
-                    borderWidth: 1,
-                    data: Object.values(DataLabLeukocytesCounts),
-                }],
-            };
-
-            this.DataLabLeukocytes = chartData;
-            this.loaded = true; // Setelah data dimuat berhasil
-        } catch (error) {
-            const toast = useToast();
-            if (error.message === "Request failed with status code 401") {
-                toast.error('Error code 401, Mohon untuk logout lalu login kembali');
-            }
-            console.error(error);
-        }
+        await this.fetchData(); // Memuat data pertama kali saat komponen dibuat
     },
     components: {
         Sidebar,
@@ -75,7 +18,10 @@ export default {
     },
     data() {
         return {
+            startDate: '',
+            endDate: '',
             loaded: false,
+            allData: [], // Menyimpan semua data
             DataLabLeukocytes: null, // Ganti menjadi null untuk menunjukkan bahwa data belum dimuat
             HasilLabLeukocytesOptions: {
                 scales: {
@@ -133,11 +79,99 @@ export default {
                     }
                 }
             },
-        };
+        }
+    },
+    methods: {
+        async fetchData() {
+            try {
+                const toast = useToast();
+                const tokenlogin = VueCookies.get('TokenAuthorization');
+                const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/leukocytes';
+                const response = await axios.get(url, {
+                    headers: {
+                        Authorization: `Bearer ${tokenlogin}`
+                    }
+                });
+                const responseData = response.data.Data;
+                console.log(response);
+                if (response.data.Message === "Success to Get Leukocytes Data") {
+                    toast.success('Data Hasil Lab Leukocytes Berhasil Dimuat');
+                }
+
+                // Simpan semua data
+                this.allData = responseData;
+                this.filterData(); // Filter data berdasarkan tanggal
+
+            } catch (error) {
+                const toast = useToast();
+                if (error.message === "Request failed with status code 401") {
+                    toast.error('Error code 401, Mohon untuk logout lalu login kembali');
+                } else {
+                    toast.error('Sedang ada gangguan, Mohon coba lagi');
+                }
+                console.error(error);
+            }
+        },
+        filterData() {
+            // Filter data berdasarkan tanggal
+            const filteredData = this.allData.filter(item => {
+                const itemDate = new Date(item.Date); // Ganti dengan field tanggal yang sesuai
+                const start = this.startDate ? new Date(this.startDate) : null;
+                const end = this.endDate ? new Date(this.endDate) : null;
+
+                if (start && end) {
+                    return itemDate >= start && itemDate <= end;
+                } else if (start) {
+                    return itemDate >= start;
+                } else if (end) {
+                    return itemDate <= end;
+                } else {
+                    return true;
+                }
+            });
+
+            // Menghitung jumlah kemunculan setiap nilai Data
+            const DataLabLeukocytesCounts = {
+                '< 3500': 0,
+                '3.500 - 10.500': 0,
+                '> 10.500': 0,
+            };
+            filteredData.forEach(item => {
+                const DataLabLeukocytes = item.Data;
+                if (DataLabLeukocytes !== 0 && DataLabLeukocytes !== null) {
+                    if (DataLabLeukocytes < 3500) {
+                        DataLabLeukocytesCounts['< 3500']++;
+                    } else if (DataLabLeukocytes <= 10500) {
+                        DataLabLeukocytesCounts['3.500 - 10.500']++;
+                    } else if (DataLabLeukocytes > 10500) {
+                        DataLabLeukocytesCounts['> 10.500']++;
+                    }
+                }
+            });
+
+            // Persiapkan data untuk chart
+            const chartData = {
+                labels: Object.keys(DataLabLeukocytesCounts),
+                datasets: [{
+                    label: 'Jumlah Orang',
+                    backgroundColor: [
+                        '#FFD700', // kuning untuk < 3500
+                        '#008000', // hijau untuk 3.500 - 10.500
+                        '#FF0000'  // merah untuk > 10.500
+                    ],
+                    borderWidth: 1,
+                    data: Object.values(DataLabLeukocytesCounts),
+                }],
+            };
+
+            this.DataLabLeukocytes = chartData;
+            this.loaded = true; // Setelah data dimuat berhasil
+        }
     },
     name: 'BarChart',
-};
+}
 </script>
+
 
 <template>
     <div class="flex bg-offwhite h-screen">
@@ -149,6 +183,17 @@ export default {
                     <p
                         class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 border-b border-[#3347E6]">
                         GRAFIK DATA LEUKOCYTES</p>
+                    <div class="flex items-center gap-4 mb-4">
+                        <label for="startDate" class="text-sm font-semibold text-gray-700">Mulai Tanggal:</label>
+                        <input type="date" id="startDate" v-model="startDate"
+                            class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <label for="endDate" class="text-sm font-semibold text-gray-700">Akhir Tanggal:</label>
+                        <input type="date" id="endDate" v-model="endDate"
+                            class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <button @click="filterData"
+                            class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Terapkan</button>
+                    </div>
+
                     <Bar v-if="loaded" :data="DataLabLeukocytes" :options="HasilLabLeukocytesOptions"
                         class="w-full h-64 md:h-96" />
                 </div>

@@ -169,8 +169,20 @@ export default {
                                             </li>
                                             <li
                                                 class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                                <a href="/HasilLabTrombosit">
+                                                    Trombosit
+                                                </a>
+                                            </li>
+                                            <li
+                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                 <a href="/HasilLabHemoglobin">
                                                     Hemoglobin
+                                                </a>
+                                            </li>
+                                            <li
+                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                                <a href="/HasilLabHematokrit">
+                                                    Hematokrit
                                                 </a>
                                             </li>
                                             <li
@@ -389,8 +401,20 @@ export default {
                                                             </li>
                                                             <li
                                                                 class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                                                <a href="/HasilLabTrombosit">
+                                                                    Trombosit
+                                                                </a>
+                                                            </li>
+                                                            <li
+                                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                                 <a href="/HasilLabHemoglobin">
                                                                     Hemoglobin
+                                                                </a>
+                                                            </li>
+                                                            <li
+                                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                                                <a href="/HasilLabHematokrit">
+                                                                    Hematokrit
                                                                 </a>
                                                             </li>
                                                             <li

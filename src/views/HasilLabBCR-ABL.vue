@@ -1,75 +1,16 @@
 <script>
-import Sidebar from "../components/Sidebar.vue"
-import axios from 'axios'
-import VueCookies from 'vue-cookies'
+import Sidebar from "../components/Sidebar.vue";
+import axios from 'axios';
+import VueCookies from 'vue-cookies';
 import { useToast } from 'vue-toastification';
-import { Bar } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+import { Bar } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 export default {
     async created() {
-        try {
-            const toast = useToast();
-            const tokenlogin = VueCookies.get('TokenAuthorization')
-            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/bcr_abl'
-            const response = await axios.get(url, {
-                headers: {
-                    Authorization: `Bearer ${tokenlogin}`
-                },
-            });
-            const responseData = response.data.Data;
-            console.log(response)
-            if (response.data.Message === "Success to Get BCR ABL Data") {
-                toast.success('Data Hasil Lab BCR ABL Berhasil Dimuat');
-            }
-
-            // Menghitung jumlah kemunculan setiap nilai Data
-            const DataLabBcrAblCounts = {
-                '< 0.001': 0,
-                '0.001 - 10': 0,
-                '> 10': 0,
-            };
-            responseData.forEach(item => {
-                const DataLabBCR = item.Data;
-                if (DataLabBCR !== 0 && DataLabBCR !== null) {
-                    if (DataLabBCR > 10) {
-                        DataLabBcrAblCounts['> 10']++;
-                    } else if (DataLabBCR <= 10) {
-                        DataLabBcrAblCounts['0.001 - 10']++;
-                    } else if (DataLabBCR <= 0.001) {
-                        DataLabBcrAblCounts['< 0.001']++;
-                    }
-                }
-            });
-
-            // Persiapkan data untuk chart
-            const chartData = {
-                labels: Object.keys(DataLabBcrAblCounts),
-                datasets: [{
-                    label: 'Jumlah Orang',
-                    backgroundColor: [
-                        '#FFD700', 
-                        '#008000',
-                        '#FF0000'  
-                    ],
-                    borderWidth: 1,
-                    data: Object.values(DataLabBcrAblCounts),
-                }],
-            };
-
-            this.DataLabBcrAbl = chartData;
-            this.loaded = true; // Setelah data dimuat berhasil
-        } catch (error) {
-            const toast = useToast()
-            if (error.message === "Request failed with status code 401") {
-                toast.error('Error code 401, Mohon untuk logout lalu login kembali')
-            } else {
-                toast.error('Sedang ada gangguan, Mohon coba lagi')
-            }
-            console.error(error);
-        }
+        await this.fetchData(); // Memuat data pertama kali saat komponen dibuat
     },
     components: {
         Sidebar,
@@ -77,7 +18,10 @@ export default {
     },
     data() {
         return {
+            startDate: '',
+            endDate: '',
             loaded: false,
+            allData: [], // Menyimpan semua data
             DataLabBcrAbl: null, // Ganti menjadi null untuk menunjukkan bahwa data belum dimuat
             HasilLabBCRABLOptions: {
                 scales: {
@@ -137,6 +81,93 @@ export default {
             },
         }
     },
+    methods: {
+        async fetchData() {
+            try {
+                const toast = useToast();
+                const tokenlogin = VueCookies.get('TokenAuthorization');
+                const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/bcr_abl';
+                const response = await axios.get(url, {
+                    headers: {
+                        Authorization: `Bearer ${tokenlogin}`
+                    }
+                });
+                const responseData = response.data.Data;
+                console.log(response);
+                if (response.data.Message === "Success to Get BCR ABL Data") {
+                    toast.success('Data Hasil Lab BCR ABL Berhasil Dimuat');
+                }
+
+                // Simpan semua data
+                this.allData = responseData;
+                this.filterData(); // Filter data berdasarkan tanggal
+
+            } catch (error) {
+                const toast = useToast();
+                if (error.message === "Request failed with status code 401") {
+                    toast.error('Error code 401, Mohon untuk logout lalu login kembali');
+                } else {
+                    toast.error('Sedang ada gangguan, Mohon coba lagi');
+                }
+                console.error(error);
+            }
+        },
+        filterData() {
+            // Filter data berdasarkan tanggal
+            const filteredData = this.allData.filter(item => {
+                const itemDate = new Date(item.Date); // Ganti dengan field tanggal yang sesuai
+                const start = this.startDate ? new Date(this.startDate) : null;
+                const end = this.endDate ? new Date(this.endDate) : null;
+                
+                if (start && end) {
+                    return itemDate >= start && itemDate <= end;
+                } else if (start) {
+                    return itemDate >= start;
+                } else if (end) {
+                    return itemDate <= end;
+                } else {
+                    return true;
+                }
+            });
+
+            // Menghitung jumlah kemunculan setiap nilai Data
+            const DataLabBcrAblCounts = {
+                '< 0.001': 0,
+                '0.001 - 10': 0,
+                '> 10': 0,
+            };
+            filteredData.forEach(item => {
+                const DataLabBCR = item.Data;
+                if (DataLabBCR !== 0 && DataLabBCR !== null) {
+                    if (DataLabBCR > 10) {
+                        DataLabBcrAblCounts['> 10']++;
+                    } else if (DataLabBCR <= 10) {
+                        DataLabBcrAblCounts['0.001 - 10']++;
+                    } else if (DataLabBCR <= 0.001) {
+                        DataLabBcrAblCounts['< 0.001']++;
+                    }
+                }
+            });
+
+            // Persiapkan data untuk chart
+            const chartData = {
+                labels: Object.keys(DataLabBcrAblCounts),
+                datasets: [{
+                    label: 'Jumlah Orang',
+                    backgroundColor: [
+                        '#FFD700', 
+                        '#008000',
+                        '#FF0000'  
+                    ],
+                    borderWidth: 1,
+                    data: Object.values(DataLabBcrAblCounts),
+                }],
+            };
+
+            this.DataLabBcrAbl = chartData;
+            this.loaded = true; // Setelah data dimuat berhasil
+        }
+    },
     name: 'BarChart',
 }
 </script>
@@ -151,6 +182,16 @@ export default {
                     <p
                         class="font-assistant text-[18px] leading-6 font-semibold leading-5 text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
                         GRAFIK DATA BCR-ABL</p>
+                    <div class="flex items-center gap-4 mb-4">
+                        <label for="startDate" class="text-sm font-semibold text-gray-700">Mulai Tanggal:</label>
+                        <input type="date" id="startDate" v-model="startDate"
+                            class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <label for="endDate" class="text-sm font-semibold text-gray-700">Akhir Tanggal:</label>
+                        <input type="date" id="endDate" v-model="endDate"
+                            class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <button @click="filterData"
+                            class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Terapkan</button>
+                    </div>
                     <Bar v-if="loaded" :data="DataLabBcrAbl" :options="HasilLabBCRABLOptions" class="w-full h-64 md:h-96" />
                 </div>
 

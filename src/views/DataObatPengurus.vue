@@ -27,7 +27,7 @@ export default {
                 item.no = index + 1;
                 // Convert list_dosis to a string if it is an array
                 if (Array.isArray(item.list_dosis)) {
-                    item.list_dosis = item.list_dosis.join(', ');
+                    item.list_dosis = item.list_dosis.map(dosis => `${dosis.amount}${dosis.unit}`).join(', ');
                 }
             });
             this.totalPages = Math.ceil(this.DataMedicine.length / this.perPage); // Calculate total pages
@@ -50,7 +50,7 @@ export default {
             medicines: [],
             form: {
                 nama_obat: '',
-                list_dosis: [''],
+                list_dosis: [{ amount: '', unit: 'mg' }],
                 kategori: '',
             },
             showcreatemedicine: false,
@@ -62,7 +62,11 @@ export default {
             paginatedDataMedicine: [],
             DataMedicine: [],
             sortColumn: 'no',
-            sortDirection: 'asc'
+            sortDirection: 'asc',
+            dosis: {
+                amount: ''
+            },
+            selectedCategory: '', // Added selectedCategory for filter
         }
     },
     methods: {
@@ -72,7 +76,7 @@ export default {
             const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/dataObat';
             const dataToSend = {
                 ...this.form,
-                list_dosis: this.form.list_dosis.join(', ') // Convert list_dosis array to string
+                list_dosis: this.form.list_dosis.map(dosis => `${dosis.amount}${dosis.unit}`).join(', ')
             };
             axios.post(url, dataToSend, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                 .then(response => {
@@ -109,7 +113,7 @@ export default {
             const url = `https://elgeka-web-api-production.up.railway.app/api/v1/dataObat/${this.editMedicineId}`;
             const dataToSend = {
                 ...this.form,
-                list_dosis: this.form.list_dosis.join(', ')
+                list_dosis: this.form.list_dosis.map(dosis => `${dosis.amount}${dosis.unit}`).join(', ')
             };
             axios.patch(url, dataToSend, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                 .then(response => {
@@ -126,8 +130,30 @@ export default {
                     console.log(error);
                 });
         },
+        filterMedicineByCategory() {
+            if (this.selectedCategory === '') {
+                // If no category is selected, show all data
+                this.updatePaginatedData();
+            } else {
+                // Filter data by selected category
+                this.paginatedDataMedicine = this.DataMedicine.filter(medicine => medicine.kategori === this.selectedCategory);
+            }
+        },
+        isValidAmount() {
+            // Regular expression to match only digits
+            const regex = /^[0-9]*$/;
+            return regex.test(this.dosis.amount);
+        },
         toggleModalCreateMedicine() {
             this.showcreatemedicine = !this.showcreatemedicine;
+            if (this.showcreatemedicine) {
+                // Reset the form when opening the "Tambah Data Obat" modal
+                this.form = {
+                    nama_obat: '',
+                    list_dosis: [{ amount: '', unit: 'mg' }],
+                    kategori: '',
+                };
+            }
         },
         toggleModalEditMedicine(medicine) {
             this.showEditMedicine = !this.showEditMedicine;
@@ -135,13 +161,16 @@ export default {
                 this.editMedicineId = medicine.id;
                 this.form = {
                     nama_obat: medicine.nama_obat,
-                    list_dosis: medicine.list_dosis.split(', '),
+                    list_dosis: medicine.list_dosis.split(', ').map(dosis => {
+                        const match = dosis.match(/(\d+)(mg|ml|pcs)/);
+                        return { amount: match[1], unit: match[2] };
+                    }),
                     kategori: medicine.kategori,
                 };
             }
         },
         addDosisInput() {
-            this.form.list_dosis.push('');
+            this.form.list_dosis.push({ amount: '', unit: 'mg' });
         },
         removeDosisInput(index) {
             this.form.list_dosis.splice(index, 1);
@@ -182,6 +211,9 @@ export default {
                 } else if (column === 'Date') {
                     compareA = new Date(a.Date);
                     compareB = new Date(b.Date);
+                } else if (column === 'kategori') {
+                    compareA = a.kategori;
+                    compareB = b.kategori;
                 }
                 if (this.sortDirection === 'asc') {
                     return compareA > compareB ? 1 : -1;
@@ -201,7 +233,12 @@ export default {
             }
             this.updatePaginatedData();
         },
-    }
+    },
+    watch: {
+        selectedCategory() {
+            this.filterMedicineByCategory();
+        }
+    },
 }
 </script>
 
@@ -211,15 +248,24 @@ export default {
         <Sidebar />
 
         <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
-            <div class="heading-div-general max-[1400px]:justify-start max-[1400px]:gap-4 max-md:gap-2">
+            <div class="heading-div-general max-[1400px]:justify-start max-[1400px]:gap-4 max-md:gap-2 bg-offwhite">
                 <p class="title-heading-general">Data Obat (Pengurus)</p>
+                <div class="mr-4">
+                    <label for="filterCategory"
+                        class="font-poppins font-semibold text-[16px] text-teal leading-7 mr-2">Filter Kategori:</label>
+                    <select v-model="selectedCategory" class="px-3 py-2 bg-white border rounded text-teal font-semibold">
+                        <option value="">Semua</option>
+                        <option value="CML">CML</option>
+                        <option value="Pendukung">Pendukung</option>
+                    </select>
+                </div>
             </div>
 
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
                 <table class="min-w-full divide-y divide-gray-200 overflow-x-auto">
                     <thead>
                         <tr class="border-b-[0.5px] border-b-teal">
-                            <th scope="col" class="th-general max-lg:pl-1 flex items-center cursor-pointer"
+                            <th scope="col" class="th-general lg:pl-1 flex items-center cursor-pointer"
                                 @click="sortNoColumn">
                                 No
                                 <span v-if="sortOrder === 'asc'">
@@ -237,13 +283,13 @@ export default {
                                     </svg>
                                 </span>
                             </th>
-                            <th scope="col" class="th-general max-lg:pl-1">
+                            <th scope="col" class="th-general lg:pl-1">
                                 Nama
                             </th>
-                            <th scope="col" class="th-general max-lg:pl-1">
+                            <th scope="col" class="th-general lg:pl-1">
                                 Dosis
                             </th>
-                            <th scope="col" class="th-general max-lg:pl-1">
+                            <th scope="col" class="th-general lg:pl-1">
                                 Kategori
                             </th>
                             <th scope="col" class="">
@@ -252,135 +298,188 @@ export default {
                             </th>
                         </tr>
                     </thead>
-
-                    <tbody v-for="(data, index) in paginatedDataMedicine" :key="index" class="divide-y divide-gray-200">
-                        <tr>
-                            <td class="td-general td-text-general">
-                                {{ data.no }}
-                            </td>
-                            <td class="td-general">
-                                <div class="flex items-center">
-                                    <div class="">
-                                        <div class=" td-text-general">
-                                            {{ data.nama_obat }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="td-general">
-                                <p class=" td-text-general ">{{ data.list_dosis }}</p>
-                            </td>
-                            <td class="td-general">
-                                <p class=" td-text-general ">{{ data.kategori }}</p>
-                            </td>
+                    <tbody class="divide-y divide-gray">
+                        <tr class="" v-for="medicine in paginatedDataMedicine" :key="medicine.id">
+                            <td class="td-general td-text-general">{{ medicine.no }}</td>
+                            <td class="td-general td-text-general">{{ medicine.nama_obat }}</td>
+                            <td class="td-general td-text-general">{{ medicine.list_dosis }}</td>
+                            <td class="td-general td-text-general">{{ medicine.kategori }}</td>
                             <td
                                 class="px-3 max-[1075px]:px-2 py-4 flex flex-col gap-2 justify-center items-center whitespace-nowrap text-sm font-medium">
-                                <a @click="toggleModalEditMedicine(data)">
-                                    <button
-                                        class="py-1 px-8 max-[1075px]:px-0 rounded-[5px] w-[110px] bg-white font-bold text-base text-teal shadow-s">Edit</button>
-                                </a>
-                                <button href="#" @click="deletehospital(data.id)"
-                                    class="py-1 px-8 max-[1075px]:px-0 rounded-[5px] w-[110px] shadow-s bg-white bg-opacity-64 text-teal font-bold text-base ">Hapus</button>
+                                <button @click="toggleModalEditMedicine(medicine)"
+                                    class="py-1 px-8 max-[1075px]:px-0 rounded-[5px] w-[110px] bg-white font-bold text-base text-teal shadow-s">Edit</button>
+                                <button @click="deletehospital(medicine.id)"
+                                    class="py-1 px-8 max-[1075px]:px-0 rounded-[5px] w-[110px] shadow-s bg-white bg-opacity-64 text-teal font-bold text-base">Hapus</button>
                             </td>
                         </tr>
                     </tbody>
-
                 </table>
+                <div class="ml-8 my-8 flex justify-center">
+                    <button @click="prevPage" :disabled="currentPage === 1"
+                        class="px-4 py-2 mr-2 bg-teal  text-white rounded-md">Previous</button>
+                    <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
+                        :class="{ 'bg-teal  text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
+                        class="px-4 py-2 mr-2">{{ pageNumber }}</button>
+                    <button @click="nextPage" :disabled="currentPage === totalPages"
+                        class="px-4 py-2 bg-teal  text-white rounded-md">Next</button>
+                </div>
+
             </div>
 
-
-            <div class="ml-8 my-8 flex justify-center">
-                <button @click="prevPage" :disabled="currentPage === 1"
-                    class="px-4 py-2 mr-2 bg-teal  text-white rounded-md">Previous</button>
-                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
-                    :class="{ 'bg-teal  text-white rounded-md': pageNumber === currentPage, 'bg-white text-blue-500 border border-blue-500 rounded-md': pageNumber !== currentPage }"
-                    class="px-4 py-2 mr-2">{{ pageNumber }}</button>
-                <button @click="nextPage" :disabled="currentPage === totalPages"
-                    class="px-4 py-2 bg-teal  text-white rounded-md">Next</button>
-            </div>
-
-            <!-- Modal for Creating Medicine -->
-            <div v-if="showcreatemedicine" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white p-8 rounded-lg shadow-lg w-96">
-                    <h2 class="text-xl font-bold mb-4 text-teal">Tambah Obat</h2>
-                    <form @submit.prevent="createmedicine">
-                        <div class="mb-4">
-                            <label for="nama_obat" class="block text-gray-700">Nama Obat:</label>
-                            <input type="text" v-model="form.nama_obat" id="nama_obat"
-                                placeholder="Nama obat, misal Parasetamol" class="w-full px-3 py-2 border rounded">
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="kategori" class="block text-gray-700">Kategori:</label>
-                            <select v-model="form.kategori" class="w-full px-3 py-2 border rounded" required>
-                                <option value="">Select Role</option>
-                                <option value="CML">CML</option>
-                                <option value="Pendukung">Pendukung</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-gray-700">Dosis:</label>
-                            <div v-for="(dosis, index) in form.list_dosis" :key="index" class="flex items-center mb-2">
-                                <input type="text" v-model="form.list_dosis[index]"
-                                    placeholder="Isi dosis obat, contoh : 300MG"
-                                    class="w-full px-3 py-2 border rounded mr-2">
-                                <button type="button" @click="removeDosisInput(index)"
-                                    class="bg-teal text-white px-3 py-2 rounded">Hapus</button>
+            <div v-if="showcreatemedicine" class="fixed inset-0 flex items-center max-sm:items-start justify-center z-50">
+                <div class="modal-overlay fixed inset-0 bg-gray-900 opacity-50"></div>
+                <div
+                    class="modal-container bg-white w-11/12 max-sm:w-9/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+                    <div class="modal-content py-4 text-left px-6">
+                        <div class="flex justify-between items-center mb-3 border-b border-teal">
+                            <p
+                                class="font-poppins font-semibold text-[35px] max-lg:text-[30px] max-md:text-[20px] text-teal">
+                                Tambah Data Obat</p>
+                            <div class="modal-close cursor-pointer z-50" @click="toggleModalCreateMedicine">
+                                <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18"
+                                    height="18" viewBox="0 0 18 18">
+                                    <path
+                                        d="M14.53 3.47a.75.75 0 00-1.06 0L9 7.94 4.53 3.47a.75.75 0 10-1.06 1.06L7.94 9l-4.47 4.47a.75.75 0 101.06 1.06L9 10.06l4.47 4.47a.75.75 0 101.06-1.06L10.06 9l4.47-4.47a.75.75 0 000-1.06z">
+                                    </path>
+                                </svg>
                             </div>
-                            <button type="button" @click="addDosisInput" class="bg-teal text-white px-4 py-2 rounded">Tambah
-                                Dosis</button>
                         </div>
+                        <form @submit.prevent="createmedicine">
+                            <div class="mb-4">
+                                <label class="font-poppins font-semibold text-[16px] text-teal leading-7" for="nama_obat">
+                                    Nama Obat
+                                </label>
+                                <input v-model="form.nama_obat" type="text" placeholder="Masukkan Nama Obat"
+                                    class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight ">
+                            </div>
+                            <div class="mb-4">
+                                <label class="font-poppins font-semibold text-[16px] text-teal leading-7">
+                                    Dosis
+                                </label>
+                                <div v-for="(dosis, index) in form.list_dosis" :key="index" class="flex mb-2">
+                                    <input v-model="dosis.amount" type="text" inputmode="numeric" pattern="[0-9]*" min="0"
+                                        placeholder="Masukkan angka"
+                                        class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight mr-2">
+                                    <span v-if="!isValidAmount" class="text-teal text-xs">Hanya ketikkan angka
+                                        saja</span>
+                                    <select v-model="dosis.unit" class="px-2 py-2 border rounded">
+                                        <option value="mg">mg</option>
+                                        <option value="ml">ml</option>
+                                        <option value="pcs">pcs</option>
+                                    </select>
+                                    <button @click="removeDosisInput(index)"
+                                        class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded ml-2">Hapus</button>
+                                </div>
+                                <button type="button" @click="addDosisInput"
+                                    class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded">Tambah
+                                    Dosis</button>
 
-                        <div class="flex justify-end">
-                            <button type="button" @click="toggleModalCreateMedicine"
-                                class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Batal</button>
-                            <button type="submit" class="bg-teal text-white px-4 py-2 rounded">Simpan</button>
-                        </div>
-                    </form>
+                            </div>
+                            <div class="mb-4">
+                                <label class="font-poppins font-semibold text-[16px] text-teal leading-7" for="kategori">
+                                    Kategori
+                                </label>
+                                <select v-model="form.kategori" class="w-full px-3 py-2 bg-white border rounded" required>
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="CML">CML</option>
+                                    <option value="Pendukung">Pendukung</option>
+                                </select>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="button" @click="toggleModalCreateMedicine"
+                                    class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Batal</button>
+                                <button type="submit" class="bg-teal text-white px-4 py-2 rounded">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 
-            <!-- Edit Medicine Modal -->
-            <div v-if="showEditMedicine" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white p-8 rounded-lg shadow-lg w-96">
-                    <h2 class="text-xl font-bold mb-4 text-teal">Edit Obat</h2>
-                    <form @submit.prevent="editmedicine">
-                        <div class="mb-4">
-                            <label for="nama_obat" class="block text-gray-700">Nama Obat:</label>
-                            <input type="text" v-model="form.nama_obat" id="nama_obat"
-                                class="w-full px-3 py-2 border rounded" required>
-                        </div>
 
-                        <div class="mb-4">
-                            <label class="block text-gray-700">Dosis:</label>
-                            <div v-for="(dosis, index) in form.list_dosis" :key="index" class="flex items-center mb-2">
-                                <input type="text" v-model="form.list_dosis[index]"
-                                    class="w-full px-3 py-2 border rounded mr-2" required>
-                                <button type="button" @click="removeDosisInput(index)"
-                                    class="bg-red-500 text-white px-3 py-2 rounded">Hapus</button>
+            <div v-if="showEditMedicine" class="fixed inset-0 flex items-center max-sm:items-start justify-center z-50">
+                <div class="modal-overlay fixed inset-0 bg-gray-900 opacity-50"></div>
+                <div
+                    class="modal-container bg-white w-11/12 max-sm:w-9/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+                    <div class="modal-content py-4 text-left px-6">
+                        <div class="flex justify-between items-center mb-3 border-b border-teal">
+                            <p
+                                class="font-poppins font-semibold text-[40px] max-lg:text-[30px] max-md:text-[20px] text-teal">
+                                Edit Data Obat</p>
+                        </div>
+                        <form @submit.prevent="editmedicine">
+                            <div class="mb-4">
+                                <label class="font-poppins font-semibold text-[16px] text-teal leading-7" for="nama_obat">
+                                    Nama Obat
+                                </label>
+                                <input v-model="form.nama_obat" type="text" placeholder="Masukkan Nama Obat"
+                                    class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight ">
                             </div>
-                            <button type="button" @click="addDosisInput" class="bg-teal text-white px-4 py-2 rounded">Tambah
-                                Dosis</button>
-                        </div>
+                            <div class="mb-4">
+                                <label class="font-poppins font-semibold text-[16px] text-teal leading-7">
+                                    Dosis
+                                </label>
+                                <div v-for="(dosis, index) in form.list_dosis" :key="index" class="flex mb-2">
+                                    <input v-model="dosis.amount" type="text" inputmode="numeric" pattern="[0-9]*" min="0"
+                                        placeholder="Masukkan angka saja"
+                                        class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight  mr-2">
+                                    <span v-if="!isValidAmount" class="text-teal text-xs">Hanya ketikkan angka
+                                        saja</span>
+                                    <select v-model="dosis.unit" class="px-2 py-2 border rounded">
+                                        <option value="mg">mg</option>
+                                        <option value="ml">ml</option>
+                                        <option value="pcs">pcs</option>
+                                    </select>
+                                    <button @click="removeDosisInput(index)"
+                                        class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded  ml-2">Hapus</button>
+                                </div>
+                                <button type="button" @click="addDosisInput"
+                                    class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded">Tambah
+                                    Dosis</button>
 
-                        <div class="mb-4">
-                            <label for="kategori" class="block text-gray-700">Kategori:</label>
-                            <select v-model="form.kategori" class="w-full px-3 py-2 border rounded" required>
-                                <option value="CML">CML</option>
-                                <option value="Pendukung">Pendukung</option>
-                            </select>
-                        </div>
-
-                        <div class="flex justify-end">
-                            <button type="button" @click="toggleModalEditMedicine"
-                                class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Batal</button>
-                            <button type="submit" class="bg-teal text-white px-4 py-2 rounded">Simpan</button>
-                        </div>
-                    </form>
+                            </div>
+                            <div class="mb-4">
+                                <label class="font-poppins font-semibold text-[16px] text-teal leading-7" for="kategori">
+                                    Kategori
+                                </label>
+                                <select v-model="form.kategori" class="w-full px-3 py-2 bg-white border rounded" required>
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="CML">CML</option>
+                                    <option value="Pendukung">Pendukung</option>
+                                </select>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="button" @click="toggleModalEditMedicine"
+                                    class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Batal</button>
+                                <button type="submit" class="bg-teal text-white px-4 py-2 rounded">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 
         </div>
     </div>
 </template>
+
+<style scoped>
+.modal-overlay {
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.modal-container {
+    z-index: 9999;
+}
+
+.modal-content {
+    z-index: 10000;
+}
+
+.modal-close {
+    cursor: pointer;
+}
+</style>

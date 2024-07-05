@@ -64,6 +64,11 @@ const routes = [
     component: () => import('../views/DetailHasilLabHemoglobin.vue')
   },
   {
+    path: '/DetailHasilLabHematokrit',
+    name: 'DetailHasilLabHematokrit',
+    component: () => import('../views/DetailHasilLabHematokrit.vue')
+  },
+  {
     path: '/DetailHasilLabLeukocytes',
     name: 'DetailHasilLabLeukocytes',
     component: () => import('../views/DetailHasilLabLeukocytes.vue')
@@ -72,6 +77,11 @@ const routes = [
     path: '/DetailHasilLabPotentialHydrogen',
     name: 'DetailHasilLabPotentialHydrogen',
     component: () => import('../views/DetailHasilLabPotentialHydrogen.vue')
+  },
+  {
+    path: '/DetailHasilLabTrombosit',
+    name: 'DetailHasilLabTrombosit',
+    component: () => import('../views/DetailHasilLabTrombosit.vue')
   },
   {
     path: '/DataKesehatan',
@@ -123,10 +133,21 @@ const routes = [
     name: 'HasilLabHeartRate',
     component: () => import('../views/HasilLabHeartRate.vue')
   },
+
+  {
+    path: '/HasilLabHematokrit',
+    name: 'HasilLabHematokrit',
+    component: () => import('../views/HasilLabHematokrit.vue')
+  },
   {
     path: '/HasilLabBloodPressure',
     name: 'HasilLabBloodPressure',
     component: () => import('../views/HasilLabBloodPressure.vue')
+  },
+  {
+    path: '/HasilLabTrombosit',
+    name: 'HasilLabTrombosit',
+    component: () => import('../views/HasilLabTrombosit.vue')
   },
   {
     path: '/HasilLabHemoglobin',

@@ -11,7 +11,10 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 export default {
     data() {
         return {
+            startDate: '',
+            endDate: '',
             loaded: false,
+            allData: [], // To store all data
             DataLabSystole: { labels: [], datasets: [] },
             DataLabDiastole: { labels: [], datasets: [] },
             HasilLabBloodPressureOptions: this.getChartOptions(),
@@ -38,69 +41,9 @@ export default {
                 if (response.data.Message === "Success to Get Blood Pressure Data") {
                     toast.success('Data Hasil Lab Blood Pressure Berhasil Dimuat');
                 }
-                const responseData = response.data.Data || [];
+                this.allData = response.data.Data || [];
+                this.filterData(); // Filter data based on the date range
 
-                const DataLabSystoleCounts = {
-                    '< 90': 0,
-                    '90 - 120': 0,
-                    '> 120': 0
-                };
-                const DataLabDiastoleCounts = {
-                    '< 60': 0,
-                    '60 - 80': 0,
-                    '> 80': 0
-                };
-
-                responseData.forEach(item => {
-                    if (item.DataSys < 90) {
-                        DataLabSystoleCounts['< 90']++;
-                    } else if (item.DataSys <= 120) {
-                        DataLabSystoleCounts['90 - 120']++;
-                    } else {
-                        DataLabSystoleCounts['> 120']++;
-                    }
-
-                    if (item.DataDia < 60) {
-                        DataLabDiastoleCounts['< 60']++;
-                    } else if (item.DataDia <= 80) {
-                        DataLabDiastoleCounts['60 - 80']++;
-                    } else {
-                        DataLabDiastoleCounts['> 80']++;
-                    }
-                });
-
-                const chartDataSys = {
-                    labels: Object.keys(DataLabSystoleCounts),
-                    datasets: [{
-                        label: 'Data Sys',
-                        backgroundColor: [
-                        '#FFD700', // kuning untuk < 0.001
-                        '#008000', // hijau untuk 0.001 - 10
-                        '#FF0000'  // merah untuk > 10
-                    ],
-                        borderWidth: 1,
-                        data: Object.values(DataLabSystoleCounts),
-                    }],
-                };
-                this.DataLabSystole = chartDataSys;
-
-                const chartDataDia = {
-                    labels: Object.keys(DataLabDiastoleCounts),
-                    datasets: [{
-                        label: 'Data Dia',
-                        backgroundColor: [
-                        '#FFD700', // kuning untuk < 0.001
-                        '#008000', // hijau untuk 0.001 - 10
-                        '#FF0000'  // merah untuk > 10
-                    ],
-                        borderWidth: 1,
-                        data: Object.values(DataLabDiastoleCounts),
-                    }],
-                };
-                this.DataLabDiastole = chartDataDia;
-
-                this.loaded = true;
-                this.updateChartFontSize();
             } catch (error) {
                 const toast = useToast();
                 if (error.message === "Request failed with status code 401") {
@@ -108,6 +51,85 @@ export default {
                 }
                 console.error(error);
             }
+        },
+        filterData() {
+            const filteredData = this.allData.filter(item => {
+                const itemDate = new Date(item.Date); // Replace with the correct date field
+                const start = this.startDate ? new Date(this.startDate) : null;
+                const end = this.endDate ? new Date(this.endDate) : null;
+
+                if (start && end) {
+                    return itemDate >= start && itemDate <= end;
+                } else if (start) {
+                    return itemDate >= start;
+                } else if (end) {
+                    return itemDate <= end;
+                } else {
+                    return true;
+                }
+            });
+
+            const DataLabSystoleCounts = {
+                '< 90': 0,
+                '90 - 120': 0,
+                '> 120': 0
+            };
+            const DataLabDiastoleCounts = {
+                '< 60': 0,
+                '60 - 80': 0,
+                '> 80': 0
+            };
+
+            filteredData.forEach(item => {
+                if (item.DataSys < 90) {
+                    DataLabSystoleCounts['< 90']++;
+                } else if (item.DataSys <= 120) {
+                    DataLabSystoleCounts['90 - 120']++;
+                } else {
+                    DataLabSystoleCounts['> 120']++;
+                }
+
+                if (item.DataDia < 60) {
+                    DataLabDiastoleCounts['< 60']++;
+                } else if (item.DataDia <= 80) {
+                    DataLabDiastoleCounts['60 - 80']++;
+                } else {
+                    DataLabDiastoleCounts['> 80']++;
+                }
+            });
+
+            const chartDataSys = {
+                labels: Object.keys(DataLabSystoleCounts),
+                datasets: [{
+                    label: 'Data Sys',
+                    backgroundColor: [
+                        '#FFD700', // yellow for < 90
+                        '#008000', // green for 90 - 120
+                        '#FF0000'  // red for > 120
+                    ],
+                    borderWidth: 1,
+                    data: Object.values(DataLabSystoleCounts),
+                }],
+            };
+            this.DataLabSystole = chartDataSys;
+
+            const chartDataDia = {
+                labels: Object.keys(DataLabDiastoleCounts),
+                datasets: [{
+                    label: 'Data Dia',
+                    backgroundColor: [
+                        '#FFD700', // yellow for < 60
+                        '#008000', // green for 60 - 80
+                        '#FF0000'  // red for > 80
+                    ],
+                    borderWidth: 1,
+                    data: Object.values(DataLabDiastoleCounts),
+                }],
+            };
+            this.DataLabDiastole = chartDataDia;
+
+            this.loaded = true;
+            this.updateChartFontSize();
         },
         getChartOptions() {
             return {
@@ -200,6 +222,16 @@ export default {
                             class="font-assistant text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
                             GRAFIK DATA TEKANAN DARAH (DataSys)
                         </p>
+                        <div class="flex justify-center items-center gap-4 my-4">
+                            <label for="startDate" class="text-sm font-semibold text-gray-700">Mulai Tanggal:</label>
+                            <input type="date" id="startDate" v-model="startDate"
+                                class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <label for="endDate" class="text-sm font-semibold text-gray-700">Akhir Tanggal:</label>
+                            <input type="date" id="endDate" v-model="endDate"
+                                class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <button @click="filterData"
+                                class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Terapkan</button>
+                        </div>
                         <Bar v-if="loaded" :data="DataLabSystole" :options="HasilLabBloodPressureOptions"
                             class="w-full h-96 md:h-[450px] lg:h-[550px] text-white sm:ml-2" />
                     </div>
@@ -209,6 +241,16 @@ export default {
                             class="font-assistant text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
                             GRAFIK DATA TEKANAN DARAH (DataDia)
                         </p>
+                        <div class="flex justify-center items-center gap-4 my-4">
+                            <label for="startDate" class="text-sm font-semibold text-gray-700">Mulai Tanggal:</label>
+                            <input type="date" id="startDate" v-model="startDate"
+                                class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <label for="endDate" class="text-sm font-semibold text-gray-700">Akhir Tanggal:</label>
+                            <input type="date" id="endDate" v-model="endDate"
+                                class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <button @click="filterData"
+                                class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Terapkan</button>
+                        </div>
                         <Bar v-if="loaded" :data="DataLabDiastole" :options="HasilLabBloodPressureOptions"
                             class="w-full h-96 md:h-[450px] lg:h-[550px] text-white sm:ml-2" />
                     </div>
