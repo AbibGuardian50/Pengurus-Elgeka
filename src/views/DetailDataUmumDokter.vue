@@ -332,7 +332,7 @@ export default {
                                         <span class="flex gap-2">
                                             <span
                                                 class="w-full focus:bg-teal px-4 focus:text-black text-white font-semibold font-poppins">
-                                                Nonaktif
+                                                Non-aktif
                                             </span>
                                         </span>
                                     </button>
