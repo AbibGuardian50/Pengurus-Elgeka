@@ -11,17 +11,35 @@ export default {
         try {
             const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization');
-            const url = 'https://elgeka-mobile-production.up.railway.app/api/doctor/list/website';
-            const response = await axios.get(url, {
+            const activeDoctorsUrl = 'https://elgeka-mobile-production.up.railway.app/api/doctor/list/website';
+            const inactiveDoctorsUrl = 'https://elgeka-mobile-production.up.railway.app/api/doctor/list/deactive/website';
+            // Fetch active doctors
+            const activeResponse = await axios.get(activeDoctorsUrl, {
                 headers: {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
-            console.log(response);
-            if (response.data.Message === "Success to Get Doctor List") {
-                toast.success('Detail Data Dokter Berhasil Dimuat');
+
+            // Fetch inactive doctors
+            const inactiveResponse = await axios.get(inactiveDoctorsUrl, {
+                headers: {
+                    Authorization: `Bearer ${tokenlogin}`
+                },
+            });
+
+            if (activeResponse.data.Message === "Success to Get Doctor List" &&
+                inactiveResponse.data.Message === "Success to Get Deactive Doctor List") {
+                toast.success('Data Dokter Berhasil Dimuat');
             }
-            this.originalInfoPatient = response.data.Data; // Save original data
+
+            // Combine active and inactive doctors
+            const combinedDoctors = [
+                ...activeResponse.data.Data.map(doctor => ({ ...doctor, status: 'aktif' })),
+                ...inactiveResponse.data.Data.map(doctor => ({ ...doctor, status: 'nonaktif' }))
+            ];
+
+
+            this.originalInfoPatient = combinedDoctors; // Save original data
             this.InfoPatient = [...this.originalInfoPatient];
             this.InfoPatient.sort((x, y) => x.id - y.id);
             this.InfoPatient.forEach((item, index) => {
@@ -53,7 +71,8 @@ export default {
             selectedHospital: '', // Selected hospital for sorting
             isConfirmationModalOpen: false,
             doctorIdToDeactivate: null,
-            searchQuery: ''
+            searchQuery: '',
+            sortOrder: 'asc' // Default sort order
         }
     },
     methods: {
@@ -293,7 +312,7 @@ export default {
                             </td>
                             <td class="td-general">
                                 <div class="relative">
-                                    <button @click="DeactivateDoctor(data.ID)"
+                                    <button v-if="data.status === 'aktif'" @click="DeactivateDoctor(data.ID)"
                                         class="flex max-lg:gap-0 max-lg:px-0 gap-2 bg-teal items-center justify-between py-2 px-1 rounded-md">
                                         <span class="flex gap-2">
                                             <span
@@ -307,6 +326,15 @@ export default {
                                                 d="M18.75 10L13.2366 15.2929C12.8298 15.6834 12.1702 15.6834 11.7634 15.2929L6.25 10"
                                                 stroke="white" stroke-width="2" stroke-linecap="round" />
                                         </svg>
+                                    </button>
+                                    <button v-else-if="data.status === 'nonaktif'"
+                                        class="flex max-lg:gap-0 cursor-default max-lg:px-0 gap-2 bg-teal items-center justify-between py-2 px-1 rounded-md">
+                                        <span class="flex gap-2">
+                                            <span
+                                                class="w-full focus:bg-teal px-4 focus:text-black text-white font-semibold font-poppins">
+                                                Nonaktif
+                                            </span>
+                                        </span>
                                     </button>
                                 </div>
                             </td>
