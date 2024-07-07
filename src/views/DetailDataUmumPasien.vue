@@ -21,6 +21,7 @@ export default {
                 toast.success('Detail Data Pasien Berhasil Dimuat');
             }
             this.InfoPatient = response.data.Data;
+            this.originalInfoPatient = [...this.InfoPatient]; // Save original data
             this.InfoPatient.sort((x, y) => x.id - y.id)
             this.InfoPatient.forEach((item, index) => {
                 item.no = index + 1;
@@ -40,7 +41,9 @@ export default {
     },
     data() {
         return {
+            searchQuery: '',
             InfoPatient: [],
+            originalInfoPatient: [], // Original data
             perPage: 10, // Number of items per page
             currentPage: 1, // Current page
             totalPages: 0, // Total pages
@@ -59,7 +62,6 @@ export default {
             this.updatePaginatedData();
         },
         formatDate(dateString) {
-            // Ubah format tanggal
             return format(new Date(dateString), 'dd MMMM yyyy', { locale: idLocale });
         },
         updatePaginatedData() {
@@ -68,20 +70,34 @@ export default {
             this.paginatedInfoPatient = this.InfoPatient.slice(startIndex, endIndex);
         },
         goToPage(pageNumber) {
-            this.currentPage = pageNumber; // Set current page to the selected page number
-            this.updatePaginatedData(); // Update paginated data for the selected page
+            this.currentPage = pageNumber;
+            this.updatePaginatedData();
         },
         nextPage() {
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
-                this.updatePaginatedData(); // Update paginated data when navigating to next page
+                this.updatePaginatedData();
             }
         },
         prevPage() {
             if (this.currentPage > 1) {
                 this.currentPage--;
-                this.updatePaginatedData(); // Update paginated data when navigating to previous page
+                this.updatePaginatedData();
             }
+        },
+        updateSearch() {
+            if (this.searchQuery === '') {
+                // Reset to original data if search query is empty
+                this.InfoPatient = [...this.originalInfoPatient];
+            } else {
+                // Filter data based on search query
+                this.InfoPatient = this.originalInfoPatient.filter(patient =>
+                    patient.Name.toLowerCase().includes(this.searchQuery.toLowerCase())
+                );
+            }
+            this.currentPage = 1;
+            this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage);
+            this.updatePaginatedData();
         },
 
     }
@@ -106,6 +122,12 @@ export default {
             </div>
 
             <p class="font-normal font-poppins text-xl leading-7 text-blueblack mt-4">Biodata Pasien</p>
+
+            <div class=" my-4">
+                <label for="searchDoctor" class="font-bold font-poppins text-blueblack">Cari Nama Pasien:</label>
+                <input type="text" id="searchDoctor" v-model="searchQuery" @input="updateSearch"
+                    class="ml-2 border border-gray-300 p-2 rounded">
+            </div>
 
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
                 <table class="min-w-full divide-y divide-gray-200">

@@ -251,7 +251,7 @@ export default {
                             </td>
                             <td class="px-3 py-4 min-w-[200px] whitespace-normal break-words max-w-[201px] text-wrap">
                                 <a :href="data.link_maps" target="_blank"
-                                    class="td-text-general">{{
+                                    class="td-text-general hover:text-teal">{{
                                         data.link_maps }}</a>
                             </td>
 
@@ -289,7 +289,7 @@ export default {
             <!-- Modal Create Rumah Sakit -->
             <div>
                 <form v-if="showcreatehospital" @submit.prevent="createhospital()"
-                    class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center max-[600px]:justify-start max-[600px]:items-start items-center flex">
+                    class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center max-[600px]:justify-start max-[600px]:items-start flex">
                     <div class="relative w-auto my-6 max-[600px]:my-0 mx-auto max-w-6xl">
                         <!--content-->
                         <div
@@ -337,7 +337,7 @@ export default {
                                         <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
                                             required name="Google Maps" id="" v-model="form.link_maps"
                                             placeholder="Link/URL Google Maps">
-                                        <a target="_blank" href="https://imgur.com/gallery/jwZQDHN"><span
+                                        <a target="_blank" href="https://drive.google.com/file/d/1E_CxXklR2mKt91QnyOwIK-djzOxSWeCb/view?usp=sharing"><span
                                                 class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
@@ -360,7 +360,7 @@ export default {
                                         <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
                                             required name="Google Maps" id="" v-model="form.latlong"
                                             placeholder="Link/URL Google Maps">
-                                        <a target="_blank" href="https://imgur.com/gallery/LaDTHRq"><span
+                                        <a target="_blank" href="https://drive.google.com/file/d/1i5NRONlsZcNzV13tsd6Y66O3fHr1j7on/view?usp=sharing"><span
                                                 class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
@@ -380,9 +380,8 @@ export default {
                                         Lengkap</label>
                                     <input @change="handleFileChange"
                                         class="border border-black py-4 min-w-[550px] max-md:min-w-full pl-2 rounded-md" type="file" required
-                                        name="Foto Profil" id="">
-                                    <div v-if="errorMessage" class="text-red text-sm font-bold mb-4">{{ errorMessage }}
-                                    </div>
+                                        name="Foto Profil" id="" accept="image/png, image/jpg, image/jpeg" />
+                                    <div v-if="errorMessage" class="text-red text-sm font-bold mb-4">{{ errorMessage }}</div>
                                 </div>
 
 

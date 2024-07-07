@@ -26,9 +26,7 @@ export default {
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const patientDataPromise = this.fetchPatientData(tokenlogin)
             const medicineDataPromise = this.fetchMedicineData(tokenlogin)
-
             const [patientData, medicineData] = await Promise.all([patientDataPromise, medicineDataPromise])
-
             this.StatisticsPatientData = patientData
             this.TotalPatientWithMedicine = medicineData.TotalPatientWithMedicine
             this.MedicineData = this.processMedicineData(medicineData.MedicineList)
@@ -143,6 +141,7 @@ export default {
             })
             if (response.data.Message === "Success to Get Patient Medicine List Website") {
                 toast.success('Data pasien berhasil dimuat!')
+
             }
             return response.data.Data
         },
@@ -156,6 +155,11 @@ export default {
             })
             if (response.data.Message === "Success to Get Medicine List Website") {
                 toast.success('Data obat Pasien berhasil dimuat!')
+                setTimeout(() => {
+                    toast.info('zoom out apabila data di grafik tidak lengkap');
+                }, 500);
+
+                
             }
             console.log(response)
             const data = response.data.Data
@@ -235,7 +239,7 @@ export default {
 
 <template>
     <div class="flex bg-offwhite min-h-screen">
-        <Sidebar class="lg:w-1/5" />
+        <Sidebar/>
 
         <div class="flex flex-col max-md:w-[90%] lg:w-4/5 w-full">
             <div class="border-b border-lightgray pt-12 pb-4 ml-4">
@@ -255,7 +259,7 @@ export default {
                         <div class="flex w-full max-md:min-w-[90%] overflow-x-auto">
                             <Bar v-if="loaded" :data="MedicineData" :options="MedicineOptions"
                                 class="w-full  p-4 max-sm:p-1 min-w-[300px] min-h-[300px] max-h-[550px] text-white" />
-                            <div v-else>
+                            <div class="ml-4" v-else>
                                 Tabel Sedang Dimuat.....
                             </div>
                         </div>

@@ -164,9 +164,9 @@ export default {
                             <th scope="col" class="th-general">
                                 Obat yang dimiliki
                             </th>
-                            <th scope="col" class="th-general">
+                            <!-- <th scope="col" class="th-general">
                                 Stok Obat
-                            </th>
+                            </th> -->
                         </tr>
                     </thead>
 
@@ -192,15 +192,8 @@ export default {
                             </td>
                             <td class="td-general max-[1000px]:min-w-[8rem]">
                                 <div v-for="(medicine, mIndex) in data.ListMedicine" :key="mIndex">
-                                    <p class="td-text-general" v-if="mIndex !== 0">- {{ medicine.Name
-                                    }}
-                                    </p>
-                                </div>
-                            </td>
-                            <td class="td-general">
-                                <div v-for="(medicine, mIndex) in data.ListMedicine" :key="mIndex">
-                                    <p class="font-bold font-assistant text-black text-[16px]" v-if="mIndex !== 0">{{
-                                        medicine.Stock }}
+                                    <p class="td-text-general leading-6" v-if="mIndex !== 0">- {{ medicine.Name}} ( {{
+                                        medicine.Stock }} )
                                     </p>
                                 </div>
                             </td>

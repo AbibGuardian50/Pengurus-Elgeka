@@ -120,7 +120,7 @@ export default {
         <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
             <!-- Your content -->
             <div class="heading-div-general max-[1400px]:justify-start max-[1400px]:gap-4 max-md:gap-2">
-                <p class="title-heading-general">Data Umum Pasien</p>
+                <p class="title-heading-general">Data Hasil Lab BCR-ABL</p>
                 <a href="/HasilLabBCRABL"
                     class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg
                             width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -192,9 +192,6 @@ export default {
                                 Email
                             </th>
                             <th scope="col" class="th-general max-md:px-1">
-                                Poli
-                            </th>
-                            <th scope="col" class="th-general max-md:px-1">
                                 Nama Rumah Sakit
                             </th>
                             <th scope="col" class="th-general max-md:px-1">
@@ -232,9 +229,6 @@ export default {
                             </td>
                             <td class="px-3 py-4 min-w-[200px] max-w-[221px]">
                                 <p class="td-text-general">{{ data.Email }}</p>
-                            </td>
-                            <td class="td-general">
-                                <p class="td-text-general">{{ data.PolyName }}</p>
                             </td>
                             <td class="td-general">
                                 <p class="td-text-general">{{ data.HospitalName }}</p>

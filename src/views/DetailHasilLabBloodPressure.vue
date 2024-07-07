@@ -119,8 +119,8 @@ export default {
 
         <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
             <!-- Your content -->
-            <div class="heading-div-general max-[1400px]:justify-start max-[1400px]:gap-4 max-md:gap-2">
-                <p class="title-heading-general">Data Umum Pasien</p>
+            <div class="heading-div-general">
+                <p class="title-heading-general">Data Hasil lab Blood Pressure</p>
                 <a href="/HasilLabBloodPressure"
                     class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg
                             width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -134,11 +134,11 @@ export default {
             <p class="font-normal font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
 
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
-                <table class="min-w-full divide-y divide-gray-200 overflow-x-auto">
+                <table class="table-general">
                     <thead>
                         <tr class="border-b-[0.5px] border-b-lightgray">
                             <th scope="col"
-                                class="px-3 py-3 max-[1300px]:pb-0 max-[1200px]:pl-0 max-w-[50px] flex items-center gap-1 text-left font-bold font-poppins text-black text-base cursor-pointer"
+                                class="th-general max-[1200px]:px-1 max-[1200px]:px-1 flex items-center max-[1080px]:pt-6"
                                 @click="sortNoColumn">
                                 No
                                 <span v-if="sortOrder === 'asc'">
@@ -156,32 +156,26 @@ export default {
                                     </svg>
                                 </span>
                             </th>
-                            <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                            <th scope="col" class="th-general max-[1200px]:px-1">
                                 Nama
                             </th>
-                            <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                            <th scope="col" class="th-general max-[1200px]:px-1">
                                 Email
                             </th>
-                            <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                            <th scope="col" class="th-general max-[1200px]:px-1">
                                 Handphone
                             </th>
-                            <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                            <th scope="col" class="th-general max-[1200px]:px-1">
                                 Data SYS
                             </th>
-                            <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                            <th scope="col" class="th-general max-[1200px]:px-1">
                                 Data Dia
                             </th>
-                            <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                            <th scope="col" class="th-general max-[1200px]:px-1">
                                 Notes
                             </th>
                             <th @click="sortData('Date')" scope="col"
-                                class="cursor-pointer flex items-center gap-1 px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                                class="cursor-pointer flex items-center gap-1 th-general max-[1200px]:px-1">
                                 Tanggal
                                 <span v-if="sortColumn === 'Date'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                 <span v-else>
@@ -198,37 +192,36 @@ export default {
                     </thead>
                     <tbody>
                         <tr v-for="(data, index) in paginatedInfoPatient" :key="index" class="divide-y divide-gray-200">
-                            <td
-                                class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-normal leading-4 text-black text-base">
+                            <td class="td-general td-text-general">
                                 {{ data.no }}
                             </td>
-                            <td class="px-3 py-4 min-w-[200px] max-w-[251px]">
+                            <td class="td-general">
                                 <div class="flex items-center">
                                     <div>
-                                        <div class="font-poppins font-normal leading-4 text-black text-base">
+                                        <div class="td-text-general">
                                             {{ data.Name }}
                                         </div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-3 py-4 min-w-[250px] max-w-[301px]">
-                                <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.Email }}</p>
+                            <td class="td-general">
+                                <p class="td-text-general">{{ data.Email }}</p>
                             </td>
-                            <td class="px-3 py-4 min-w-[200px] max-w-[201px]">
-                                <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.PhoneNumber }}
+                            <td class="td-general">
+                                <p class="td-text-general">{{ data.PhoneNumber }}
                                 </p>
                             </td>
-                            <td class="px-3 py-4 min-w-[250px] max-w-[251px]">
-                                <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.DataSys }}</p>
+                            <td class="td-general">
+                                <p class="td-text-general">{{ data.DataSys }}</p>
                             </td>
-                            <td class="px-3 py-4 min-w-[250px] max-w-[251px]">
-                                <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.DataDia }}</p>
+                            <td class="td-general">
+                                <p class="td-text-general">{{ data.DataDia }}</p>
                             </td>
-                            <td class="px-3 py-4 min-w-[250px] max-w-[251px]">
-                                <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.Notes }}</p>
+                            <td class="td-general">
+                                <p class="td-text-general">{{ data.Notes }}</p>
                             </td>
-                            <td class="px-3 py-4 min-w-[250px] max-w-[251px]">
-                                <p class="font-poppins font-normal leading-4 text-black text-base">{{ formatDate(data.Date)
+                            <td class="td-general">
+                                <p class="td-text-general">{{ formatDate(data.Date)
                                 }}</p>
                             </td>
                         </tr>

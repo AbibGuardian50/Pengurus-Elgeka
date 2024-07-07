@@ -22,6 +22,7 @@ export default {
             }
             console.log(response);
             this.DataMedicine = response.data.result.data;
+            this.originalInfoMedicine = [...this.DataMedicine];
             this.DataMedicine.sort((x, y) => x.id - y.id);
             this.DataMedicine.forEach((item, index) => {
                 item.no = index + 1;
@@ -47,6 +48,7 @@ export default {
     },
     data() {
         return {
+            originalInfoMedicine: [],
             medicines: [],
             form: {
                 nama_obat: '',
@@ -67,6 +69,7 @@ export default {
                 amount: ''
             },
             selectedCategory: '', // Added selectedCategory for filter
+            searchQuery: '',
         }
     },
     methods: {
@@ -233,6 +236,21 @@ export default {
             }
             this.updatePaginatedData();
         },
+        updateSearch() {
+        if (this.searchQuery === '') {
+            // Reset to original data if search query is empty
+            this.DataMedicine = [...this.originalInfoMedicine];
+        } else {
+            // Filter data based on search query
+            this.DataMedicine = this.originalInfoMedicine.filter(medicine =>
+                medicine.nama_obat.toLowerCase().includes(this.searchQuery.toLowerCase())
+            );
+        }
+        this.sortData(this.sortColumn); // Add this line to sort data after search
+        this.currentPage = 1; // Reset pagination to first page
+        this.totalPages = Math.ceil(this.DataMedicine.length / this.perPage); // Update total pages
+        this.updatePaginatedData(); // Update paginated data
+    },
     },
     watch: {
         selectedCategory() {
@@ -261,12 +279,19 @@ export default {
                 </div>
             </div>
 
+            <div class="mt-4">
+                <label for="searchQuery" class="font-poppins font-semibold text-[16px] text-teal leading-7 mr-2">Cari Nama
+                    Obat:</label>
+                <input v-model="searchQuery" @input="updateSearch"
+                    class="px-3 py-2 bg-white border rounded text-teal font-semibold" type="text" id="searchQuery"
+                    placeholder="Cari nama obat...">
+            </div>
+
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
                 <table class="min-w-full divide-y divide-gray-200 overflow-x-auto">
                     <thead>
                         <tr class="border-b-[0.5px] border-b-teal">
-                            <th scope="col" class="th-general lg:pl-1 flex items-center cursor-pointer"
-                                @click="sortNoColumn">
+                            <th scope="col" class="th-general  flex items-center cursor-pointer" @click="sortNoColumn">
                                 No
                                 <span v-if="sortOrder === 'asc'">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
@@ -283,13 +308,13 @@ export default {
                                     </svg>
                                 </span>
                             </th>
-                            <th scope="col" class="th-general lg:pl-1">
+                            <th scope="col" class="th-general ">
                                 Nama
                             </th>
-                            <th scope="col" class="th-general lg:pl-1">
+                            <th scope="col" class="th-general ">
                                 Dosis
                             </th>
-                            <th scope="col" class="th-general lg:pl-1">
+                            <th scope="col" class="th-general ">
                                 Kategori
                             </th>
                             <th scope="col" class="">

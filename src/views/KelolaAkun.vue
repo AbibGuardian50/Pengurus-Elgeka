@@ -263,7 +263,7 @@ export default {
                     <thead>
                         <tr class="border-b-[0.5px]">
                             <th scope="col"
-                                class="cursor-pointer px-3 max-sm:pl-0 py-3 max-w-[50px] text-left font-bold font-poppins text-black text-base"
+                                class="cursor-pointer max-md:px-1 px-3 max-sm:pl-0 pt-5 flex items-center max-w-[50px] text-left font-bold font-poppins text-black text-base"
                                 @click="sortNoColumn">
                                 No
                                 <span v-if="sortOrder === 'asc'">
@@ -281,14 +281,14 @@ export default {
                                     </svg>
                                 </span>
                             </th>
-                            <th scope="col" class="th-general px-1">
+                            <th scope="col" class="th-general max-md:px-1 ">
                                 Name
                             </th>
-                            <th scope="col" class="th-general px-1">
+                            <th scope="col" class="th-general max-md:px-1 ">
                                 Username
                             </th>
                             <th @click="sortData('Status')" scope="col"
-                                class="cursor-pointer th-general px-1">
+                                class="cursor-pointer th-general max-md:px-1 ">
                                 Status
                                 <span v-if="sortColumn === 'Status'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                 <span v-else>
@@ -301,7 +301,7 @@ export default {
                                 </span>
                             </th>
                             <th @click="sortData('Roles')" scope="col"
-                                class="cursor-pointer th-general px-1">
+                                class="cursor-pointer th-general max-md:px-1 ">
                                 Roles
                                 <span v-if="sortColumn === 'Roles'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                 <span v-else>
@@ -360,7 +360,7 @@ export default {
                     </tbody>
                 </table>
 
-                <div class="flex justify-center mt-4">
+                <div class="flex justify-center my-8">
                     <button @click="prevPage" :disabled="currentPage === 1"
                         class="px-4 py-2 mr-2 bg-teal text-white rounded-md">Previous</button>
                     <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"

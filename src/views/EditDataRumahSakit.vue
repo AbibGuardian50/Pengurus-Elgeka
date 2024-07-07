@@ -75,9 +75,15 @@ export default {
 
             if (!allowedTypes.includes(selectedFile.type)) {
                 // Tampilkan pesan kesalahan kepada pengguna
-                alert('Hanya gambar dengan format PNG, JPEG, atau JPG yang diizinkan!');
+                const toast = useToast();
+                this.errorMessage = 'Hanya gambar dengan format PNG, JPEG, atau JPG yang diizinkan!';
+                toast.warning('Hanya gambar dengan format PNG, JPEG, atau JPG yang diizinkan!');
                 // Atau, Anda dapat mengatur pesan kesalahan pada variabel data untuk ditampilkan dalam template
                 // this.errorMessage = 'Hanya gambar dengan format PNG, JPEG, atau JPG yang diizinkan!';
+                // Bersihkan nilai input file
+                event.target.value = '';
+            } else if (selectedFile.size > 1024 * 1024) { // 1024 KB * 1024 = 1MB
+                this.errorMessage = 'Ukuran gambar tidak boleh lebih dari 1MB!';
                 // Bersihkan nilai input file
                 event.target.value = '';
             }
@@ -85,6 +91,7 @@ export default {
     },
     data() {
         return {
+            errorMessage: '',
             showeditadmin: false,
             getRoles: false,
             resulterror: '',
@@ -106,7 +113,7 @@ export default {
 <template>
     <div>
         <form v-if="DataHospital" @submit.prevent="edithospital(DataHospital.id)"
-            class="fixed inset-0 flex justify-center max-md:justify-start items-center max-md:items-start overflow-y-auto overflow-x-hidden">
+            class="fixed inset-0 flex justify-center max-md:justify-start max-md:items-start overflow-y-auto overflow-x-hidden">
             <div class="relative w-full max-w-6xl mx-auto my-6 max-md:my-0 flex flex-col">
                 <!--content-->
                 <div
@@ -154,7 +161,7 @@ export default {
                                 <input class="border border-black py-2 md:py-3 lg:py-4 pl-2 pr-10 rounded-md w-full"
                                     type="text" required name="Google Maps" id="" v-model="DataHospital.link_maps"
                                     placeholder="Link/URL Google Maps">
-                                <a target="_blank" href="https://imgur.com/gallery/jwZQDHN">
+                                <a target="_blank" href="https://drive.google.com/file/d/1i5NRONlsZcNzV13tsd6Y66O3fHr1j7on/view?usp=sharing">
                                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
@@ -176,7 +183,7 @@ export default {
                                 <input class="border border-black py-2 md:py-3 lg:py-4 pl-2 pr-10 rounded-md w-full"
                                     type="text" required name="Latlong" id="" v-model="DataHospital.latlong"
                                     placeholder="Latlong Coordinates">
-                                <a target="_blank" href="https://imgur.com/gallery/LaDTHRq">
+                                <a target="_blank" href="https://drive.google.com/file/d/1E_CxXklR2mKt91QnyOwIK-djzOxSWeCb/view?usp=sharing">
                                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
@@ -197,6 +204,7 @@ export default {
                             <input @change="handleFileChange" accept="image/png, image/jpeg, image/jpg"
                                 class="border border-black py-2 md:py-3 lg:py-4 w-full min-w-[250px] md:min-w-[400px] lg:min-w-[550px] pl-2 rounded-md"
                                 type="file" name="Gambar RS" id="">
+                                <div v-if="errorMessage" class="text-red text-sm font-bold mb-4">{{ errorMessage }}</div>
                         </div>
                     </div>
 

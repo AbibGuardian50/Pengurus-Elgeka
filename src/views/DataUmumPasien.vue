@@ -1,160 +1,186 @@
 <script>
-import Sidebar from "../components/Sidebar.vue"
-import axios from 'axios'
-import VueCookies from 'vue-cookies'
-import { Bar, Pie } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js'
-import { useToast } from 'vue-toastification';
+import Sidebar from "../components/Sidebar.vue"; // Import komponen Sidebar
+import axios from 'axios'; // Import axios untuk melakukan HTTP requests
+import VueCookies from 'vue-cookies'; // Import VueCookies untuk mengelola cookies
+import { Bar, Pie } from 'vue-chartjs'; // Import komponen Bar dan Pie dari vue-chartjs
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js'; // Import elemen-elemen yang diperlukan dari Chart.js
+import { useToast } from 'vue-toastification'; // Import useToast untuk menampilkan notifikasi
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement); // Registrasi elemen-elemen yang diperlukan dari Chart.js
 
 export default {
+    components: {
+        Sidebar, // Menambahkan Sidebar sebagai komponen yang digunakan
+        Bar,
+        Pie,
+    },
+    data() {
+        return {
+            allData: [], // Array untuk menyimpan semua data dari API
+            TotalGeneralPatient: 0, // Total jumlah pasien umum
+            BloodData: {}, // Data untuk chart golongan darah
+            ageData: {}, // Data untuk chart umur
+            DistrictData: {}, // Data untuk chart kabupaten
+            loaded: false, // Status apakah data sudah dimuat atau belum
+            ageOptions: {}, // Setelan atau pengaturan untuk chart umur
+            BloodOptions: {}, // Setelan atau pengaturan untuk chart golongan darah
+            DistrictOptions: {}, // Setelan atau pengaturan untuk chart kabupaten
+        };
+    },
     async created() {
-        this.loaded = false;
-        try {
-            const toast = useToast();
-            const tokenlogin = VueCookies.get('TokenAuthorization');
-            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/list/website';
-            const response = await axios.get(url, {
-                headers: {
-                    Authorization: `Bearer ${tokenlogin}`
-                },
-            });
-            const responseData = response.data.Data;
-            console.log(response)
-            if (response.data.Message === "Success to Get Patient List") {
-                toast.success('Data Pasien Berhasil Dimuat');
-            }
-            this.TotalGeneralPatient = responseData.length;
-
-            const ageCounts = {
-                '1-20': 0,
-                '21-40': 0,
-                '41-60': 0,
-                '61-80': 0,
-                '81+': 0
-            };
-            responseData.forEach(item => {
-                const age = item.Age;
-                if (age !== 0 && age !== null) {
-                    if (age <= 20) {
-                        ageCounts['1-20']++;
-                    } else if (age <= 40) {
-                        ageCounts['21-40']++;
-                    } else if (age <= 60) {
-                        ageCounts['41-60']++;
-                    } else if (age <= 80) {
-                        ageCounts['61-80']++;
-                    } else {
-                        ageCounts['81+']++;
-                    }
-                }
-            });
-            this.ageData = {
-                labels: Object.keys(ageCounts),
-                datasets: [{
-                    label: 'Umur',
-                    backgroundColor: '#0A6B77',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                    data: Object.values(ageCounts),
-                    color: 'yellow',
-                }],
-            };
-
-            const districtCounts = {};
-            responseData.forEach(item => {
-                const district = item.District;
-                const province = item.Province;
-                if (province === "32" && district !== "") {
-                    districtCounts[district] = (districtCounts[district] || 0) + 1;
-                }
-            });
-
-            const provinceId = '32'; // Replace with actual province ID if necessary
-            const districtUrl = `https://abibguardian50.github.io/api-wilayah-indonesia/api/regencies/${provinceId}.json`;
-            const districtResponse = await axios.get(districtUrl);
-            const districts = districtResponse.data;
-            const districtMapping = {};
-            districts.forEach(district => {
-                districtMapping[district.id] = district.name;
-            });
-
-            const mappedDistrictCounts = {};
-            Object.keys(districtCounts).forEach(districtId => {
-                const districtName = districtMapping[districtId];
-                if (districtName) {
-                    mappedDistrictCounts[districtName] = districtCounts[districtId];
-                }
-            });
-
-            this.DistrictData = {
-                labels: Object.keys(mappedDistrictCounts),
-                datasets: [{
-                    label: 'Kabupaten',
-                    backgroundColor: '#0A6B77',
-                    borderWidth: 1,
-                    data: Object.values(mappedDistrictCounts),
-                    color: 'yellow',
-                }],
-            };
-
-            const labels = ['A', 'AB', 'B', 'O'];
-            const BloodGroups = responseData.map(item => item.BloodGroup);
-            const BloodGroupCounts = {}
-            labels.forEach(label => {
-                BloodGroupCounts[label] = BloodGroups.filter(group => group === label && group !== null).length;
-            });
-            const backgroundColors = {
-                'A': '#009E73',
-                'AB': '#CC79A7',
-                'B': '#56B4E9',
-                'O': '#E69F00'
-            };
-            console.log(BloodGroups)
-            this.BloodData = {
-                labels: Object.keys(BloodGroupCounts),
-                datasets: [
-                    {
-                        label: 'Golongan Darah',
-                        color: '#FF6384',
-                        backgroundColor: Object.keys(BloodGroupCounts).map(label => backgroundColors[label]),
-                        data: Object.values(BloodGroupCounts)
-                    },
-                ]
-            };
-            this.loaded = true;
-
-            this.updateOptions();
-            window.addEventListener('resize', this.updateOptions);
-
-        } catch (error) {
-            const toast = useToast();
-            if (error.message === "Request failed with status code 401") {
-                toast.error('Error code 401, Mohon untuk logout lalu login kembali');
-            }
-            console.error(error);
-        }
+        await this.fetchData(); // Panggil method fetchData()
     },
     beforeDestroy() {
-        window.removeEventListener('resize', this.updateOptions);
+        window.removeEventListener('resize', this.updateOptions); // Hapus event listener saat komponen akan dihancurkan
     },
     methods: {
+        async fetchData() {
+            this.loaded = false; // Set status loading data
+            try {
+                const toast = useToast(); // Gunakan useToast untuk menampilkan notifikasi
+                const tokenlogin = VueCookies.get('TokenAuthorization'); // Ambil token dari cookies
+                const url = 'https://elgeka-mobile-production.up.railway.app/api/user/list/website'; // URL endpoint API
+                const response = await axios.get(url, {
+                    headers: {
+                        Authorization: `Bearer ${tokenlogin}` // Set header Authorization dengan token
+                    },
+                });
+                const responseData = response.data.Data; // Ambil data dari respons API
+                this.allData = responseData; // Simpan semua data dari API
+                console.log(response); // Log respons API untuk keperluan debugging
+
+                // Tampilkan notifikasi jika pengambilan data berhasil
+                if (response.data.Message === "Success to Get Patient List") {
+                    toast.success('Data Pasien Berhasil Dimuat');
+                }
+                this.TotalGeneralPatient = responseData.length; // Hitung jumlah total pasien umum
+
+                // Hitung data pasien berdasarkan umur
+                const ageCounts = {
+                    '1-20': 0,
+                    '21-40': 0,
+                    '41-60': 0,
+                    '61-80': 0,
+                    '81+': 0
+                };
+                responseData.forEach(item => {
+                    const age = item.Age; // Ambil usia dari setiap data pasien
+                    if (age !== 0 && age !== null) {
+                        if (age <= 20) {
+                            ageCounts['1-20']++;
+                        } else if (age <= 40) {
+                            ageCounts['21-40']++;
+                        } else if (age <= 60) {
+                            ageCounts['41-60']++;
+                        } else if (age <= 80) {
+                            ageCounts['61-80']++;
+                        } else {
+                            ageCounts['81+']++;
+                        }
+                    }
+                });
+                this.ageData = {
+                    labels: Object.keys(ageCounts),
+                    datasets: [{
+                        label: 'Umur',
+                        backgroundColor: '#0A6B77',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        data: Object.values(ageCounts),
+                    }],
+                };
+
+                // Hitung data pasien berdasarkan kabupaten di provinsi dengan ID 32 (contoh: Jawa Barat)
+                const districtCounts = {};
+                responseData.forEach(item => {
+                    const district = item.District; // Ambil nama kabupaten dari setiap data pasien
+                    const province = item.Province; // Ambil ID provinsi dari setiap data pasien
+                    if (province === "32" && district !== "") { // Filter hanya data yang berada di provinsi dengan ID 32
+                        districtCounts[district] = (districtCounts[district] || 0) + 1;
+                    }
+                });
+
+                // Ambil nama-nama kabupaten dari API wilayah Indonesia
+                const provinceId = '32'; // ID provinsi yang diinginkan (contoh: Jawa Barat)
+                const districtUrl = `https://abibguardian50.github.io/api-wilayah-indonesia/api/regencies/${provinceId}.json`;
+                const districtResponse = await axios.get(districtUrl);
+                const districts = districtResponse.data;
+                const districtMapping = {};
+                districts.forEach(district => {
+                    districtMapping[district.id] = district.name; // Membuat mapping antara ID kabupaten dan nama kabupaten
+                });
+
+                // Membuat objek data untuk chart berdasarkan kabupaten
+                const mappedDistrictCounts = {};
+                Object.keys(districtCounts).forEach(districtId => {
+                    const districtName = districtMapping[districtId];
+                    if (districtName) {
+                        mappedDistrictCounts[districtName] = districtCounts[districtId];
+                    }
+                });
+
+                const DistrictData = {
+                    labels: Object.keys(mappedDistrictCounts),
+                    datasets: [{
+                        label: 'Kabupaten',
+                        backgroundColor: '#0A6B77',
+                        borderWidth: 1,
+                        data: Object.values(mappedDistrictCounts),
+                    }],
+                };
+
+                this.DistrictData = DistrictData; // Simpan data kabupaten ke dalam variabel komponen
+
+                // Hitung data golongan darah dari semua pasien
+                const labels = ['A', 'AB', 'B', 'O']; // Label untuk golongan darah
+                const BloodGroups = responseData.map(item => item.BloodGroup); // Ambil data golongan darah dari setiap pasien
+                const BloodGroupCounts = {};
+                labels.forEach(label => {
+                    BloodGroupCounts[label] = BloodGroups.filter(group => group === label && group !== null).length; // Hitung jumlah kemunculan setiap golongan darah
+                });
+                const backgroundColors = { // Warna latar belakang untuk setiap golongan darah
+                    'A': '#009E73',
+                    'AB': '#CC79A7',
+                    'B': '#56B4E9',
+                    'O': '#E69F00'
+                };
+
+                this.BloodData = {
+                    labels: Object.keys(BloodGroupCounts),
+                    datasets: [{
+                        label: 'Golongan Darah',
+                        backgroundColor: Object.keys(BloodGroupCounts).map(label => backgroundColors[label]), // Atur warna latar belakang berdasarkan golongan darah
+                        data: Object.values(BloodGroupCounts) // Atur data jumlah pasien berdasarkan golongan darah
+                    }],
+                };
+
+                this.loaded = true; // Set status bahwa data sudah dimuat
+                this.updateOptions(); // Panggil method untuk memperbarui opsi chart
+                window.addEventListener('resize', this.updateOptions); // Tambahkan event listener untuk merespons perubahan ukuran layar
+            } catch (error) {
+                const toast = useToast(); // Gunakan useToast untuk menampilkan notifikasi
+                if (error.message === "Request failed with status code 401") {
+                    toast.error('Error code 401, Mohon untuk logout lalu login kembali'); // Tampilkan notifikasi error jika terjadi error 401 (Unauthorized)
+                }
+                console.error(error); // Log error ke konsol
+            }
+        },
         updateOptions() {
-            const width = window.innerWidth;
+            const width = window.innerWidth; // Ambil lebar layar browser
             let fontSize;
             if (width >= 1200) {
-                fontSize = 18;
+                fontSize = 18; // Atur ukuran font untuk layar dengan lebar ≥ 1200px
             } else if (width >= 768) {
-                fontSize = 16;
+                fontSize = 16; // Atur ukuran font untuk layar dengan lebar antara 768px dan 1199px
             } else {
-                fontSize = 12;
+                fontSize = 12; // Atur ukuran font untuk layar dengan lebar < 768px
             }
-            this.ageOptions = this.getChartOptions(fontSize);
-            this.BloodOptions = this.getBloodOptions(fontSize);
-            this.DistrictOptions = this.getChartOptions(fontSize, true);
+            this.ageOptions = this.getChartOptions(fontSize); // Update opsi untuk chart umur
+            this.BloodOptions = this.getBloodOptions(fontSize); // Update opsi untuk chart golongan darah
+            this.DistrictOptions = this.getChartOptions(fontSize, true); // Update opsi untuk chart kabupaten
         },
         getBloodOptions(fontSize) {
+            // Opsi untuk chart golongan darah
             const options = {
                 responsive: true,
                 plugins: {
@@ -180,6 +206,7 @@ export default {
             return options;
         },
         getChartOptions(fontSize, isHorizontal = false) {
+            // Opsi untuk chart umur dan kabupaten
             const options = {
                 scales: {
                     x: {
@@ -234,71 +261,102 @@ export default {
                 }
             };
             if (isHorizontal) {
-                options.indexAxis = 'y';
+                options.indexAxis = 'y'; // Jika chart horizontal, atur indexAxis ke 'y'
             }
             return options;
-        }
-    },
-
-    components: {
-        Sidebar,
-        Bar,
-        Pie,
+        },
     },
     computed: {
+        // Menghitung total jumlah pasien berdasarkan golongan darah
         TotalGolonganDarah() {
-            if (!this.BloodData.datasets) return 0;
+            // Jika datasets BloodData tidak ada, kembalikan nilai 0
+            if (!this.BloodData.datasets) return 'error';
+
+            // Ambil data jumlah golongan darah dari dataset pertama
             const BloodGroupCounts = this.BloodData.datasets[0].data;
+
+            // pengurangan array BloodGroupCounts untuk menghitung total jumlah pasien
             return BloodGroupCounts.reduce((total, count) => total + count, 0);
         },
+
+        // Menentukan golongan darah dengan jumlah pasien terbanyak
         golonganDarahTerbanyak() {
-            if (!this.BloodData.datasets) return '';
+            // Jika datasets BloodData tidak ada, kembalikan string kosong
+            if (!this.BloodData.datasets) return 'error';
+
+            // Ambil data jumlah golongan darah dan labelnya
             const BloodGroupCounts = this.BloodData.datasets[0].data;
             const labels = this.BloodData.labels;
+
+            // Temukan nilai maksimum dari BloodGroupCounts
             const maxCount = Math.max(...BloodGroupCounts);
+
+            // Temukan indeks dari nilai maksimum tersebut
             const indexOfMaxCount = BloodGroupCounts.indexOf(maxCount);
+
+            // Ambil label dari golongan darah dengan jumlah terbanyak
             const golonganDarahTerbanyak = labels[indexOfMaxCount];
+
+            // Ambil jumlah orang dengan golongan darah terbanyak
             const jumlahOrangTerbanyak = maxCount;
+
+            // Buat teks untuk golongan darah terbanyak
             const teksGolonganDarahTerbanyak = `${golonganDarahTerbanyak} (${jumlahOrangTerbanyak} Orang)`;
+
+            // Filter label yang memiliki jumlah pasien sama dengan nilai maksimum
             const duplicates = labels.filter(label => BloodGroupCounts[label] === maxCount);
+
+            // Jika terdapat lebih dari satu label dengan jumlah terbanyak, ambil yang pertama setelah diurutkan
             if (duplicates.length > 1) {
                 return duplicates.sort()[0];
             }
+
+            // Kembalikan teks golongan darah terbanyak
             return teksGolonganDarahTerbanyak;
         },
+
+        // Menentukan golongan darah dengan jumlah pasien terlangka
         golonganDarahTerlangka() {
+            // Jika datasets BloodData tidak ada, kembalikan string kosong
             if (!this.BloodData.datasets) return '';
+
+            // Ambil data jumlah golongan darah dan labelnya
             const BloodGroupCounts = this.BloodData.datasets[0].data;
             const labels = this.BloodData.labels;
+
+            // Temukan nilai minimum dari BloodGroupCounts
             const minCount = Math.min(...BloodGroupCounts);
+
+            // Temukan indeks dari nilai minimum tersebut
             const indexOfMinCount = BloodGroupCounts.indexOf(minCount);
+
+            // Ambil label dari golongan darah dengan jumlah terlangka
             const golonganDarahTerlangka = labels[indexOfMinCount];
+
+            // Ambil jumlah orang dengan golongan darah terlangka
             const jumlahOrangTerlangka = minCount;
+
+            // Buat teks untuk golongan darah terlangka
             const teksGolonganDarahTerlangka = `${golonganDarahTerlangka} (${jumlahOrangTerlangka} Orang)`;
+
+            // Filter label yang memiliki jumlah pasien sama dengan nilai minimum
             const duplicates = labels.filter(label => BloodGroupCounts[label] === minCount);
+
+            // Jika terdapat lebih dari satu label dengan jumlah terlangka, ambil yang pertama setelah diurutkan
             if (duplicates.length > 1) {
                 return duplicates.sort()[0];
             }
+
+            // Kembalikan teks golongan darah terlangka
             return teksGolonganDarahTerlangka;
         },
     },
-    data() {
-        return {
-            TotalGeneralPatient: 0,
-            BloodData: {},
-            ageData: {},
-            DistrictData: {},
-            loaded: false,
-            ageOptions: {},
-            BloodOptions: {},
-            DistrictOptions: {},
-        }
-    }
+
 }
 </script>
 
-<style>
 
+<style>
 .container {
     max-width: 100%;
     padding: 0;
@@ -386,7 +444,7 @@ p {
                         class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 max-sm:p-1 w-full max-[1400px]:w-[800px] max-[1000px]:max-w-[600px] max-md:w-[100%] lg:pl-8 lg:py-4 lg:pr-8">
                         <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 lg:pl-8">
                             Grafik
-                            Pasien berdasarkan Kabupaten</p>
+                            Pasien berdasarkan Umur</p>
                         <Bar v-if="loaded" :data="ageData" :options="DistrictOptions"
                             class="border border-lightsilver rounded-md w-full lg:max-w-[900px] lg:min-h-[400px] lg:max-h-[450px] text-white max-sm:p-0 p-4" />
                     </div>
