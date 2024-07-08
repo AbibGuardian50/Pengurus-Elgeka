@@ -39,15 +39,42 @@ export default {
     components: {
         Sidebar
     },
+    computed: {
+        filteredData() {
+            return this.InfoPatient.filter((item) => {
+                if (this.selectedFilter === '<3500') {
+                    return parseFloat(item.Data) < 3500;
+                } else if (this.selectedFilter === '3500 - 10500') {
+                    return parseFloat(item.Data) >= 3500 && parseFloat(item.Data) <= 10500;
+                } else if (this.selectedFilter === '>10500') {
+                    return parseFloat(item.Data) > 10500;
+                } else {
+                    return true;
+                }
+            });
+        }
+    },
+    watch: {
+        selectedFilter() {
+            this.currentPage = 1; // Reset to first page when filter changes
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
+            this.updatePaginatedData();
+        }
+    },
     data() {
         return {
+            items: [
+                // your data here...
+            ],
             InfoPatient: [],
             perPage: 10, // Number of items per page
             currentPage: 1, // Current page
             totalPages: 0, // Total pages
             paginatedInfoPatient: [], // Paginated data
             sortColumn: 'no', // Column to sort by
-            sortDirection: 'asc' // Sort direction
+            sortDirection: 'asc', // Sort direction
+            sortOrder: 'asc',
+            selectedFilter: '',  // Add selectedFilter
         }
     },
     methods: {
@@ -58,7 +85,7 @@ export default {
         updatePaginatedData() {
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
-            this.paginatedInfoPatient = this.InfoPatient.slice(startIndex, endIndex);
+            this.paginatedInfoPatient = this.filteredData.slice(startIndex, endIndex);
         },
         goToPage(pageNumber) {
             this.currentPage = pageNumber; // Set current page to the selected page number
@@ -110,6 +137,12 @@ export default {
             }
             this.updatePaginatedData();
         },
+        filterData() {
+            // This will trigger the computed property `filteredData` to recalculate
+            this.currentPage = 1;
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage);
+            this.updatePaginatedData();
+        }
     }
 }
 </script>
@@ -134,6 +167,18 @@ export default {
             </div>
 
             <p class="font-normal font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
+
+            <!-- Filter Dropdown -->
+            <div class="mb-4">
+                <label for="filter" class="font-medium font-poppins text-blueblack">Filter Data:</label>
+                <select id="filter" v-model="selectedFilter" @change="filterData"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
+                    <option value="">Pilih Filter</option>
+                    <option value="<3500">&lt; 3500</option>
+                    <option value="3500 - 10500">3500 - 10500</option>
+                    <option value=">10500">&gt; 10500</option>
+                </select>
+            </div>
 
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
                 <table class="min-w-full divide-y divide-gray-200 overflow-x-auto">

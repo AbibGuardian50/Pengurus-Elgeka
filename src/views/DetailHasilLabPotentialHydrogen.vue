@@ -38,15 +38,42 @@ export default {
     components: {
         Sidebar
     },
+    computed: {
+        filteredData() {
+            return this.InfoLabPotentialHydrogen.filter((item) => {
+                if (this.selectedFilter === '<7.35') {
+                    return parseFloat(item.Data) < 7.35;
+                } else if (this.selectedFilter === '7.35 - 7.45') {
+                    return parseFloat(item.Data) >= 7.35 && parseFloat(item.Data) <= 7.45;
+                } else if (this.selectedFilter === '>7.45') {
+                    return parseFloat(item.Data) > 7.45;
+                } else {
+                    return true;
+                }
+            });
+        }
+    },
+    watch: {
+        selectedFilter() {
+            this.currentPage = 1; // Reset to first page when filter changes
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
+            this.updatePaginatedData();
+        }
+    },
     data() {
         return {
+            items: [
+                // your data here...
+            ],
             InfoLabPotentialHydrogen: [],
             perPage: 10, // Number of items per page
             currentPage: 1, // Current page
             totalPages: 0, // Total pages
             paginatedInfoLabPotentialHydrogen: [], // Paginated data
             sortColumn: 'no', // Column to sort by
-            sortDirection: 'asc' // Sort direction
+            sortDirection: 'asc', // Sort direction
+            sortOrder: 'asc',
+            selectedFilter: '',  // Add selectedFilter
         }
     },
     methods: {
@@ -57,7 +84,7 @@ export default {
         updatePaginatedData() {
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
-            this.paginatedInfoLabPotentialHydrogen = this.InfoLabPotentialHydrogen.slice(startIndex, endIndex);
+            this.paginatedInfoLabPotentialHydrogen = this.filteredData.slice(startIndex, endIndex);
         },
         goToPage(pageNumber) {
             this.currentPage = pageNumber; // Set current page to the selected page number
@@ -109,6 +136,12 @@ export default {
             }
             this.updatePaginatedData();
         },
+        filterData() {
+            // This will trigger the computed property `filteredData` to recalculate
+            this.currentPage = 1;
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage);
+            this.updatePaginatedData();
+        }
     }
 }
 </script>
@@ -132,6 +165,17 @@ export default {
             </div>
 
             <p class="font-normal font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
+
+            <div class="mb-4">
+                <label for="filter" class="font-medium font-poppins text-blueblack">Filter Data:</label>
+                <select id="filter" v-model="selectedFilter" @change="filterData"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
+                    <option value="">Pilih Filter</option>
+                    <option value="<7.35">&lt; 7.35</option>
+                    <option value="7.35 - 7.45">7.35 - 7.45</option>
+                    <option value=">7.45">&gt; 7.45</option>
+                </select>
+            </div>
 
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
                 <table class="min-w-full divide-y divide-gray-200 overflow-x-auto">

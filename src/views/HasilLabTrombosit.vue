@@ -141,19 +141,19 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data
             const DataLabTrombositCounts = {
-                '< 0.001': 0,
-                '0.001 - 10': 0,
-                '> 10': 0,
+                '< 135.000': 0,
+                '135.000 - 371.000': 0,
+                '> 371.000': 0,
             };
             filteredData.forEach(item => {
                 const DataLabTrombosit = item.Data;
                 if (DataLabTrombosit !== 0 && DataLabTrombosit !== null) {
-                    if (DataLabTrombosit > 10) {
-                        DataLabTrombositCounts['> 10']++;
-                    } else if (DataLabTrombosit <= 10) {
-                        DataLabTrombositCounts['0.001 - 10']++;
-                    } else if (DataLabTrombosit <= 0.001) {
-                        DataLabTrombositCounts['< 0.001']++;
+                    if (DataLabTrombosit > 371.000) {
+                        DataLabTrombositCounts['> 371.000']++;
+                    } else if (DataLabTrombosit > 135.000) {
+                        DataLabTrombositCounts['135.000 - 371.000']++;
+                    } else if (DataLabTrombosit <= 135.000) {
+                        DataLabTrombositCounts['< 135.000']++;
                     }
                 }
             });

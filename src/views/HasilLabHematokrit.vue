@@ -150,7 +150,7 @@ export default {
                 if (DataLabHematokrit !== 0 && DataLabHematokrit !== null) {
                     if (DataLabHematokrit > 50) {
                         DataLabHematokritCounts['> 50%']++;
-                    } else if (DataLabHematokrit <= 50) {
+                    } else if (DataLabHematokrit >34.9) {
                         DataLabHematokritCounts['34.9% - 50%']++;
                     } else if (DataLabHematokrit <= 34.9) {
                         DataLabHematokritCounts['< 34.9%']++;

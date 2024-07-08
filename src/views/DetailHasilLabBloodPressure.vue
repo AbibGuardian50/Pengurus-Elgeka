@@ -38,6 +38,23 @@ export default {
     components: {
         Sidebar
     },
+    computed: {
+        filteredData() {
+            return this.InfoPatient.filter((item) => {
+                const sysMatch = this.selectedFilterSys ? this.checkFiltersystol(item.DataSys, this.selectedFilterSys) : true;
+                const diaMatch = this.selectedFilterDia ? this.checkFilterdiastol(item.DataDia, this.selectedFilterDia) : true;
+                return sysMatch && diaMatch;
+            });
+        }
+    },
+    watch: {
+        selectedFilterSys() {
+            this.applyFilter();
+        },
+        selectedFilterDia() {
+            this.applyFilter();
+        }
+    },
     data() {
         return {
             InfoPatient: [],
@@ -46,7 +63,10 @@ export default {
             totalPages: 0, // Total pages
             paginatedInfoPatient: [], // Paginated data
             sortColumn: 'no', // Column to sort by
-            sortDirection: 'asc' // Sort direction
+            sortDirection: 'asc', // Sort direction
+            sortOrder: 'asc',
+            selectedFilterSys: '',  // Add selectedFilterSys
+            selectedFilterDia: '',  // Add selectedFilterDia
         }
     },
     methods: {
@@ -57,7 +77,7 @@ export default {
         updatePaginatedData() {
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
-            this.paginatedInfoPatient = this.InfoPatient.slice(startIndex, endIndex);
+            this.paginatedInfoPatient = this.filteredData.slice(startIndex, endIndex);
         },
         goToPage(pageNumber) {
             this.currentPage = pageNumber; // Set current page to the selected page number
@@ -109,9 +129,37 @@ export default {
             }
             this.updatePaginatedData();
         },
+        applyFilter() {
+            this.currentPage = 1;
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage);
+            this.updatePaginatedData();
+        },
+        checkFiltersystol(value, filter) {
+            if (filter === '<90') {
+                return parseFloat(value) < 90;
+            } else if (filter === '90 - 120') {
+                return parseFloat(value) >= 90 && parseFloat(value) <= 120;
+            } else if (filter === '>120') {
+                return parseFloat(value) > 120;
+            } else {
+                return true;
+            }
+        },
+        checkFilterdiastol(value, filter) {
+            if (filter === '<60') {
+                return parseFloat(value) < 60;
+            } else if (filter === '60 - 80') {
+                return parseFloat(value) >= 60 && parseFloat(value) <= 80;
+            } else if (filter === '>80') {
+                return parseFloat(value) > 80;
+            } else {
+                return true;
+            }
+        }
     }
 }
 </script>
+
 
 <template>
     <div class="flex bg-offwhite">
@@ -132,6 +180,29 @@ export default {
             </div>
 
             <p class="font-normal font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
+
+            <!-- Filter Dropdowns -->
+            <div class="mb-4">
+                <label for="filterSys" class="font-medium font-poppins text-blueblack">Filter Data Sistol:</label>
+                <select id="filterSys" v-model="selectedFilterSys" @change="applyFilter"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
+                    <option value="">Pilih Filter</option>
+                    <option value="<90">&lt; 90</option>
+                    <option value="90 - 120">90 - 120</option>
+                    <option value=">120">&gt; 120</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="filterDia" class="font-medium font-poppins text-blueblacks">Filter Data Diastol</label>
+                <select id="filterDia" v-model="selectedFilterDia" @change="applyFilter"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
+                    <option value="">Pilih Filter</option>
+                    <option value="<60">&lt; 60</option>
+                    <option value="60 - 80">60 - 80</option>
+                    <option value=">80">&gt; 80</option>
+                </select>
+            </div>
 
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
                 <table class="table-general">

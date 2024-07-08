@@ -38,15 +38,42 @@ export default {
     components: {
         Sidebar
     },
+    computed: {
+        filteredData() {
+            return this.InfoPatient.filter((item) => {
+                if (this.selectedFilter === '<0.001') {
+                    return parseFloat(item.Data) < 0.001;
+                } else if (this.selectedFilter === '0.001-10') {
+                    return parseFloat(item.Data) >= 0.001 && parseFloat(item.Data) <= 10;
+                } else if (this.selectedFilter === '>10') {
+                    return parseFloat(item.Data) > 10;
+                } else {
+                    return true;
+                }
+            });
+        }
+    },
+    watch: {
+        selectedFilter() {
+            this.currentPage = 1; // Reset to first page when filter changes
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
+            this.updatePaginatedData();
+        }
+    },
     data() {
         return {
+            items: [
+                // your data here...
+            ],
             InfoPatient: [],
-            perPage: 10, // Number of items per page
+            perPage: 5, // Number of items per page
             currentPage: 1, // Current page
             totalPages: 0, // Total pages
             paginatedInfoPatient: [], // Paginated data
             sortColumn: 'no', // Column to sort by
-            sortDirection: 'asc' // Sort direction
+            sortDirection: 'asc', // Sort direction
+            sortOrder: 'asc',
+            selectedFilter: '',  // Add selectedFilter
         }
     },
     methods: {
@@ -57,7 +84,7 @@ export default {
         updatePaginatedData() {
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
-            this.paginatedInfoPatient = this.InfoPatient.slice(startIndex, endIndex);
+            this.paginatedInfoPatient = this.filteredData.slice(startIndex, endIndex);
         },
         goToPage(pageNumber) {
             this.currentPage = pageNumber; // Set current page to the selected page number
@@ -109,12 +136,24 @@ export default {
             }
             this.updatePaginatedData();
         },
+        editItem(item) {
+            // your edit logic here...
+        },
+        deleteItem(itemId) {
+            this.items = this.items.filter(item => item.id !== itemId);
+        },
+        filterData() {
+            // This will trigger the computed property `filteredData` to recalculate
+            this.currentPage = 1;
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage);
+            this.updatePaginatedData();
+        }
     }
 }
 </script>
 
 <template>
-    <div class="flex bg-offwhite">
+    <div class="flex bg-offwhite h-full">
         <Sidebar />
 
         <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
@@ -132,6 +171,18 @@ export default {
             </div>
 
             <p class="font-normal font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
+
+            <!-- Filter Dropdown -->
+            <div class="mb-4">
+                <label for="filter" class="font-medium font-poppins text-blueblack">Filter Data:</label>
+                <select id="filter" v-model="selectedFilter" @change="filterData"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
+                    <option value="">Pilih Filter</option>
+                    <option value="<0.001">&lt; 0.001</option>
+                    <option value="0.001-10">0.001 - 10</option>
+                    <option value=">10">&gt; 10</option>
+                </select>
+            </div>
 
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
                 <table class="min-w-full divide-y divide-gray-200 overflow-x-auto">
@@ -186,42 +237,33 @@ export default {
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr v-for="(data, index) in paginatedInfoPatient" :key="index" class="divide-y divide-gray-200">
-                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[4%] td-text-general">
-                                {{ data.no }}
+                    <tbody class="divide-y divide-gray-200">
+                        <tr v-for="(item, index) in paginatedInfoPatient" :key="item.id">
+                            <td class="td-general max-[1200px]:pl-0 max-w-[50px]">
+                                <span class="ml-3 max-[1200px]:ml-0">{{ item.no }}</span>
                             </td>
-                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[5%]">
-                                <div class="flex items-center">
-                                    <div>
-                                        <div class="td-text-general">
-                                            {{ data.Name }}
-                                        </div>
-                                    </div>
-                                </div>
+                            <td class="td-general max-lg:px-1">
+                                {{ item.Name }}
                             </td>
-                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[10%]">
-                                <p class="td-text-general">{{ data.Email }}</p>
+                            <td class="td-general max-lg:px-1">
+                                <p class="td-text-general">{{ item.Email }}</p>
                             </td>
-                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[10%]">
-                                <p class="td-text-general">{{ data.PhoneNumber }}</p>
+                            <td class="td-general max-lg:px-1">
+                                <p class="td-text-general">{{ item.PhoneNumber }}</p>
                             </td>
-                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[5%]">
-                                <p class="td-text-general">{{ data.Data }}</p>
+                            <td class="td-general max-lg:px-1">
+                                <p class="td-text-general">{{ item.Data }}</p>
                             </td>
-                            <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[5%]">
-                                <p class="td-text-general">{{ data.Notes }}</p>
+                            <td class="td-general max-lg:px-1">
+                                <p class="td-text-general">{{ item.Notes }}</p>
                             </td>
-                            <td class="px-3 py-4 max-lg:px-1">
-                                <p class="td-text-general">{{ formatDate(data.Date) }}
-                                </p>
+                            <td class="td-general max-lg:px-1">
+                                <p class="td-text-general">{{ formatDate(item.Date) }} </p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-
-
             <!-- Pagination navigation -->
             <div class=" mt-4 flex justify-center">
                 <button @click="prevPage" :disabled="currentPage === 1"
@@ -235,4 +277,5 @@ export default {
         </div>
     </div>
 </template>
+  
 
