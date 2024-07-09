@@ -150,7 +150,7 @@ export default {
                 if (DataLabBCR !== 0 && DataLabBCR !== null) {
                     if (DataLabBCR > 10) {
                         DataLabBcrAblCounts['> 10']++;
-                    } else if (DataLabBCR <= 10) {
+                    } else if (DataLabBCR > 0.001) {
                         DataLabBcrAblCounts['0.001 - 10']++;
                     } else if (DataLabBCR <= 0.001) {
                         DataLabBcrAblCounts['< 0.001']++;
