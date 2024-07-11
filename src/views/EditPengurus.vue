@@ -1,7 +1,7 @@
 <script>
 import axios from 'axios'
 import VueCookies from 'vue-cookies';
-// import { useToast } from 'vue-toastification';
+import { useToast } from 'vue-toastification';
 // import { toast } from 'vue3-toastify';
 // import 'vue3-toastify/dist/index.css';
 
@@ -38,23 +38,31 @@ export default {
             this.showeditpengurus = !this.showeditpengurus;
         },
         editpengurus(id) {
-            const tokenlogin = VueCookies.get('TokenAuthorization')
+            const toast = useToast();
+            const tokenlogin = VueCookies.get('TokenAuthorization');
             this.daftarpengurus.is_active = this.daftarpengurus.is_active.toString();
+            // Hapus properti superUser dari objek daftarpengurus
+            delete this.daftarpengurus.superUser;
             const url = `https://elgeka-web-api-production.up.railway.app/api/v1/pengurus/${id}`
             axios.patch(url, this.daftarpengurus, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                 .then(response => {
                     console.log(response.data)
                     this.resulterror = response.data
                     if (response.data.code === 200) {
-                        this.$router.push('/kelolaakun')
+                        toast.success('Berhasil edit pengurus')
+                        setTimeout(() => {
+                            this.$router.push('/kelolaakun');
+                        }, 1000);
                     } else if (response.data.code === 400) {
                         setTimeout(() => {
                             this.$router.push('/kelolaakun');
                         }, 5000);
+                        toast.error('Terdapat kesalahan code 400, mohon coba lagi')
                     }
                 })
                 .catch(error => {
                     console.log(error)
+                    toast.error('Terdapat kesalahan, mohon coba lagi')
                 })
         },
     },
