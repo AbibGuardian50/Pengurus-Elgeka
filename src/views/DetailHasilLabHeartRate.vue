@@ -20,12 +20,12 @@ export default {
             if (response.data.Message === "Success to Get Heart Rate Data") {
                 toast.success('Detail Data Hasil Lab Heart Rate Berhasil Dimuat');
             }
-            this.InfoLabHeartRate = response.data.Data;
-            this.InfoLabHeartRate.sort((x, y) => x.id - y.id)
-            this.InfoLabHeartRate.forEach((item, index) => {
+            this.InfoPatient = response.data.Data;
+            this.InfoPatient.sort((x, y) => x.id - y.id)
+            this.InfoPatient.forEach((item, index) => {
                 item.no = index + 1;
             });
-            this.totalPages = Math.ceil(this.InfoLabHeartRate.length / this.perPage); // Calculate total pages
+            this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage); // Calculate total pages
             this.updatePaginatedData(); // Update paginated data
         } catch (error) {
             const toast = useToast()
@@ -40,21 +40,52 @@ export default {
     },
     computed: {
         filteredData() {
-            return this.InfoLabHeartRate.filter((item) => {
-                if (this.selectedFilter === '<60') {
-                    return parseFloat(item.Data) < 60;
-                } else if (this.selectedFilter === '60 - 100') {
-                    return parseFloat(item.Data) >= 60 && parseFloat(item.Data) <= 100;
-                } else if (this.selectedFilter === '>100') {
-                    return parseFloat(item.Data) > 100;
-                } else {
-                    return true;
-                }
-            });
+            let filtered = this.InfoPatient;
+
+            // Filter by data value
+            if (this.selectedFilter) {
+                filtered = filtered.filter((item) => {
+                    const value = parseFloat(item.Data)
+                    if (this.selectedFilter === '<60') {
+                        return value < 60;
+                    } else if (this.selectedFilter === '60 - 100') {
+                        return value >= 60 && value <= 100;
+                    } else if (this.selectedFilter === '>100') {
+                        return value > 100;
+                    } else {
+                        return true;
+                    }
+                });
+            }
+
+            // Filter by date range
+            if (this.startDate && this.endDate) {
+                const startDate = new Date(this.startDate);
+                const endDate = new Date(this.endDate);
+                filtered = filtered.filter(item => {
+                    const itemDate = new Date(item.Date);
+                    return itemDate >= startDate && itemDate <= endDate;
+                });
+            }
+
+            return filtered; // Ensure the filtered array is always returned
         }
     },
     watch: {
         selectedFilter() {
+            this.validateDates(); // Add date validation
+            this.currentPage = 1; // Reset to first page when filter changes
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
+            this.updatePaginatedData();
+        },
+        startDate() {
+            this.validateDates(); // Add date validation
+            this.currentPage = 1; // Reset to first page when filter changes
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
+            this.updatePaginatedData();
+        },
+        endDate() {
+            this.validateDates(); // Add date validation
             this.currentPage = 1; // Reset to first page when filter changes
             this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
             this.updatePaginatedData();
@@ -62,15 +93,17 @@ export default {
     },
     data() {
         return {
-            InfoLabHeartRate: [],
+            InfoPatient: [],
             perPage: 10, // Number of items per page
             currentPage: 1, // Current page
             totalPages: 0, // Total pages
-            paginatedInfoLabHeartRate: [], // Paginated data
+            paginatedInfoPatient: [], // Paginated data
             sortColumn: 'no', // Column to sort by
             sortDirection: 'asc', // Sort direction
             sortOrder: 'asc',
             selectedFilter: '',  // Add selectedFilter
+            startDate: '',
+            endDate: ''
         }
     },
     methods: {
@@ -81,7 +114,7 @@ export default {
         updatePaginatedData() {
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
-            this.paginatedInfoLabHeartRate = this.filteredData.slice(startIndex, endIndex);
+            this.paginatedInfoPatient = this.filteredData.slice(startIndex, endIndex);
         },
         goToPage(pageNumber) {
             this.currentPage = pageNumber; // Set current page to the selected page number
@@ -106,7 +139,7 @@ export default {
                 this.sortColumn = column;
                 this.sortDirection = 'asc';
             }
-            this.InfoLabHeartRate.sort((a, b) => {
+            this.InfoPatient.sort((a, b) => {
                 let compareA, compareB;
                 if (column === 'no') {
                     compareA = a.no;
@@ -125,10 +158,10 @@ export default {
         },
         sortNoColumn() {
             if (this.sortOrder === 'asc') {
-                this.InfoLabHeartRate.sort((a, b) => a.no - b.no);
+                this.InfoPatient.sort((a, b) => a.no - b.no);
                 this.sortOrder = 'desc';
             } else {
-                this.InfoLabHeartRate.sort((a, b) => b.no - a.no);
+                this.InfoPatient.sort((a, b) => b.no - a.no);
                 this.sortOrder = 'asc';
             }
             this.updatePaginatedData();
@@ -138,6 +171,16 @@ export default {
             this.currentPage = 1;
             this.totalPages = Math.ceil(this.filteredData.length / this.perPage);
             this.updatePaginatedData();
+        },
+        validateDates() {
+            const toast = useToast();
+            if (this.startDate && this.endDate) {
+                const startDate = new Date(this.startDate);
+                const endDate = new Date(this.endDate);
+                if (startDate > endDate) {
+                    toast.error('Tanggal awal tidak boleh lebih besar dari tanggal akhir');
+                }
+            }
         }
     }
 }
@@ -173,6 +216,15 @@ export default {
                     <option value="60 - 100">60 - 100</option>
                     <option value=">100">&gt; 100</option>
                 </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="startDate" class="font-medium font-poppins text-blueblack">Tanggal Mulai:</label>
+                <input type="date" id="startDate" v-model="startDate"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
+                <label for="endDate" class="font-medium font-poppins text-blueblack ml-4">Tanggal Akhir:</label>
+                <input type="date" id="endDate" v-model="endDate"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
             </div>
 
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
@@ -235,7 +287,7 @@ export default {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(data, index) in paginatedInfoLabHeartRate" :key="index"
+                        <tr v-for="(data, index) in paginatedInfoPatient" :key="data.id"
                             class="divide-y divide-gray-200">
                             <td
                                 class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-normal leading-4 text-black text-base">
@@ -285,4 +337,5 @@ export default {
                     class="px-4 py-2 bg-teal  text-white rounded-md">Next</button>
             </div>
         </div>
-    </div></template>
+    </div>
+</template>

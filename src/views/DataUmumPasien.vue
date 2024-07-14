@@ -132,17 +132,21 @@ export default {
                 this.DistrictData = DistrictData; // Simpan data kabupaten ke dalam variabel komponen
 
                 // Hitung data golongan darah dari semua pasien
-                const labels = ['A', 'AB', 'B', 'O']; // Label untuk golongan darah
+                const labels = ['A-', 'AB-', 'B-', 'O-', 'A+', 'AB+', 'B+', 'O+']; // Label untuk golongan darah
                 const BloodGroups = responseData.map(item => item.BloodGroup); // Ambil data golongan darah dari setiap pasien
                 const BloodGroupCounts = {};
                 labels.forEach(label => {
                     BloodGroupCounts[label] = BloodGroups.filter(group => group === label && group !== null).length; // Hitung jumlah kemunculan setiap golongan darah
                 });
                 const backgroundColors = { // Warna latar belakang untuk setiap golongan darah
-                    'A': '#009E73',
-                    'AB': '#CC79A7',
-                    'B': '#56B4E9',
-                    'O': '#E69F00'
+                    'A-': '#009E73',
+                    'AB-': '#CC79A7',
+                    'B-': '#56B4E9',
+                    'O-': '#E69F00',
+                    'A+': '#D32F2F',   
+                    'AB+': '#7B1FA2',  
+                    'B+': '#1976D2',   
+                    'O+': '#388E3C'    
                 };
 
                 this.BloodData = {
