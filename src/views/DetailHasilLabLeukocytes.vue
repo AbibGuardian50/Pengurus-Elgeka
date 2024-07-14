@@ -1,7 +1,7 @@
 <script>
-import Sidebar from "../components/Sidebar.vue"
-import axios from 'axios'
-import VueCookies from 'vue-cookies'
+import Sidebar from "../components/Sidebar.vue";
+import axios from 'axios';
+import VueCookies from 'vue-cookies';
 import { useToast } from 'vue-toastification';
 import { format } from 'date-fns';
 import idLocale from 'date-fns/locale/id';
@@ -10,52 +10,78 @@ export default {
     async created() {
         try {
             const toast = useToast();
-            const tokenlogin = VueCookies.get('TokenAuthorization')
+            const tokenlogin = VueCookies.get('TokenAuthorization');
             const url = 'https://elgeka-mobile-production.up.railway.app/api/user/health_status/list_website/leukocytes';
             const response = await axios.get(url, {
                 headers: {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
-            console.log(response)
             if (response.data.Message === "Success to Get Leukocytes Data") {
                 toast.success('Data Hasil Lab Leukocytes Berhasil Dimuat');
             }
             this.InfoPatient = response.data.Data;
-            this.InfoPatient.sort((x, y) => x.id - y.id)
+            this.InfoPatient.sort((x, y) => x.id - y.id);
             this.InfoPatient.forEach((item, index) => {
                 item.no = index + 1;
             });
             this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage); // Calculate total pages
             this.updatePaginatedData(); // Update paginated data
         } catch (error) {
-            const toast = useToast()
+            const toast = useToast();
             if (error.message === "Request failed with status code 401") {
-                toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+                toast.error('Error code 401, Mohon untuk logout lalu login kembali');
             }
             console.error(error);
         }
     },
-    components: {
-        Sidebar
-    },
     computed: {
         filteredData() {
-            return this.InfoPatient.filter((item) => {
-                if (this.selectedFilter === '<3500') {
-                    return parseFloat(item.Data) < 3500;
-                } else if (this.selectedFilter === '3500 - 10500') {
-                    return parseFloat(item.Data) >= 3500 && parseFloat(item.Data) <= 10500;
-                } else if (this.selectedFilter === '>10500') {
-                    return parseFloat(item.Data) > 10500;
-                } else {
+            let filtered = this.InfoPatient;
+
+            // Filter by data value
+            if (this.selectedFilter) {
+                filtered = filtered.filter(item => {
+                    const value = parseFloat(item.Data);
+                    if (this.selectedFilter === '<3500') {
+                        return value < 3500;
+                    } else if (this.selectedFilter === '3500 - 10500') {
+                        return value >= 3500 && value <= 10500;
+                    } else if (this.selectedFilter === '>10500') {
+                        return value > 10500;
+                    }
                     return true;
-                }
-            });
+                });
+            }
+
+            // Filter by date range
+            if (this.startDate && this.endDate) {
+                const startDate = new Date(this.startDate);
+                const endDate = new Date(this.endDate);
+                filtered = filtered.filter(item => {
+                    const itemDate = new Date(item.Date);
+                    return itemDate >= startDate && itemDate <= endDate;
+                });
+            }
+
+            return filtered;
         }
     },
     watch: {
         selectedFilter() {
+            this.validateDates(); // Add date validation
+            this.currentPage = 1; // Reset to first page when filter changes
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
+            this.updatePaginatedData();
+        },
+        startDate() {
+            this.validateDates(); // Add date validation
+            this.currentPage = 1; // Reset to first page when filter changes
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
+            this.updatePaginatedData();
+        },
+        endDate() {
+            this.validateDates(); // Add date validation
             this.currentPage = 1; // Reset to first page when filter changes
             this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
             this.updatePaginatedData();
@@ -75,13 +101,11 @@ export default {
             sortDirection: 'asc', // Sort direction
             sortOrder: 'asc',
             selectedFilter: '',  // Add selectedFilter
+            startDate: '',
+            endDate: ''
         }
     },
     methods: {
-        formatDate(dateString) {
-            // Ubah format tanggal
-            return format(new Date(dateString), 'dd MMMM yyyy', { locale: idLocale });
-        },
         updatePaginatedData() {
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
@@ -102,6 +126,9 @@ export default {
                 this.currentPage--;
                 this.updatePaginatedData(); // Update paginated data when navigating to previous page
             }
+        },
+        deleteItem(itemId) {
+            this.items = this.items.filter(item => item.id !== itemId);
         },
         sortData(column) {
             if (this.sortColumn === column) {
@@ -137,15 +164,32 @@ export default {
             }
             this.updatePaginatedData();
         },
+        formatDate(dateString) {
+            const date = new Date(dateString);
+            return format(date, "dd MMMM yyyy", { locale: idLocale });
+        },
         filterData() {
-            // This will trigger the computed property `filteredData` to recalculate
             this.currentPage = 1;
             this.totalPages = Math.ceil(this.filteredData.length / this.perPage);
             this.updatePaginatedData();
+        },
+        validateDates() {
+            const toast = useToast();
+            if (this.startDate && this.endDate) {
+                const startDate = new Date(this.startDate);
+                const endDate = new Date(this.endDate);
+                if (startDate > endDate) {
+                    toast.error('Tanggal awal tidak boleh lebih besar dari tanggal akhir');
+                }
+            }
         }
+    },
+    components: {
+        Sidebar
     }
-}
+};
 </script>
+
 
 <template>
     <div class="flex bg-offwhite">
@@ -153,8 +197,7 @@ export default {
 
         <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
             <!-- Your content -->
-            <div
-                class="heading-div-general max-[1400px]:justify-start max-[1400px]:gap-4 max-md:gap-2">
+            <div class="heading-div-general max-[1400px]:justify-start max-[1400px]:gap-4 max-md:gap-2">
                 <p class="title-heading-general">Data hasil Lab Leukocytes</p>
                 <a href="/HasilLabLeukocytes"
                     class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg
@@ -178,6 +221,15 @@ export default {
                     <option value="3500 - 10500">3500 - 10500</option>
                     <option value=">10500">&gt; 10500</option>
                 </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="startDate" class="font-medium font-poppins text-blueblack">Tanggal Mulai:</label>
+                <input type="date" id="startDate" v-model="startDate"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
+                <label for="endDate" class="font-medium font-poppins text-blueblack ml-4">Tanggal Akhir:</label>
+                <input type="date" id="endDate" v-model="endDate"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
             </div>
 
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
@@ -234,7 +286,7 @@ export default {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(data, index) in paginatedInfoPatient" :key="index" class="divide-y divide-gray-200">
+                        <tr v-for="(data, index) in paginatedInfoPatient" :key="data.id" class="divide-y divide-gray-200">
                             <td class="td-general max-lg:w-[5%]">
                                 {{ data.no }}
                             </td>

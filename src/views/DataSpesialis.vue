@@ -76,10 +76,8 @@ export default {
             const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization');
             const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/dataSpesialis';
-
             // Convert this.form to a JSON string
             const dataToSend = JSON.stringify(this.form);
-
             axios.post(url, dataToSend, { headers: { 'Authorization': `Bearer ${tokenlogin}`, 'Content-Type': 'application/json' } })
                 .then(response => {
                     console.log(response);
@@ -139,7 +137,7 @@ export default {
             axios.patch(url, dataToSend, { headers: { 'Authorization': `Bearer ${tokenlogin}`, 'Content-Type': 'application/json' } })
                 .then(response => {
                     console.log(response);
-                    if (response.data.message === "Update Data Spesialis Successfully") {
+                    if (response.data.message === "Update Data Spesialis by ID Successfully") {
                         toast.success('Data Spesialis Berhasil Diperbarui');
                         setTimeout(() => {
                             window.location.reload();

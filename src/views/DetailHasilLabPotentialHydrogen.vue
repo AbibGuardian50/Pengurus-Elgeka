@@ -20,12 +20,12 @@ export default {
             if (response.data.Message === "Success to Get Potential Hydrogen Data") {
                 toast.success('Detail Data Hasil Lab Potential Hydrogen Berhasil Dimuat');
             }
-            this.InfoLabPotentialHydrogen = response.data.Data;
-            this.InfoLabPotentialHydrogen.sort((x, y) => x.id - y.id)
-            this.InfoLabPotentialHydrogen.forEach((item, index) => {
+            this.InfoPatient = response.data.Data;
+            this.InfoPatient.sort((x, y) => x.id - y.id)
+            this.InfoPatient.forEach((item, index) => {
                 item.no = index + 1;
             });
-            this.totalPages = Math.ceil(this.InfoLabPotentialHydrogen.length / this.perPage); // Calculate total pages
+            this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage); // Calculate total pages
             this.updatePaginatedData(); // Update paginated data
         } catch (error) {
             const toast = useToast()
@@ -40,21 +40,50 @@ export default {
     },
     computed: {
         filteredData() {
-            return this.InfoLabPotentialHydrogen.filter((item) => {
-                if (this.selectedFilter === '<7.35') {
-                    return parseFloat(item.Data) < 7.35;
-                } else if (this.selectedFilter === '7.35 - 7.45') {
-                    return parseFloat(item.Data) >= 7.35 && parseFloat(item.Data) <= 7.45;
-                } else if (this.selectedFilter === '>7.45') {
-                    return parseFloat(item.Data) > 7.45;
-                } else {
+            let filtered = this.InfoPatient;
+
+            if (this.selectedFilter) {
+                filtered = filtered.filter((item) => {
+                    const value = parseFloat(item.Data);
+                    if (this.selectedFilter === '<7.35') {
+                        return value < 7.35;
+                    } else if (this.selectedFilter === '7.35 - 7.45') {
+                        return value >= 7.35 && value <= 7.45;
+                    } else if (this.selectedFilter === '>7.45') {
+                        return value > 7.45;
+                    }
                     return true;
-                }
-            });
+                });
+            }
+
+            // Filter by date range
+            if (this.startDate && this.endDate) {
+                const startDate = new Date(this.startDate);
+                const endDate = new Date(this.endDate);
+                filtered = filtered.filter(item => {
+                    const itemDate = new Date(item.Date);
+                    return itemDate >= startDate && itemDate <= endDate;
+                });
+            }
+
+            return filtered; // Ensure the filtered array is always returned
         }
     },
     watch: {
         selectedFilter() {
+            this.validateDates(); // Add date validation
+            this.currentPage = 1; // Reset to first page when filter changes
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
+            this.updatePaginatedData();
+        },
+        startDate() {
+            this.validateDates(); // Add date validation
+            this.currentPage = 1; // Reset to first page when filter changes
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
+            this.updatePaginatedData();
+        },
+        endDate() {
+            this.validateDates(); // Add date validation
             this.currentPage = 1; // Reset to first page when filter changes
             this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
             this.updatePaginatedData();
@@ -65,15 +94,17 @@ export default {
             items: [
                 // your data here...
             ],
-            InfoLabPotentialHydrogen: [],
+            InfoPatient: [],
             perPage: 10, // Number of items per page
             currentPage: 1, // Current page
             totalPages: 0, // Total pages
-            paginatedInfoLabPotentialHydrogen: [], // Paginated data
+            paginatedInfoPatient: [], // Paginated data
             sortColumn: 'no', // Column to sort by
             sortDirection: 'asc', // Sort direction
             sortOrder: 'asc',
             selectedFilter: '',  // Add selectedFilter
+            startDate: '',
+            endDate: ''
         }
     },
     methods: {
@@ -84,7 +115,7 @@ export default {
         updatePaginatedData() {
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
-            this.paginatedInfoLabPotentialHydrogen = this.filteredData.slice(startIndex, endIndex);
+            this.paginatedInfoPatient = this.filteredData.slice(startIndex, endIndex);
         },
         goToPage(pageNumber) {
             this.currentPage = pageNumber; // Set current page to the selected page number
@@ -109,7 +140,7 @@ export default {
                 this.sortColumn = column;
                 this.sortDirection = 'asc';
             }
-            this.InfoLabPotentialHydrogen.sort((a, b) => {
+            this.InfoPatient.sort((a, b) => {
                 let compareA, compareB;
                 if (column === 'no') {
                     compareA = a.no;
@@ -128,19 +159,32 @@ export default {
         },
         sortNoColumn() {
             if (this.sortOrder === 'asc') {
-                this.InfoLabPotentialHydrogen.sort((a, b) => a.no - b.no);
+                this.InfoPatient.sort((a, b) => a.no - b.no);
                 this.sortOrder = 'desc';
             } else {
-                this.InfoLabPotentialHydrogen.sort((a, b) => b.no - a.no);
+                this.InfoPatient.sort((a, b) => b.no - a.no);
                 this.sortOrder = 'asc';
             }
             this.updatePaginatedData();
+        },
+        deleteItem(itemId) {
+            this.items = this.items.filter(item => item.id !== itemId);
         },
         filterData() {
             // This will trigger the computed property `filteredData` to recalculate
             this.currentPage = 1;
             this.totalPages = Math.ceil(this.filteredData.length / this.perPage);
             this.updatePaginatedData();
+        },
+        validateDates() {
+            const toast = useToast();
+            if (this.startDate && this.endDate) {
+                const startDate = new Date(this.startDate);
+                const endDate = new Date(this.endDate);
+                if (startDate > endDate) {
+                    toast.error('Tanggal awal tidak boleh lebih besar dari tanggal akhir');
+                }
+            }
         }
     }
 }
@@ -177,6 +221,15 @@ export default {
                 </select>
             </div>
 
+            <div class="mb-4">
+                <label for="startDate" class="font-medium font-poppins text-blueblack">Tanggal Mulai:</label>
+                <input type="date" id="startDate" v-model="startDate"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
+                <label for="endDate" class="font-medium font-poppins text-blueblack ml-4">Tanggal Akhir:</label>
+                <input type="date" id="endDate" v-model="endDate"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
+            </div>
+
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
                 <table class="min-w-full divide-y divide-gray-200 overflow-x-auto">
                     <thead>
@@ -200,24 +253,19 @@ export default {
                                     </svg>
                                 </span>
                             </th>
-                            <th scope="col"
-                                class="th-general">
+                            <th scope="col" class="th-general">
                                 Nama
                             </th>
-                            <th scope="col"
-                                class="th-general">
+                            <th scope="col" class="th-general">
                                 Email
                             </th>
-                            <th scope="col"
-                                class="th-general">
+                            <th scope="col" class="th-general">
                                 Handphone
                             </th>
-                            <th scope="col"
-                                class="th-general">
+                            <th scope="col" class="th-general">
                                 Data
                             </th>
-                            <th scope="col"
-                                class="th-general">
+                            <th scope="col" class="th-general">
                                 Notes
                             </th>
                             <th @click="sortData('Date')" scope="col"
@@ -237,8 +285,7 @@ export default {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(data, index) in paginatedInfoLabPotentialHydrogen" :key="index"
-                            class="divide-y divide-gray-200">
+                        <tr v-for="(data, index) in paginatedInfoPatient" :key="data.id" class="divide-y divide-gray-200">
                             <td
                                 class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-normal leading-4 text-black text-base">
                                 {{ data.no }}

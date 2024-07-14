@@ -40,21 +40,52 @@ export default {
     },
     computed: {
         filteredData() {
-            return this.InfoPatient.filter((item) => {
-                if (this.selectedFilter === '<0.001') {
-                    return parseFloat(item.Data) < 0.001;
-                } else if (this.selectedFilter === '0.001-10') {
-                    return parseFloat(item.Data) >= 0.001 && parseFloat(item.Data) <= 10;
-                } else if (this.selectedFilter === '>10') {
-                    return parseFloat(item.Data) > 10;
-                } else {
+            let filtered = this.InfoPatient;
+
+            // Filter by data value
+            if (this.selectedFilter) {
+                filtered = filtered.filter(item => {
+                    const value = parseFloat(item.Data);
+                    if (this.selectedFilter === '<0.001') {
+                        return value < 0.001;
+                    } else if (this.selectedFilter === '0.001-10') {
+                        return value >= 0.001 && value <= 10;
+                    } else if (this.selectedFilter === '>10') {
+                        return value > 10;
+                    }
                     return true;
-                }
-            });
+                });
+            }
+
+            // Filter by date range
+            if (this.startDate && this.endDate) {
+                const toast = useToast()
+                const startDate = new Date(this.startDate);
+                const endDate = new Date(this.endDate);
+                filtered = filtered.filter(item => {
+                    const itemDate = new Date(item.Date);
+                    return itemDate >= startDate && itemDate <= endDate;
+                });
+            }
+
+            return filtered;
         }
     },
     watch: {
         selectedFilter() {
+            this.validateDates(); // Add date validation
+            this.currentPage = 1; // Reset to first page when filter changes
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
+            this.updatePaginatedData();
+        },
+        startDate() {
+            this.validateDates(); // Add date validation
+            this.currentPage = 1; // Reset to first page when filter changes
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
+            this.updatePaginatedData();
+        },
+        endDate() {
+            this.validateDates(); // Add date validation
             this.currentPage = 1; // Reset to first page when filter changes
             this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
             this.updatePaginatedData();
@@ -62,11 +93,8 @@ export default {
     },
     data() {
         return {
-            items: [
-                // your data here...
-            ],
             InfoPatient: [],
-            perPage: 5, // Number of items per page
+            perPage: 10, // Number of items per page
             currentPage: 1, // Current page
             totalPages: 0, // Total pages
             paginatedInfoPatient: [], // Paginated data
@@ -74,6 +102,8 @@ export default {
             sortDirection: 'asc', // Sort direction
             sortOrder: 'asc',
             selectedFilter: '',  // Add selectedFilter
+            startDate: '',
+            endDate: ''
         }
     },
     methods: {
@@ -136,17 +166,21 @@ export default {
             }
             this.updatePaginatedData();
         },
-        editItem(item) {
-            // your edit logic here...
-        },
-        deleteItem(itemId) {
-            this.items = this.items.filter(item => item.id !== itemId);
-        },
         filterData() {
             // This will trigger the computed property `filteredData` to recalculate
             this.currentPage = 1;
             this.totalPages = Math.ceil(this.filteredData.length / this.perPage);
             this.updatePaginatedData();
+        },
+        validateDates() {
+            const toast = useToast();
+            if (this.startDate && this.endDate) {
+                const startDate = new Date(this.startDate);
+                const endDate = new Date(this.endDate);
+                if (startDate > endDate) {
+                    toast.error('Tanggal awal tidak boleh lebih besar dari tanggal akhir');
+                }
+            }
         }
     }
 }
@@ -182,6 +216,15 @@ export default {
                     <option value="0.001-10">0.001 - 10</option>
                     <option value=">10">&gt; 10</option>
                 </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="startDate" class="font-medium font-poppins text-blueblack">Tanggal Mulai:</label>
+                <input type="date" id="startDate" v-model="startDate"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
+                <label for="endDate" class="font-medium font-poppins text-blueblack ml-4">Tanggal Akhir:</label>
+                <input type="date" id="endDate" v-model="endDate"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
             </div>
 
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
@@ -278,4 +321,3 @@ export default {
     </div>
 </template>
   
-

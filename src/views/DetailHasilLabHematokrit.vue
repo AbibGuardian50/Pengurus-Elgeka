@@ -40,21 +40,53 @@ export default {
     },
     computed: {
         filteredData() {
-            return this.InfoPatient.filter((item) => {
-                if (this.selectedFilter === '<34.9') {
-                    return parseFloat(item.Data) < 34.9;
-                } else if (this.selectedFilter === '34.9 - 50') {
-                    return parseFloat(item.Data) >= 34.9 && parseFloat(item.Data) <= 50;
-                } else if (this.selectedFilter === '>50') {
-                    return parseFloat(item.Data) > 50;
-                } else {
+            let filtered = this.InfoPatient;
+
+            // Filter by data value
+            if (this.selectedFilter) {
+                filtered = filtered.filter((item) => {
+                    const value = parseFloat(item.Data);
+                    if (this.selectedFilter === '<34.9') {
+                        return value < 34.9;
+                    } else if (this.selectedFilter === '34.9 - 50') {
+                        return value >= 34.9 && value <= 50;
+                    } else if (this.selectedFilter === '>50') {
+                        return value > 50;
+                    }
                     return true;
-                }
-            });
+
+                });
+            }
+
+            // Filter by date range
+            if (this.startDate && this.endDate) {
+                const toast = useToast()
+                const startDate = new Date(this.startDate);
+                const endDate = new Date(this.endDate);
+                filtered = filtered.filter(item => {
+                    const itemDate = new Date(item.Date);
+                    return itemDate >= startDate && itemDate <= endDate;
+                });
+            }
+
+            return filtered;
         }
     },
     watch: {
         selectedFilter() {
+            this.validateDates(); // Add date validation
+            this.currentPage = 1; // Reset to first page when filter changes
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
+            this.updatePaginatedData();
+        },
+        startDate() {
+            this.validateDates(); // Add date validation
+            this.currentPage = 1; // Reset to first page when filter changes
+            this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
+            this.updatePaginatedData();
+        },
+        endDate() {
+            this.validateDates(); // Add date validation
             this.currentPage = 1; // Reset to first page when filter changes
             this.totalPages = Math.ceil(this.filteredData.length / this.perPage); // Recalculate total pages
             this.updatePaginatedData();
@@ -71,6 +103,8 @@ export default {
             sortDirection: 'asc', // Sort direction
             sortOrder: 'asc',
             selectedFilter: '',  // Add selectedFilter
+            startDate: '',
+            endDate: ''
         }
     },
     methods: {
@@ -138,6 +172,16 @@ export default {
             this.currentPage = 1;
             this.totalPages = Math.ceil(this.filteredData.length / this.perPage);
             this.updatePaginatedData();
+        },
+        validateDates() {
+            const toast = useToast();
+            if (this.startDate && this.endDate) {
+                const startDate = new Date(this.startDate);
+                const endDate = new Date(this.endDate);
+                if (startDate > endDate) {
+                    toast.error('Tanggal awal tidak boleh lebih besar dari tanggal akhir');
+                }
+            }
         }
     }
 }
@@ -173,6 +217,15 @@ export default {
                     <option value="34.9 - 50">34.9 - 50%</option>
                     <option value=">50">&gt; 50%</option>
                 </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="startDate" class="font-medium font-poppins text-blueblack">Tanggal Mulai:</label>
+                <input type="date" id="startDate" v-model="startDate"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
+                <label for="endDate" class="font-medium font-poppins text-blueblack ml-4">Tanggal Akhir:</label>
+                <input type="date" id="endDate" v-model="endDate"
+                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
             </div>
 
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
