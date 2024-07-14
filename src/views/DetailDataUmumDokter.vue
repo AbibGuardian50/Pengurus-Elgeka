@@ -143,29 +143,32 @@ export default {
         },
         sortDataByHospital(event) {
             this.selectedHospital = event.target.value;
-            if (this.selectedHospital) {
-                this.InfoPatient = this.originalInfoPatient.filter(item => item.HospitalName === this.selectedHospital);
-            } else {
-                this.InfoPatient = [...this.originalInfoPatient]; // Reset to original data
-                this.InfoPatient.sort((x, y) => x.id - y.id);
-            }
+
+            this.InfoPatient = this.originalInfoPatient.filter(item =>
+                (!this.selectedHospital || item.HospitalName === this.selectedHospital) &&
+                item.Name.toLowerCase().includes(this.searchQuery.toLowerCase())
+            );
+
             this.InfoPatient.forEach((item, index) => {
                 item.no = index + 1;
             });
+
             this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage);
             this.currentPage = 1;
             this.updatePaginatedData();
         },
+
         updateSearch() {
-            // Filter data berdasarkan nama dokter
             this.InfoPatient = this.originalInfoPatient.filter(patient =>
-                patient.Name.toLowerCase().includes(this.searchQuery.toLowerCase())
+                patient.Name.toLowerCase().includes(this.searchQuery.toLowerCase()) &&
+                (!this.selectedHospital || patient.HospitalName === this.selectedHospital)
             );
-            // Reset pagination
+
             this.currentPage = 1;
             this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage);
             this.updatePaginatedData();
         },
+
         getHospitalNames() {
             const hospitals = this.originalInfoPatient.map(item => item.HospitalName);
             this.hospitalNames = [...new Set(hospitals)];
@@ -312,19 +315,17 @@ export default {
                             </td>
                             <td class="td-general">
                                 <div class="relative">
-                                    <div v-if="data.status === 'aktif'"
-                                        class="">
-                                        <select class="flex cursor-pointer max-lg:gap-0 max-lg:px-0 gap-2 bg-teal text-white font-semibold font-poppins items-center justify-between py-2 px-4 rounded-md">
-                                            <option selected
-                                                class="">
+                                    <div v-if="data.status === 'aktif'" class="">
+                                        <select
+                                            class="flex cursor-pointer max-lg:gap-0 max-lg:px-0 gap-2 bg-teal text-white font-semibold font-poppins items-center justify-between py-2 px-4 rounded-md">
+                                            <option selected class="">
                                                 Aktif
                                             </option>
-                                            <option @click="DeactivateDoctor(data.ID)"
-                                                class="">
+                                            <option @click="DeactivateDoctor(data.ID)" class="">
                                                 Non-aktif
                                             </option>
                                         </select>
-                                        
+
                                     </div>
                                     <button v-else-if="data.status === 'nonaktif'"
                                         class="flex max-lg:gap-0 cursor-default max-lg:px-0 gap-2 bg-teal items-center justify-between py-2 px-1 rounded-md">

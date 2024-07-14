@@ -178,32 +178,34 @@ export default {
                             <td class="td-general">
                                 <div class="flex items-center">
                                     <div class="">
-                                        <div class=" td-text-general">
-                                            {{ data.Name }}
+                                        <div class="td-text-general">
+                                            {{ data.Name || 'Tidak Diketahui' }}
                                         </div>
                                     </div>
                                 </div>
                             </td>
                             <td class="td-general">
-                                <p class=" td-text-general ">{{ data.PhoneNumber }}</p>
+                                <p class="td-text-general">{{ data.PhoneNumber || 'Tidak Diketahui' }}</p>
                             </td>
                             <td class="td-general">
-                                <p class=" td-text-general ">{{ data.Email }}</p>
+                                <p class="td-text-general">{{ data.Email || 'Tidak Diketahui' }}</p>
                             </td>
                             <td class="td-general max-[1000px]:min-w-[8rem]">
-                                <div v-for="(medicine, mIndex) in data.ListMedicine" :key="mIndex">
-                                    <p class="td-text-general leading-6" v-if="mIndex !== 0">- {{ medicine.Name}} ( {{
-                                        medicine.Stock }} )
-                                    </p>
+                                <div v-if="data.ListMedicine && data.ListMedicine.length > 0">
+                                    <div v-for="(medicine, mIndex) in data.ListMedicine" :key="mIndex">
+                                        <p class="td-text-general leading-6">
+                                            - {{ medicine.Name || 'Tidak Diketahui' }} ({{ medicine.Stock || 'Tidak Diketahui' }})
+                                        </p>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <p class="td-text-general">Tidak Diketahui</p>
                                 </div>
                             </td>
-                            <td class="td-general">
-                                <p class=" td-text-general "></p>
-                            </td>
-                            <td class="td-general">
-                            </td>
+
                         </tr>
                     </tbody>
+
                 </table>
             </div>
 
