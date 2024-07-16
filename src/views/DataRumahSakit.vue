@@ -336,7 +336,7 @@ export default {
                                     <div class="relative">
                                         <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
                                             required name="Google Maps" id="" v-model="form.link_maps"
-                                            placeholder="Link/URL Google Maps">
+                                            placeholder="Masukkan Latlong">
                                         <a target="_blank" href="https://drive.google.com/file/d/1E_CxXklR2mKt91QnyOwIK-djzOxSWeCb/view?usp=sharing"><span
                                                 class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
