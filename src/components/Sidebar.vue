@@ -81,6 +81,12 @@ export default {
                                                     Data Obat
                                                 </a>
                                             </li>
+                                            <li
+                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                                <a href="/datakategoriobatpengurus">
+                                                    Data Kategori Obat
+                                                </a>
+                                            </li>
                                         </ul>
                                     </article>
                                 </details>
@@ -312,6 +318,12 @@ export default {
                                                                 class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                                 <a href="/dataobat">
                                                                     Data Obat
+                                                                </a>
+                                                            </li>
+                                                            <li
+                                                                class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
+                                                                <a href="/datakategoriobatpengurus">
+                                                                    Data Kategori Obat
                                                                 </a>
                                                             </li>
                                                         </ul>

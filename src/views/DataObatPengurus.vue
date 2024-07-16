@@ -15,6 +15,15 @@ export default {
                     Authorization: `Bearer ${tokenlogin}`
                 },
             });
+
+            const categorymedicineurl = 'https://elgeka-web-api-production.up.railway.app/api/v1/dataKategoriObat'
+            const responsecategory = await axios.get(categorymedicineurl, {
+                headers: {
+                    Authorization: `Bearer ${tokenlogin}`
+                },
+            });
+            this.DataCategoryMedicine = responsecategory.data.result.data
+
             if (response.data.message === "Get Data Obat Successfully" && response.data.result.totalItems > 0) {
                 toast.success('Data obat pengurus berhasil dimuat!');
             } else if (response.data.message === "Get Data Obat Successfully" && response.data.result.totalItems === 0) {
@@ -48,6 +57,7 @@ export default {
     },
     data() {
         return {
+            DataCategoryMedicine: [],
             originalInfoMedicine: [],
             medicines: [],
             form: {
@@ -85,7 +95,7 @@ export default {
                 .then(response => {
                     console.log(response);
                     if (response.data.message === "Create Data Obat Successfully") {
-                        toast.success('Data Rumah Sakit Baru Berhasil Ditambahkan');
+                        toast.success('Data Obat Baru Berhasil Ditambahkan');
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
@@ -170,6 +180,13 @@ export default {
                     }),
                     kategori: medicine.kategori,
                 };
+            } else {
+                // Reset form data when closing modal without a medicine object
+                this.form = {
+                    nama_obat: '',
+                    list_dosis: [{ amount: '', unit: 'mg' }],
+                    kategori: '',
+                };
             }
         },
         addDosisInput() {
@@ -237,20 +254,20 @@ export default {
             this.updatePaginatedData();
         },
         updateSearch() {
-        if (this.searchQuery === '') {
-            // Reset to original data if search query is empty
-            this.DataMedicine = [...this.originalInfoMedicine];
-        } else {
-            // Filter data based on search query
-            this.DataMedicine = this.originalInfoMedicine.filter(medicine =>
-                medicine.nama_obat.toLowerCase().includes(this.searchQuery.toLowerCase())
-            );
-        }
-        this.sortData(this.sortColumn); // Add this line to sort data after search
-        this.currentPage = 1; // Reset pagination to first page
-        this.totalPages = Math.ceil(this.DataMedicine.length / this.perPage); // Update total pages
-        this.updatePaginatedData(); // Update paginated data
-    },
+            if (this.searchQuery === '') {
+                // Reset to original data if search query is empty
+                this.DataMedicine = [...this.originalInfoMedicine];
+            } else {
+                // Filter data based on search query
+                this.DataMedicine = this.originalInfoMedicine.filter(medicine =>
+                    medicine.nama_obat.toLowerCase().includes(this.searchQuery.toLowerCase())
+                );
+            }
+            this.sortData(this.sortColumn); // Add this line to sort data after search
+            this.currentPage = 1; // Reset pagination to first page
+            this.totalPages = Math.ceil(this.DataMedicine.length / this.perPage); // Update total pages
+            this.updatePaginatedData(); // Update paginated data
+        },
     },
     watch: {
         selectedCategory() {
@@ -273,8 +290,9 @@ export default {
                         class="font-poppins font-semibold text-[16px] text-teal leading-7 mr-2">Filter Kategori:</label>
                     <select v-model="selectedCategory" class="px-3 py-2 bg-white border rounded text-teal font-semibold">
                         <option value="">Semua</option>
-                        <option value="CML">CML</option>
-                        <option value="Komorbid">Komorbid</option>
+                        <option v-for="category in DataCategoryMedicine" :value="category.nama_kategori_obat">
+                            {{ category.nama_kategori_obat }}</option>
+
                     </select>
                 </div>
             </div>
@@ -351,7 +369,7 @@ export default {
 
             </div>
 
-            <div v-if="showcreatemedicine" class="fixed inset-0 flex items-center max-sm:items-start justify-center z-50">
+            <div v-if="showcreatemedicine" class="fixed inset-0 flex max-h-[38rem] max-sm:items-start justify-center z-50">
                 <div class="modal-overlay fixed inset-0 bg-gray-900 opacity-50"></div>
                 <div
                     class="modal-container bg-white w-11/12 max-sm:w-9/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
@@ -405,9 +423,9 @@ export default {
                                     Kategori
                                 </label>
                                 <select v-model="form.kategori" class="w-full px-3 py-2 bg-white border rounded" required>
-                                    <option value="">Pilih Kategori</option>
-                                    <option value="CML">CML</option>
-                                    <option value="Komorbid">Komorbid</option>
+                                    <option selected value="">Pilih Kategori</option>
+                                    <option v-for="category in DataCategoryMedicine" :value="category.nama_kategori_obat">
+                                        {{ category.nama_kategori_obat }}</option>
                                 </select>
                             </div>
                             <div class="flex justify-end">
@@ -421,10 +439,10 @@ export default {
             </div>
 
 
-            <div v-if="showEditMedicine" class="fixed inset-0 flex items-center max-sm:items-start justify-center z-50">
+            <div v-if="showEditMedicine" class="fixed inset-0 flex max-sm:items-start max-h-[38rem] justify-center z-50">
                 <div class="modal-overlay fixed inset-0 bg-gray-900 opacity-50"></div>
                 <div
-                    class="modal-container bg-white w-11/12 max-sm:w-9/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+                    class="modal-container bg-white w-11/12 max-sm:w-9/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto ">
                     <div class="modal-content py-4 text-left px-6">
                         <div class="flex justify-between items-center mb-3 border-b border-teal">
                             <p
@@ -468,8 +486,8 @@ export default {
                                 </label>
                                 <select v-model="form.kategori" class="w-full px-3 py-2 bg-white border rounded" required>
                                     <option value="">Pilih Kategori</option>
-                                    <option value="CML">CML</option>
-                                    <option value="Komorbid">Komorbid</option>
+                                    <option v-for="category in DataCategoryMedicine" :value="category.nama_kategori_obat">
+                                        {{ category.nama_kategori_obat }}</option>
                                 </select>
                             </div>
                             <div class="flex justify-end">

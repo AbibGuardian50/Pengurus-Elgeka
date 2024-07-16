@@ -111,6 +111,12 @@ const routes = [
     meta: { title: 'Data Spesialis' }
   },
   {
+    path: '/DataKategoriObatPengurus',
+    name: 'DataKategoriObatPengurus',
+    component: () => import('../views/DataKategoriObatPengurus.vue'),
+    meta: { title: 'Data Kategori Obat' }
+  },
+  {
     path: '/DataRumahSakit',
     name: 'DataRumahSakit',
     component: () => import('../views/DataRumahSakit.vue'),
