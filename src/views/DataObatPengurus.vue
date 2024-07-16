@@ -274,7 +274,7 @@ export default {
                     <select v-model="selectedCategory" class="px-3 py-2 bg-white border rounded text-teal font-semibold">
                         <option value="">Semua</option>
                         <option value="CML">CML</option>
-                        <option value="Pendukung">Pendukung</option>
+                        <option value="Komorbid">Komorbid</option>
                     </select>
                 </div>
             </div>
@@ -407,7 +407,7 @@ export default {
                                 <select v-model="form.kategori" class="w-full px-3 py-2 bg-white border rounded" required>
                                     <option value="">Pilih Kategori</option>
                                     <option value="CML">CML</option>
-                                    <option value="Pendukung">Pendukung</option>
+                                    <option value="Komorbid">Komorbid</option>
                                 </select>
                             </div>
                             <div class="flex justify-end">
@@ -469,7 +469,7 @@ export default {
                                 <select v-model="form.kategori" class="w-full px-3 py-2 bg-white border rounded" required>
                                     <option value="">Pilih Kategori</option>
                                     <option value="CML">CML</option>
-                                    <option value="Pendukung">Pendukung</option>
+                                    <option value="Komorbid">Komorbid</option>
                                 </select>
                             </div>
                             <div class="flex justify-end">
