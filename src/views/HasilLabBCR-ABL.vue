@@ -210,7 +210,7 @@ export default {
                 <div class="flex flex-col justify-between p-4 bg-cover bg-center bg-work rounded-md h-full w-full md:w-1/3 lg:w-1/2 mt-4 md:mt-0">
                     <div class="flex flex-col gap-4">
                         <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA BCR-ABL KESELURUHAN</p>
-                        <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang data LEUKOCYTES</p>
+                        <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang data BCR-ABL</p>
                     </div>
                     <div class="flex items-center justify-end">
                         <a href="/DetailHasilLabbcrabl" target="_blank">
