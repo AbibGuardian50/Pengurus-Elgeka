@@ -27,7 +27,7 @@ export default {
             const patientDataPromise = this.fetchPatientData(tokenlogin)
             const medicineDataPromise = this.fetchMedicineData(tokenlogin)
             const [patientData, medicineData] = await Promise.all([patientDataPromise, medicineDataPromise])
-            this.StatisticsPatientData = patientData
+            this.StatisticsPatientData = this.getRandomFilteredPatients(patientData, 3)
             this.TotalPatientWithMedicine = medicineData.TotalPatientWithMedicine
             this.MedicineData = this.processMedicineData(medicineData.MedicineList)
             this.HospitalPerMedicineData = this.processHospitalData(medicineData.MedicineList)
@@ -141,7 +141,6 @@ export default {
             })
             if (response.data.Message === "Success to Get Patient Medicine List Website") {
                 toast.success('Data pasien berhasil dimuat!')
-
             }
             return response.data.Data
         },
@@ -158,8 +157,6 @@ export default {
                 setTimeout(() => {
                     toast.info('zoom out apabila data di grafik tidak lengkap');
                 }, 500);
-
-                
             }
             console.log(response)
             const data = response.data.Data
@@ -230,8 +227,22 @@ export default {
             const saturation = Math.floor(Math.random() * 50) + 50; // Saturation between 50% and 100%
             const lightness = Math.floor(Math.random() * 30) + 50; // Lightness between 50% and 80%
             return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-        }
+        },
+        getRandomFilteredPatients(patientData, maxPatients) {
+            // Filter patients who have at least one medicine with stock below 10
+            const filteredPatients = patientData.filter(patient => 
+                patient.ListMedicine.some(medicine => medicine.Stock < 10)
+            )
 
+            // Shuffle the filtered patients
+            for (let i = filteredPatients.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [filteredPatients[i], filteredPatients[j]] = [filteredPatients[j], filteredPatients[i]];
+            }
+
+            // Return up to maxPatients
+            return filteredPatients.slice(0, maxPatients);
+        }
     }
 }
 </script>
