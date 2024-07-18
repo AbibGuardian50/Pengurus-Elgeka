@@ -86,6 +86,8 @@ export default {
                         setTimeout(() => {
                             window.location.reload();
                         }, 500);
+                    } else if (response.data.message === "Error Creating Data Spesialis: Data Spesialis already exists") {
+                        toast.error('Nama Spesialis yang akan ditambahkan sudah ada, mohon untuk menggantinya dengan nama lain')
                     }
                 })
                 .catch(error => {

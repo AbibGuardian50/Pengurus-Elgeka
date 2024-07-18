@@ -17,7 +17,9 @@ export default {
             HospitalPerMedicineData: [],
             PoliPerMedicineData: [],
             StatisticsPatientData: [],
-            MedicineOptions: this.getMedicineOptions()
+            MedicineOptions: this.getMedicineOptions(),
+            startDate: '',
+            endDate: '',
         }
     },
     async created() {
@@ -55,6 +57,32 @@ export default {
         Doughnut,
     },
     methods: {
+        async fetchFilteredMedicineData() {
+            const startDateObj = new Date(this.startDate);
+            const endDateObj = new Date(this.endDate);
+
+            if (startDateObj > endDateObj) {
+                const toast = useToast();
+                toast.error('Tanggal mulai tidak boleh lebih besar dari tanggal akhir');
+                return;
+            }
+            if (this.startDate && this.endDate) {
+                const tokenlogin = VueCookies.get('TokenAuthorization')
+                try {
+                    const medicineData = await this.fetchMedicineData(tokenlogin, this.startDate, this.endDate)
+                    this.TotalPatientWithMedicine = medicineData.TotalPatientWithMedicine
+                    this.MedicineData = this.processMedicineData(medicineData.MedicineList)
+                    this.HospitalPerMedicineData = this.processHospitalData(medicineData.MedicineList)
+                    this.PoliPerMedicineData = this.processPoliData(medicineData.MedicineList)
+                } catch (error) {
+                    console.error(error.message)
+                    const toast = useToast()
+                    if (error.message === "Request failed with status code 401") {
+                        toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+                    }
+                }
+            }
+        },
         getResponsiveFontSize() {
             const width = window.innerWidth;
             if (width < 640) return 10;  // Font size for small screens (mobile)
@@ -142,6 +170,7 @@ export default {
             if (response.data.Message === "Success to Get Patient Medicine List Website") {
                 toast.success('Data pasien berhasil dimuat!')
             }
+            console.log(response)
             return response.data.Data
         },
         async fetchMedicineData(token) {
@@ -230,7 +259,7 @@ export default {
         },
         getRandomFilteredPatients(patientData, maxPatients) {
             // Filter patients who have at least one medicine with stock below 10
-            const filteredPatients = patientData.filter(patient => 
+            const filteredPatients = patientData.filter(patient =>
                 patient.ListMedicine.some(medicine => medicine.Stock < 10)
             )
 
@@ -250,7 +279,7 @@ export default {
 
 <template>
     <div class="flex bg-offwhite min-h-screen">
-        <Sidebar/>
+        <Sidebar />
 
         <div class="flex flex-col max-md:w-[90%] lg:w-4/5 w-full">
             <div class="border-b border-lightgray pt-12 pb-4 ml-4">
@@ -267,6 +296,18 @@ export default {
                                 Total Pasien: {{ TotalPatientWithMedicine }}</p>
                         </div>
 
+                        <!-- Date Filter -->
+                        <div class="flex justify-center py-4">
+                            <div class="flex max-md:flex-col items-center gap-4">
+                                <label for="startDate" class="font-bold">Start Date:</label>
+                                <input type="date" v-model="startDate" @change="fetchFilteredMedicineData"
+                                    class="border rounded p-2" />
+
+                                <label for="endDate" class="font-bold">End Date:</label>
+                                <input type="date" v-model="endDate" @change="fetchFilteredMedicineData"
+                                    class="border rounded p-2" />
+                            </div>
+                        </div>
                         <div class="flex w-full max-md:min-w-[90%] overflow-x-auto">
                             <Bar v-if="loaded" :data="MedicineData" :options="MedicineOptions"
                                 class="w-full  p-4 max-sm:p-1 min-w-[300px] min-h-[300px] max-h-[550px] text-white" />

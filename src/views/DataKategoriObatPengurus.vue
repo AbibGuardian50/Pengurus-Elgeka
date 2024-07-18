@@ -85,6 +85,8 @@ export default {
                         setTimeout(() => {
                             window.location.reload();
                         }, 500);
+                    } else if (response.data.message === "Error Creating Data Kategori Obat: Data Kategori Obat already exists") {
+                        toast.error('Nama kategori obat yang akan ditambahkan sudah ada, mohon untuk menggantinya dengan nama lain');
                     }
                 })
                 .catch(error => {
