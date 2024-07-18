@@ -138,6 +138,8 @@ export default {
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
+                    } else if (response.data.message === "Error Update Data Obat by ID: Data Obat already exists") {
+                        toast.error('Data obat yang akan diperbarui sudah memiliki nama yang sama, mohon untuk menggantinya dengan nama lain');
                     }
                 })
                 .catch(error => {

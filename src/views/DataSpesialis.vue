@@ -144,6 +144,8 @@ export default {
                         setTimeout(() => {
                             window.location.reload();
                         }, 500);
+                    } else if (response.data.message === "Error Update Data Kategori Obat by ID: Data Kategori Obat already exists") {
+                        toast.success('Data Spesialis yang akan diperbarui sudah memiliki nama yang sama, mohon untuk menggantinya dengan nama lain');
                     }
                 })
                 .catch(error => {
