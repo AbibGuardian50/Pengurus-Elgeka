@@ -3,6 +3,10 @@ import axios from 'axios';
 import VueCookies from 'vue-cookies';
 import { useToast } from 'vue-toastification';
 
+import CryptoJS from 'crypto-js';
+
+const ENCRYPTION_KEY = 'v304_+r30-t_8jbv0r0m';
+
 export default {
     data() {
         return {
@@ -36,7 +40,8 @@ export default {
 
                     if (this.rememberMe) {
                         localStorage.setItem('rememberedUsername', this.username);
-                        localStorage.setItem('rememberedPassword', this.password);
+                        const encryptedPassword = CryptoJS.AES.encrypt(this.password, ENCRYPTION_KEY).toString();
+                        localStorage.setItem('rememberedPassword', encryptedPassword);
                     } else {
                         localStorage.removeItem('rememberedUsername');
                         localStorage.removeItem('rememberedPassword');
@@ -60,10 +65,11 @@ export default {
     },
     mounted() {
         const rememberedUsername = localStorage.getItem('rememberedUsername');
-        const rememberedPassword = localStorage.getItem('rememberedPassword');
-        if (rememberedUsername && rememberedPassword) {
+        const encryptedPassword = localStorage.getItem('rememberedPassword');
+        if (rememberedUsername && encryptedPassword) {
             this.username = rememberedUsername;
-            this.password = rememberedPassword;
+            const decryptedPassword = CryptoJS.AES.decrypt(encryptedPassword, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8);
+            this.password = decryptedPassword;
             this.rememberMe = true;
         }
     }

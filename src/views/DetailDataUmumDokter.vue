@@ -300,12 +300,6 @@ export default {
                                                 {{ data.Specialist }}
                                             </span>
                                         </span>
-                                        <svg width="25" height="24" viewBox="0 0 25 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M18.75 10L13.2366 15.2929C12.8298 15.6834 12.1702 15.6834 11.7634 15.2929L6.25 10"
-                                                stroke="white" stroke-width="2" stroke-linecap="round" />
-                                        </svg>
                                     </button>
                                 </div>
                             </td>
