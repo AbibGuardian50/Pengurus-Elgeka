@@ -21,6 +21,10 @@ export default {
                 toast.success('Detail Data Hasil Lab Trombosit Berhasil Dimuat');
             }
             this.InfoPatient = response.data.Data;
+            this.InfoPatient.forEach((item, index) => {
+                item.Data = parseFloat(item.Data) * 1000; // Mengalikan dengan 10 pangkat 3
+                item.no = index + 1;
+            });
             this.InfoPatient.sort((x, y) => x.id - y.id)
             this.InfoPatient.forEach((item, index) => {
                 item.no = index + 1;
@@ -109,6 +113,9 @@ export default {
         }
     },
     methods: {
+        formatNumber(value) {
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        },
         formatDate(dateString) {
             // Ubah format tanggal
             return format(new Date(dateString), 'dd MMMM yyyy', { locale: idLocale });
@@ -303,7 +310,7 @@ export default {
                                 <p class="td-text-general">{{ data.PhoneNumber }}</p>
                             </td>
                             <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[5%]">
-                                <p class="td-text-general">{{ data.Data }}</p>
+                                <p class="td-text-general">{{ formatNumber(data.Data) }}</p>
                             </td>
                             <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[5%]">
                                 <p class="td-text-general">{{ data.Notes }}</p>

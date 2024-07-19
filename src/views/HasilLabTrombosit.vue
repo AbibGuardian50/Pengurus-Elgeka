@@ -148,11 +148,11 @@ export default {
             filteredData.forEach(item => {
                 const DataLabTrombosit = item.Data;
                 if (DataLabTrombosit !== 0 && DataLabTrombosit !== null) {
-                    if (DataLabTrombosit > 371.000) {
+                    if (DataLabTrombosit > 371) {
                         DataLabTrombositCounts['> 371.000']++;
-                    } else if (DataLabTrombosit > 135.000) {
+                    } else if (DataLabTrombosit > 135) {
                         DataLabTrombositCounts['135.000 - 371.000']++;
-                    } else if (DataLabTrombosit <= 135.000) {
+                    } else if (DataLabTrombosit <= 135) {
                         DataLabTrombositCounts['< 135.000']++;
                     }
                 }
