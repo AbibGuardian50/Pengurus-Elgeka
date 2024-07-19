@@ -29,11 +29,6 @@ export default {
         }
     },
     methods: {
-        // showToatWarning(){
-        //     toast.warning('Wow warning!',{
-        //         autoClose: 1000,
-        //     });   
-        // },
         toggleModalEditPengurus: function () {
             this.showeditpengurus = !this.showeditpengurus;
         },
@@ -53,11 +48,13 @@ export default {
                         setTimeout(() => {
                             this.$router.push('/kelolaakun');
                         }, 1000);
-                    } else if (response.data.code === 400) {
+                    } else if (response.data.message === 'Error Update Admin by ID: Username already exists') {
+                        toast.error('Nama pengurus yang akan diubah sudah ada, mohon untuk mengganti dengan nama yang lain')
                         setTimeout(() => {
                             this.$router.push('/kelolaakun');
-                        }, 5000);
-                        toast.error('Terdapat kesalahan code 400, mohon coba lagi')
+                        }, 2000);
+                    } else {
+                        toast.error('Terdapat kesalahan, mohon coba lagi')
                     }
                 })
                 .catch(error => {

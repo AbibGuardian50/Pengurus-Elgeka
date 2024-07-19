@@ -149,7 +149,12 @@ export default {
                 axios.post(url, this.form, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                     .then(response => {
                         console.log(response.data);
-                        window.location.reload();
+                        if (response.data.message === 'Create New Pengurus Success') {
+                            toast.success('Pengurus baru berhasil ditambahkan ');
+                        } else if (response.data.message === 'Error Creating New Pengurus: Username already exists') {
+                            toast.error('Nama pengurus yang akan ditambahkan sudah ada, mohon untuk mengganti dengan nama yang lain');
+                        }
+
                     })
                     .catch(error => {
                         toast.error('Terdapat Kesalahan pada sistem, mohon coba lagi');

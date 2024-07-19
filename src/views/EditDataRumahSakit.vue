@@ -50,11 +50,10 @@ export default {
                     if (response.data.code === 200) {
                         toast.success('Edit data rumah sakit berhasil');
                         this.$router.push('/datarumahsakit')
-                    } else if (response.data.code === 400) {
-                        setTimeout(() => {
-                            toast.error('Edit data rumah sakit gagal!');
-                            this.$router.push('/datarumahsakit');
-                        }, 5000);
+                    } else if (response.data.message === 'Error Update Info RS by ID: Rumah Sakit already exists') {
+                        toast.error('Nama Rumah Sakit yang sama sudah ada, mohon untuk mengganti dengan nama yang lain')
+                    } else {
+                        toast.error('terdapat kesalahan, mohon coba lagi')
                     }
                 })
                 .catch(error => {
@@ -121,7 +120,7 @@ export default {
                     <!--header-->
                     <div class="flex items-start justify-between p-5 border-b-2 border-black rounded-t">
                         <h3 class="text-2xl md:text-3xl lg:text-[40px] text-teal font-semibold font-poppins">
-                            Data RSUD Bandung
+                            Data Rumah Sakit
                         </h3>
                         <button
                             class="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -161,7 +160,8 @@ export default {
                                 <input class="border border-black py-2 md:py-3 lg:py-4 pl-2 pr-10 rounded-md w-full"
                                     type="text" required name="Google Maps" id="" v-model="DataHospital.link_maps"
                                     placeholder="Link/URL Google Maps">
-                                <a target="_blank" href="https://drive.google.com/file/d/1i5NRONlsZcNzV13tsd6Y66O3fHr1j7on/view?usp=sharing">
+                                <a target="_blank"
+                                    href="https://drive.google.com/file/d/1i5NRONlsZcNzV13tsd6Y66O3fHr1j7on/view?usp=sharing">
                                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
@@ -183,7 +183,8 @@ export default {
                                 <input class="border border-black py-2 md:py-3 lg:py-4 pl-2 pr-10 rounded-md w-full"
                                     type="text" required name="Latlong" id="" v-model="DataHospital.latlong"
                                     placeholder="Latlong Coordinates">
-                                <a target="_blank" href="https://drive.google.com/file/d/1E_CxXklR2mKt91QnyOwIK-djzOxSWeCb/view?usp=sharing">
+                                <a target="_blank"
+                                    href="https://drive.google.com/file/d/1E_CxXklR2mKt91QnyOwIK-djzOxSWeCb/view?usp=sharing">
                                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
@@ -204,7 +205,7 @@ export default {
                             <input @change="handleFileChange" accept="image/png, image/jpeg, image/jpg"
                                 class="border border-black py-2 md:py-3 lg:py-4 w-full min-w-[250px] md:min-w-[400px] lg:min-w-[550px] pl-2 rounded-md"
                                 type="file" name="Gambar RS" id="">
-                                <div v-if="errorMessage" class="text-red text-sm font-bold mb-4">{{ errorMessage }}</div>
+                            <div v-if="errorMessage" class="text-red text-sm font-bold mb-4">{{ errorMessage }}</div>
                         </div>
                     </div>
 
@@ -226,5 +227,5 @@ export default {
                 </div>
             </div>
         </form>
-    <div v-if="showeditadmin" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
-</div></template>
+        <div v-if="showeditadmin" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
+    </div></template>

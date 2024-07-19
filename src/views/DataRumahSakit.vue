@@ -94,6 +94,8 @@ export default {
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
+                    } else if (response.data.message === 'Error Creating Info RS: Rumah Sakit already exists') {
+                        toast.error ('Nama Rumah Sakit yang sama sudah ada, mohon untuk mengganti dengan nama yang lain')
                     }
                 })
                 .catch(error => {
