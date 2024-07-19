@@ -12,7 +12,7 @@ const routes = [
     path: '/',
     name: 'Login',
     component: () => import('../views/Login.vue'),
-    meta: { title: 'Login Pengurus Elgeka Jawa Barat' }
+    meta: { title: 'Login Pengurus Sahabat CGI' }
   },
   {
     path: '/dataumumpasien',
@@ -213,7 +213,7 @@ router.beforeEach((to, from, next) => {
   if (!tokenlogin && to.name !== 'Login' && to.name !== 'notfound') {
     next('/');
   } else {
-    document.title = to.meta.title || 'Dashboard Pengurus Elgeka Jawa Barat'; // Atur title berdasarkan meta title atau default jika tidak ada
+    document.title = to.meta.title || 'Dashboard Pengurus Sahabat CGI'; // Atur title berdasarkan meta title atau default jika tidak ada
     next();
   }
 });
