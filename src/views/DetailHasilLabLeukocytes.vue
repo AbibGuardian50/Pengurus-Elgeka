@@ -21,6 +21,10 @@ export default {
                 toast.success('Data Hasil Lab Leukocytes Berhasil Dimuat');
             }
             this.InfoPatient = response.data.Data;
+            this.InfoPatient.forEach((item, index) => {
+                item.Data = parseFloat(item.Data) * 1000; // Mengalikan dengan 10 pangkat 3
+                item.no = index + 1;
+            });
             this.InfoPatient.sort((x, y) => x.id - y.id);
             this.InfoPatient.forEach((item, index) => {
                 item.no = index + 1;
@@ -106,6 +110,9 @@ export default {
         }
     },
     methods: {
+        formatNumber(value) {
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        },
         updatePaginatedData() {
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
@@ -306,7 +313,7 @@ export default {
                                 <p class="td-text-general">{{ data.PhoneNumber }}</p>
                             </td>
                             <td class="td-general max-lg:w-[5%]">
-                                <p class="td-text-general">{{ data.Data }}</p>
+                                <p class="td-text-general">{{ formatNumber(data.Data) }}</p>
                             </td>
                             <td class="td-general max-lg:w-[5%]">
                                 <p class="td-text-general">{{ data.Notes }}</p>
