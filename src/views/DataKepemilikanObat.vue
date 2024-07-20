@@ -197,15 +197,13 @@ export default {
         processMedicineData(medicineList) {
             const MedicineNameData = medicineList.map(item => item.Medicine_Name)
             const TotalPatientData = medicineList.map(item => item.Total_Patient)
-            const backgroundColors = medicineList.map(() => this.generateRandomColor())
-
             return {
                 labels: MedicineNameData,
                 datasets: [
                     {
                         label: 'Jumlah Pasien',
-                        color: '#FF6384',
-                        backgroundColor: backgroundColors,
+                        color: '#0A6B77',
+                        backgroundColor: '#0A6B77',
                         data: Object.values(TotalPatientData)
                     }
                 ]
