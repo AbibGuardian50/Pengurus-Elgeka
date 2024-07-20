@@ -197,7 +197,7 @@ export default {
 
         <div class="pl-8 max-sm:pl-2 pt-4 w-full bg-offwhite">
             <div class="heading-div-general">
-                <p class="title-heading-general">Data Rumah Sakit</p>
+                <p class="title-heading-general">Data Spesialis</p>
             </div>
 
             <div class="container-table-general bg-offwhite">
