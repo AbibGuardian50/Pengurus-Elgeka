@@ -257,7 +257,7 @@ export default {
             </div>
 
             <!-- Pagination navigation -->
-            <div class="ml-8 mt-4 flex justify-center">
+            <div class="ml-8 my-8 flex justify-center">
                 <button @click="prevPage" :disabled="currentPage === 1"
                     class="px-4 py-2 mr-2 bg-teal text-white rounded-md">Previous</button>
                 <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
