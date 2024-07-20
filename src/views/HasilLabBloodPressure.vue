@@ -156,7 +156,7 @@ export default {
             const chartDataSys = {
                 labels: Object.keys(DataLabSystoleCounts),
                 datasets: [{
-                    label: 'Data Sys',
+                    label: 'Systole',
                     backgroundColor: [
                         '#FFD700', // yellow for < 90
                         '#008000', // green for 90 - 120
@@ -204,7 +204,7 @@ export default {
             const chartDataDia = {
                 labels: Object.keys(DataLabDiastoleCounts),
                 datasets: [{
-                    label: 'Data Dia',
+                    label: 'Diastole',
                     backgroundColor: [
                         '#FFD700', // yellow for < 60
                         '#008000', // green for 60 - 80
