@@ -308,7 +308,7 @@ export default {
                         </div>
                         <div class="flex w-full max-md:min-w-[90%] overflow-x-auto">
                             <Bar v-if="loaded" :data="MedicineData" :options="MedicineOptions"
-                                class="w-full  p-4 max-sm:p-1 min-w-[300px] min-h-[300px] max-h-[550px] text-white" />
+                                class="w-full  p-4 max-sm:p-1 min-w-[300px] min-h-[300px] text-white" />
                             <div class="ml-4" v-else>
                                 Tabel Sedang Dimuat.....
                             </div>
