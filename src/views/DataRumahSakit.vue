@@ -41,7 +41,7 @@ export default {
                 link_maps: '',
                 latlong: '',
                 info_kontak: '',
-                data_dokter: [{ name: '', qualification: '' }] // New field for data_dokter
+                data_dokter: [{ name: ''}] // New field for data_dokter
             },
             formErrors: {
                 image: '',
@@ -103,8 +103,7 @@ export default {
             formData.append('info_kontak', this.form.info_kontak);
             // Format data_dokter into the desired string format
             const formattedDoctors = this.form.data_dokter.map(doctor => {
-                const specialization = this.selectedSpecialization ? `,${this.selectedSpecialization}` : '';
-                return `${doctor.name} ${doctor.qualification}${specialization}`;
+                return `${doctor.name}`;
             }).join(', ');
 
             formData.append('data_dokter', formattedDoctors);
@@ -184,7 +183,7 @@ export default {
             this.updatePaginatedData();
         },
         addDoctor() {
-            this.form.data_dokter.push({ name: '', qualification: '' });
+            this.form.data_dokter.push({ name: ''});
         },
         removeDoctor(index) {
             if (this.form.data_dokter.length > 1) {
@@ -192,7 +191,7 @@ export default {
             }
         },
         getFullDoctorName(doctor) {
-            return `${doctor.name} ${doctor.qualification}`;
+            return `${doctor.name}`;
         },
         sortNoColumn() {
             if (this.sortOrder === 'asc') {
@@ -370,12 +369,6 @@ export default {
                                         <input class="border border-black py-4 w-[80%] max-md:min-w-[50%] pl-2 rounded-md"
                                             placeholder="Masukkan nama dokter" type="text" :id="'doctor_name_' + index"
                                             v-model="doctor.name" required />
-                                        <select v-model="selectedSpecialization" required>
-                                            <option v-for="spec in specializations" :key="spec.id"
-                                                :value="spec.nama_spesialis">
-                                                {{ spec.nama_spesialis }}
-                                            </option>
-                                        </select>
                                         <button class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded"
                                             type="button" @click="removeDoctor(index)">Hapus</button>
                                     </div>

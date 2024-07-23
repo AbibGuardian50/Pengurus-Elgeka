@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar.vue"
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
 import { format } from 'date-fns';
+import id from 'date-fns/locale/id';
 import idLocale from 'date-fns/locale/id';
 import { useToast } from 'vue-toastification';
 
@@ -51,6 +52,10 @@ export default {
         }
     },
     methods: {
+        formatDate(dateString) {
+            // Ubah format tanggal
+            return format(new Date(dateString), 'dd MMMM yyyy HH:mm', { locale: id });
+        },
         updatePaginatedData() {
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
@@ -164,6 +169,9 @@ export default {
                             <th scope="col" class="th-general">
                                 Obat yang dimiliki
                             </th>
+                            <th scope="col" class="th-general">
+                                Tanggal
+                            </th>
                             <!-- <th scope="col" class="th-general">
                                 Stok Obat
                             </th> -->
@@ -195,6 +203,18 @@ export default {
                                     <div v-for="(medicine, mIndex) in data.ListMedicine" :key="mIndex">
                                         <p class="td-text-general leading-6">
                                             - {{ medicine.Name || 'Tidak Diketahui' }} ({{ medicine.Stock || 'Tidak Diketahui' }})
+                                        </p>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <p class="td-text-general">Tidak Diketahui</p>
+                                </div>
+                            </td>
+                            <td class="td-general max-[1000px]:min-w-[8rem]">
+                                <div v-if="data.ListMedicine && data.ListMedicine.length > 0">
+                                    <div v-for="(medicine, mIndex) in data.ListMedicine" :key="mIndex">
+                                        <p class="td-text-general leading-6">
+                                            {{ formatDate(medicine.Date) || 'Tidak Diketahui' }}
                                         </p>
                                     </div>
                                 </div>

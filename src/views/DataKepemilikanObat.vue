@@ -12,6 +12,7 @@ export default {
     data() {
         return {
             loaded: false,
+            allData: [], // Data asli tanpa filter
             MedicineData: [],
             TotalPatientWithMedicine: 0,
             HospitalPerMedicineData: [],
@@ -19,24 +20,28 @@ export default {
             MedicineOptions: this.getMedicineOptions(),
             startDate: '',
             endDate: '',
-            categories: [], // Add this line
-            selectedCategory: '' // Add this line
+            categories: [],
+            selectedCategory: '',
+            selectedStock: '',
         }
     },
     async created() {
         this.loaded = false
         try {
-            const tokenlogin = VueCookies.get('TokenAuthorization')
-            await this.fetchCategories(tokenlogin) // Fetch categories on creation
-            const patientDataPromise = this.fetchPatientData(tokenlogin)
-            const medicineDataPromise = this.fetchMedicineData(tokenlogin)
-            const [patientData, medicineData] = await Promise.all([patientDataPromise, medicineDataPromise])
+            const tokenlogin = VueCookies.get('TokenAuthorization');
+            await this.fetchCategories(tokenlogin);
+            const patientDataPromise = this.fetchPatientData(tokenlogin);
+            const medicineDataPromise = this.fetchMedicineData(tokenlogin);
+            const [patientData, medicineData] = await Promise.all([patientDataPromise, medicineDataPromise]);
             this.StatisticsPatientData = this.getRandomFilteredPatients(patientData, 3)
-            this.TotalPatientWithMedicine = this.calculateTotalPatientWithMedicine(patientData)
-            this.MedicineData = this.processMedicineData(patientData)
-            this.HospitalPerMedicineData = this.processHospitalData(patientData)
 
-            this.loaded = true
+            // Save fetched patient data to allData
+            this.allData = patientData;
+            this.totalPatientCount = this.allData.length;
+
+            this.filterData(); // Apply initial filtering
+
+            this.loaded = true;
         } catch (error) {
             console.error(error.message)
             const toast = useToast()
@@ -45,7 +50,6 @@ export default {
             }
         }
 
-        // Add resize event listener to update chart font sizes on window resize
         window.addEventListener('resize', this.updateChartFontSizes);
     },
     beforeDestroy() {
@@ -57,43 +61,82 @@ export default {
         Pie,
         Doughnut,
     },
-    methods: {
-        async fetchFilteredMedicineData() {
-            const startDateObj = new Date(this.startDate);
-            const endDateObj = new Date(this.endDate);
+    computed: {
+        filteredPatients() {
+            return this.getRandomFilteredPatients(this.StatisticsPatientData, 100); // Adjust the count as needed
+        },
+        filteredPatientData() {
+            const today = new Date();
+            const cutoffDate = new Date(today.setDate(today.getDate() - 30));
 
-            if (startDateObj > endDateObj) {
+            return this.StatisticsPatientData.filter(patient => {
+                return patient.ListMedicine.some(medicine =>
+                    new Date(medicine.Date) <= cutoffDate
+                );
+            });
+        }
+    },
+    methods: {
+        filterData() {
+            const startDateObj = this.startDate ? new Date(this.startDate) : null;
+            const endDateObj = this.endDate ? new Date(this.endDate) : null;
+
+            if (startDateObj && endDateObj && startDateObj > endDateObj) {
                 const toast = useToast();
                 toast.error('Tanggal mulai tidak boleh lebih besar dari tanggal akhir');
                 return;
             }
 
-            if (this.startDate && this.endDate) {
-                const tokenlogin = VueCookies.get('TokenAuthorization');
-                try {
-                    const params = {
-                        startDate: this.startDate,
-                        endDate: this.endDate,
-                        category: this.selectedCategory || '' // Pastikan parameter ini dikirim
-                    };
-                    const patientData = await this.fetchPatientData(tokenlogin, params);
-                    this.TotalPatientWithMedicine = this.calculateTotalPatientWithMedicine(patientData);
-                    this.MedicineData = this.processMedicineData(patientData);
-                    this.HospitalPerMedicineData = this.processHospitalData(patientData);
-                } catch (error) {
-                    console.error(error.message);
-                    const toast = useToast();
-                    if (error.message === "Request failed with status code 401") {
-                        toast.error('Error code 401, Mohon untuk logout lalu login kembali');
-                    }
+            const filteredData = this.allData.reduce((acc, patient) => {
+                const patientFilteredMedicines = patient.ListMedicine.filter(medicine => {
+                    const itemDate = new Date(medicine.Date);
+                    const dateInRange = (!startDateObj || itemDate >= startDateObj) && (!endDateObj || itemDate <= endDateObj);
+                    const categoryMatches = !this.selectedCategory || medicine.Category === this.selectedCategory;
+                    return dateInRange && categoryMatches;
+                });
+
+                if (patientFilteredMedicines.length > 0) {
+                    acc.push({
+                        ...patient,
+                        ListMedicine: patientFilteredMedicines
+                    });
                 }
-            }
+
+                return acc;
+            }, []);
+
+            this.updateData(filteredData);
+        },
+
+
+        getRandomFilteredPatients(patients, count) {
+            const today = new Date();
+            const cutoffDate = new Date(today.setDate(today.getDate() - 8));
+
+            const filteredPatients = patients.filter(patient => {
+                return patient.ListMedicine.some(medicine => medicine.Stock < 10 && new Date(medicine.Date) > cutoffDate);
+            });
+
+            return filteredPatients.sort(() => Math.random() - 0.5).slice(0, count);
+        },
+
+        // Method to fetch filtered medicine data based on category
+        async fetchFilteredMedicineData() {
+            // Call filterData to apply the selected category
+            this.filterData();
+        },
+
+        // Methods to fetch data remain unchanged
+        updateData(filteredData) {
+            this.TotalPatientWithMedicine = this.totalPatientCount;
+            this.MedicineData = this.processMedicineData(filteredData);
+            this.HospitalPerMedicineData = this.processHospitalData(filteredData);
         },
         getResponsiveFontSize() {
             const width = window.innerWidth;
-            if (width < 640) return 10;  // Font size for small screens (mobile)
-            if (width < 1024) return 14; // Font size for medium screens (tablet)
-            return 20;                   // Font size for large screens (desktop)
+            if (width < 640) return 10;
+            if (width < 1024) return 14;
+            return 20;
         },
         getMedicineOptions() {
             const fontSize = this.getResponsiveFontSize();
@@ -102,9 +145,9 @@ export default {
                 scales: {
                     x: {
                         ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
+                            color: '#222539',
                             font: {
-                                size: fontSize  // Menggunakan ukuran font responsif
+                                size: fontSize
                             }
                         },
                         title: {
@@ -118,9 +161,9 @@ export default {
                     },
                     y: {
                         ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu Y
+                            color: '#222539',
                             font: {
-                                size: fontSize  // Menggunakan ukuran font responsif
+                                size: fontSize
                             }
                         },
                         title: {
@@ -166,20 +209,28 @@ export default {
             this.MedicineOptions.plugins.legend.labels.font.size = fontSize + 2;
         },
         async fetchPatientData(token) {
-            const toast = useToast()
-            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/medicine/list_patient/website'
-            const response = await axios.get(url, {
-                headers: {
-                    Authorization: `Bearer ${token}`
+            const toast = useToast();
+            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/medicine/list_patient/website';
+            try {
+                const response = await axios.get(url, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                });
+                if (response.data.Message === "Success to Get Patient Medicine List Website") {
+                    toast.success('Data pasien berhasil dimuat!');
                 }
-            })
-            if (response.data.Message === "Success to Get Patient Medicine List Website") {
-                toast.success('Data pasien berhasil dimuat!')
+                console.log(response);
+                return response.data.Data;
+            } catch (error) {
+                console.error(error.message);
+                if (error.message === "Request failed with status code 401") {
+                    toast.error('Error code 401, Mohon untuk logout lalu login kembali');
+                }
             }
-            console.log(response)
-            return response.data.Data
         },
-        async fetchMedicineData(token, params = {}) {
+
+        async fetchMedicineData(token) {
             const toast = useToast();
             const url = 'https://elgeka-mobile-production.up.railway.app/api/user/medicine/list/website';
             try {
@@ -187,7 +238,6 @@ export default {
                     headers: {
                         Authorization: `Bearer ${token}`
                     },
-                    params
                 });
 
                 if (response.data.Message === "Success to Get Medicine List Website") {
@@ -204,13 +254,11 @@ export default {
                 };
             } catch (error) {
                 console.error(error.message);
-                const toast = useToast();
                 if (error.message === "Request failed with status code 401") {
                     toast.error('Error code 401, Mohon untuk logout lalu login kembali');
                 }
             }
         },
-
         async fetchCategories(token) {
             try {
                 const response = await axios.get('https://elgeka-mobile-production.up.railway.app/api/user/medicine/list_patient/website', {
@@ -229,93 +277,53 @@ export default {
                 }
             }
         },
-
-        processMedicineData(patientData) { // data sudah disesuaikan kembali namun filter dropdown dan tanggal masih berantakan
-        const medicineList = patientData.flatMap(patient => patient.ListMedicine);
-
-        // Hitung jumlah kemunculan setiap nama obat
-        const medicineCount = medicineList.reduce((acc, item) => {
-            acc[item.Name] = (acc[item.Name] || 0) + 1;
-            return acc;
-        }, {});
-
-        // Siapkan data untuk chart
-        const labels = Object.keys(medicineCount);
-        const data = Object.values(medicineCount);
-
-        return {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Jumlah Pasien',
-                    color: '#0A6B77',
-                    backgroundColor: '#0A6B77',
-                    data: data
-                }
-            ]
-        };
-    },
-
-        processHospitalData(patientData) {
+        processMedicineData(patientData) {
             const medicineList = patientData.flatMap(patient => patient.ListMedicine);
-            const HospitalPerDoctorCount = medicineList.reduce((acc, medicine) => {
-                const hospitalName = medicine.Category; // Adjusted based on response
-                acc[hospitalName] = (acc[hospitalName] || 0) + 1
-                return acc
-            }, {})
-            const labels = Object.keys(HospitalPerDoctorCount)
-            const data = Object.values(HospitalPerDoctorCount)
+            const medicineCount = medicineList.reduce((acc, item) => {
+                acc[item.Name] = (acc[item.Name] || 0) + 1;
+                return acc;
+            }, {});
+            const labels = Object.keys(medicineCount);
+            const data = Object.values(medicineCount);
+
             return {
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Jumlah Dokter',
+                        label: 'Jumlah Pasien',
                         backgroundColor: '#0A6B77',
                         data: data
                     }
                 ]
-            }
-        },
-        generateRandomColor() {
-            const hue = Math.floor(Math.random() * 360);
-            const saturation = Math.floor(Math.random() * 50) + 50; // Saturation between 50% and 100%
-            const lightness = Math.floor(Math.random() * 30) + 50; // Lightness between 50% and 80%
-            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-        },
-        calculateTotalPatientWithMedicine(patientData) {
-            const medicineList = patientData.flatMap(patient => patient.ListMedicine);
-            return medicineList.reduce((total, medicine) => total + medicine.Stock, 0);
-        },
-        getRandomFilteredPatients(patientData, maxPatients) {
-            // Get today's date and subtract 30 days
-            const today = new Date();
-            const dateLimit = new Date(today.setDate(today.getDate() - 30));
-
-            // Function to convert "YYYY-MM-DD HH:MM:SS" to a JavaScript Date object
-            const parseDateString = (dateString) => {
-                const [datePart, timePart] = dateString.split(' ');
-                const [year, month, day] = datePart.split('-').map(Number);
-                const [hour, minute, second] = timePart.split(':').map(Number);
-                return new Date(year, month - 1, day, hour, minute, second);
             };
+        },
+        processHospitalData(patientData) {
+            const hospitalData = patientData.flatMap(patient => patient.ListMedicine.map(medicine => ({
+                medicineName: medicine.Name,
+                hospitalName: patient.Hospital
+            })));
+            const hospitalGroupedData = hospitalData.reduce((acc, { medicineName, hospitalName }) => {
+                if (!acc[medicineName]) {
+                    acc[medicineName] = {};
+                }
+                acc[medicineName][hospitalName] = (acc[medicineName][hospitalName] || 0) + 1;
+                return acc;
+            }, {});
 
-            // Filter patients who have at least one medicine with stock below 10
-            // and the date is more than 30 days old
-            const filteredPatients = patientData.filter(patient =>
-                patient.ListMedicine.some(medicine =>
-                    medicine.Stock < 10 && parseDateString(medicine.Date) <= dateLimit
-                )
-            );
-
-            // Shuffle the filtered patients
-            for (let i = filteredPatients.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [filteredPatients[i], filteredPatients[j]] = [filteredPatients[j], filteredPatients[i]];
-            }
-
-            // Return up to maxPatients
-            return filteredPatients.slice(0, maxPatients);
-        }
+            return Object.entries(hospitalGroupedData).map(([medicineName, hospitalCounts]) => ({
+                labels: Object.keys(hospitalCounts),
+                datasets: [
+                    {
+                        label: `Jumlah Pasien untuk ${medicineName}`,
+                        backgroundColor: '#0A6B77',
+                        data: Object.values(hospitalCounts)
+                    }
+                ]
+            }));
+        },
+        calculateTotalPatientWithMedicine(patients) {
+            return patients.length;
+        },
     }
 }
 </script>
@@ -343,13 +351,12 @@ export default {
                         <!-- Date Filter -->
                         <div class="flex justify-center py-4">
                             <div class="flex max-md:flex-col items-center gap-4">
+                                <h1 class="font-poppins text-red font-bold">*Filter bisa digabung</h1>
                                 <label for="startDate" class="font-bold">Start Date:</label>
-                                <input type="date" v-model="startDate" @change="fetchFilteredMedicineData"
-                                    class="border rounded p-2" />
+                                <input type="date" v-model="startDate" @change="filterData" class="border rounded p-2" />
 
                                 <label for="endDate" class="font-bold">End Date:</label>
-                                <input type="date" v-model="endDate" @change="fetchFilteredMedicineData"
-                                    class="border rounded p-2" />
+                                <input type="date" v-model="endDate" @change="filterData" class="border rounded p-2" />
 
                                 <label for="category" class="font-bold">Category:</label>
                                 <select v-model="selectedCategory" @change="fetchFilteredMedicineData"
@@ -383,6 +390,13 @@ export default {
                                     TotalPatientWithMedicine }}</p>
                             </div>
 
+                            <div class="my-4">
+                                <label for="stockFilter"
+                                    class="font-hindsiliguri text-teal font-medium text-[14px] leading-[18px]">Filter batas maksimum obat:</label>
+                                <input id="stockFilter" type="number" v-model.number="selectedStock" class="bg-white border border-gray-300 rounded-md py-2 px-3"
+                                    placeholder="Masukkan batas maksimum" />
+                            </div>
+
                             <div class="w-full max-md:px-0 px-4 overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
@@ -396,31 +410,45 @@ export default {
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
+
+
                                         <!-- Conditionally render the message if no patient data is available -->
-                                        <tr v-if="StatisticsPatientData.length === 0" class="hover:bg-[#ddd]">
+                                        <tr v-if="filteredPatientData.length === 0" class="hover:bg-[#ddd]">
                                             <td colspan="3" class="text-center text-[20px] py-4">Belum ada pasien yang
                                                 kekurangan obat
                                             </td>
                                         </tr>
-                                        <tr v-for="patient in StatisticsPatientData" :key="patient.id"
+                                        <tr v-for="patient in filteredPatientData" :key="patient.id"
                                             class="hover:bg-[#ddd]">
                                             <td class="td-general max-md:pl-3 td-text-general">
-                                                {{ patient.Name }}</td>
+                                                {{ patient.Name }}
+                                            </td>
                                             <td class="td-general max-md:pl-3">
-                                                <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => med.Stock < 10)"
-                                                    :key="mIndex" class="flex">
-                                                    <p class="td-text-general">- {{
-                                                        medicine.Name }}</p>
+                                                <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => {
+                                                    let stockCondition = true;
+                                                    if (selectedStock !== null) {
+                                                        stockCondition = med.Stock <= selectedStock;
+                                                    }
+                                                    return stockCondition && new Date(med.Date) <= new Date(new Date().setDate(new Date().getDate() - 1));
+                                                })" :key="mIndex" class="flex">
+                                                    <p class="td-text-general">- {{ medicine.Name }}</p>
                                                 </div>
                                             </td>
                                             <td class="td-general max-md:pl-3">
-                                                <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => med.Stock < 10)"
-                                                    :key="mIndex" class="flex py-[0.2rem]">
-                                                    <p class="td-text-general">{{
-                                                        medicine.Stock }}</p>
+                                                <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => {
+                                                    let stockCondition = true;
+                                                    if (selectedStock !== null) {
+                                                        stockCondition = med.Stock <= selectedStock;
+                                                    }
+                                                    return stockCondition && new Date(med.Date) <= new Date(new Date().setDate(new Date().getDate() - 1));
+                                                })" :key="mIndex" class="flex py-[0.2rem]">
+                                                    <p class="td-text-general">{{ medicine.Stock }}</p>
                                                 </div>
                                             </td>
                                         </tr>
+
+
+
                                     </tbody>
                                 </table>
                                 <div class="mt-4">
