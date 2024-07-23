@@ -254,6 +254,9 @@ export default {
                             <th scope="col" class="th-general max-lg:px-1">
                                 Nama
                             </th>
+                            <!-- <th scope="col" class="th-general max-lg:px-1">
+                                Gender
+                            </th> -->
                             <th scope="col" class="th-general max-lg:px-1">
                                 Email
                             </th>
@@ -295,6 +298,10 @@ export default {
                                     </div>
                                 </div>
                             </td>
+                            <!-- <td class="td-general">
+                                <p v-if="data.Gender === 'male'" class="td-text-general">Laki-laki</p>
+                                <p v-else-if="data.Gender === 'female'" class="td-text-general">Perempuan</p>
+                            </td> -->
                             <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[10%]">
                                 <p class="td-text-general">{{ data.Email }}</p>
                             </td>

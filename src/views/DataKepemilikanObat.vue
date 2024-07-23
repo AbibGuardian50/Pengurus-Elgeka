@@ -15,25 +15,26 @@ export default {
             MedicineData: [],
             TotalPatientWithMedicine: 0,
             HospitalPerMedicineData: [],
-            PoliPerMedicineData: [],
             StatisticsPatientData: [],
             MedicineOptions: this.getMedicineOptions(),
             startDate: '',
             endDate: '',
+            categories: [], // Add this line
+            selectedCategory: '' // Add this line
         }
     },
     async created() {
         this.loaded = false
         try {
             const tokenlogin = VueCookies.get('TokenAuthorization')
+            await this.fetchCategories(tokenlogin) // Fetch categories on creation
             const patientDataPromise = this.fetchPatientData(tokenlogin)
             const medicineDataPromise = this.fetchMedicineData(tokenlogin)
             const [patientData, medicineData] = await Promise.all([patientDataPromise, medicineDataPromise])
             this.StatisticsPatientData = this.getRandomFilteredPatients(patientData, 3)
-            this.TotalPatientWithMedicine = medicineData.TotalPatientWithMedicine
-            this.MedicineData = this.processMedicineData(medicineData.MedicineList)
-            this.HospitalPerMedicineData = this.processHospitalData(medicineData.MedicineList)
-            this.PoliPerMedicineData = this.processPoliData(medicineData.MedicineList)
+            this.TotalPatientWithMedicine = this.calculateTotalPatientWithMedicine(patientData)
+            this.MedicineData = this.processMedicineData(patientData)
+            this.HospitalPerMedicineData = this.processHospitalData(patientData)
 
             this.loaded = true
         } catch (error) {
@@ -66,19 +67,24 @@ export default {
                 toast.error('Tanggal mulai tidak boleh lebih besar dari tanggal akhir');
                 return;
             }
+
             if (this.startDate && this.endDate) {
-                const tokenlogin = VueCookies.get('TokenAuthorization')
+                const tokenlogin = VueCookies.get('TokenAuthorization');
                 try {
-                    const medicineData = await this.fetchMedicineData(tokenlogin, this.startDate, this.endDate)
-                    this.TotalPatientWithMedicine = medicineData.TotalPatientWithMedicine
-                    this.MedicineData = this.processMedicineData(medicineData.MedicineList)
-                    this.HospitalPerMedicineData = this.processHospitalData(medicineData.MedicineList)
-                    this.PoliPerMedicineData = this.processPoliData(medicineData.MedicineList)
+                    const params = {
+                        startDate: this.startDate,
+                        endDate: this.endDate,
+                        category: this.selectedCategory || '' // Pastikan parameter ini dikirim
+                    };
+                    const patientData = await this.fetchPatientData(tokenlogin, params);
+                    this.TotalPatientWithMedicine = this.calculateTotalPatientWithMedicine(patientData);
+                    this.MedicineData = this.processMedicineData(patientData);
+                    this.HospitalPerMedicineData = this.processHospitalData(patientData);
                 } catch (error) {
-                    console.error(error.message)
-                    const toast = useToast()
+                    console.error(error.message);
+                    const toast = useToast();
                     if (error.message === "Request failed with status code 401") {
-                        toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+                        toast.error('Error code 401, Mohon untuk logout lalu login kembali');
                     }
                 }
             }
@@ -173,71 +179,92 @@ export default {
             console.log(response)
             return response.data.Data
         },
-        async fetchMedicineData(token) {
-            const toast = useToast()
-            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/medicine/list/website'
-            const response = await axios.get(url, {
-                headers: {
-                    Authorization: `Bearer ${token}`
+        async fetchMedicineData(token, params = {}) {
+            const toast = useToast();
+            const url = 'https://elgeka-mobile-production.up.railway.app/api/user/medicine/list/website';
+            try {
+                const response = await axios.get(url, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    params
+                });
+
+                if (response.data.Message === "Success to Get Medicine List Website") {
+                    toast.success('Data obat Pasien berhasil dimuat!');
+                    setTimeout(() => {
+                        toast.info('Zoom out apabila data di grafik tidak lengkap');
+                    }, 500);
                 }
-            })
-            if (response.data.Message === "Success to Get Medicine List Website") {
-                toast.success('Data obat Pasien berhasil dimuat!')
-                setTimeout(() => {
-                    toast.info('zoom out apabila data di grafik tidak lengkap');
-                }, 500);
-            }
-            console.log(response)
-            const data = response.data.Data
-            return {
-                TotalPatientWithMedicine: data.Total_Patient_Have_Medicine,
-                MedicineList: data.Medicine
+                console.log(response);
+                const data = response.data.Data;
+                return {
+                    TotalPatientWithMedicine: data.Total_Patient_Have_Medicine,
+                    MedicineList: data.Medicine
+                };
+            } catch (error) {
+                console.error(error.message);
+                const toast = useToast();
+                if (error.message === "Request failed with status code 401") {
+                    toast.error('Error code 401, Mohon untuk logout lalu login kembali');
+                }
             }
         },
-        processMedicineData(medicineList) {
-            const MedicineNameData = medicineList.map(item => item.Medicine_Name)
-            const TotalPatientData = medicineList.map(item => item.Total_Patient)
-            return {
-                labels: MedicineNameData,
-                datasets: [
-                    {
-                        label: 'Jumlah Pasien',
-                        color: '#0A6B77',
-                        backgroundColor: '#0A6B77',
-                        data: Object.values(TotalPatientData)
+
+        async fetchCategories(token) {
+            try {
+                const response = await axios.get('https://elgeka-mobile-production.up.railway.app/api/user/medicine/list_patient/website', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
                     }
-                ]
+                });
+                const medicineList = response.data.Data.flatMap(patient => patient.ListMedicine);
+                const categoriesSet = new Set(medicineList.map(medicine => medicine.Category));
+                this.categories = Array.from(categoriesSet);
+            } catch (error) {
+                console.error(error.message);
+                const toast = useToast();
+                if (error.message === "Request failed with status code 401") {
+                    toast.error('Error code 401, Mohon untuk logout lalu login kembali');
+                }
             }
         },
-        processHospitalData(medicineList) {
-            const HospitalPerDoctorCount = medicineList.reduce((acc, doctor) => {
-                const hospitalName = doctor.HospitalName
+
+        processMedicineData(patientData) { // data sudah disesuaikan kembali namun filter dropdown dan tanggal masih berantakan
+        const medicineList = patientData.flatMap(patient => patient.ListMedicine);
+
+        // Hitung jumlah kemunculan setiap nama obat
+        const medicineCount = medicineList.reduce((acc, item) => {
+            acc[item.Name] = (acc[item.Name] || 0) + 1;
+            return acc;
+        }, {});
+
+        // Siapkan data untuk chart
+        const labels = Object.keys(medicineCount);
+        const data = Object.values(medicineCount);
+
+        return {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Jumlah Pasien',
+                    color: '#0A6B77',
+                    backgroundColor: '#0A6B77',
+                    data: data
+                }
+            ]
+        };
+    },
+
+        processHospitalData(patientData) {
+            const medicineList = patientData.flatMap(patient => patient.ListMedicine);
+            const HospitalPerDoctorCount = medicineList.reduce((acc, medicine) => {
+                const hospitalName = medicine.Category; // Adjusted based on response
                 acc[hospitalName] = (acc[hospitalName] || 0) + 1
                 return acc
             }, {})
             const labels = Object.keys(HospitalPerDoctorCount)
             const data = Object.values(HospitalPerDoctorCount)
-            return {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Jumlah Dokter',
-                        backgroundColor: '#0A6B77',
-                        data: data
-                    }
-                ]
-            }
-        },
-        processPoliData(medicineList) {
-            const PoliPerDoctorCount = medicineList.reduce((acc, doctor) => {
-                const polyName = doctor.PolyName
-                acc[polyName] = (acc[polyName] || 0) + 1
-                return acc
-            }, {})
-
-            const labels = Object.keys(PoliPerDoctorCount)
-            const data = Object.values(PoliPerDoctorCount)
-
             return {
                 labels: labels,
                 datasets: [
@@ -255,11 +282,30 @@ export default {
             const lightness = Math.floor(Math.random() * 30) + 50; // Lightness between 50% and 80%
             return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
         },
+        calculateTotalPatientWithMedicine(patientData) {
+            const medicineList = patientData.flatMap(patient => patient.ListMedicine);
+            return medicineList.reduce((total, medicine) => total + medicine.Stock, 0);
+        },
         getRandomFilteredPatients(patientData, maxPatients) {
+            // Get today's date and subtract 30 days
+            const today = new Date();
+            const dateLimit = new Date(today.setDate(today.getDate() - 30));
+
+            // Function to convert "YYYY-MM-DD HH:MM:SS" to a JavaScript Date object
+            const parseDateString = (dateString) => {
+                const [datePart, timePart] = dateString.split(' ');
+                const [year, month, day] = datePart.split('-').map(Number);
+                const [hour, minute, second] = timePart.split(':').map(Number);
+                return new Date(year, month - 1, day, hour, minute, second);
+            };
+
             // Filter patients who have at least one medicine with stock below 10
+            // and the date is more than 30 days old
             const filteredPatients = patientData.filter(patient =>
-                patient.ListMedicine.some(medicine => medicine.Stock < 10)
-            )
+                patient.ListMedicine.some(medicine =>
+                    medicine.Stock < 10 && parseDateString(medicine.Date) <= dateLimit
+                )
+            );
 
             // Shuffle the filtered patients
             for (let i = filteredPatients.length - 1; i > 0; i--) {
@@ -304,6 +350,16 @@ export default {
                                 <label for="endDate" class="font-bold">End Date:</label>
                                 <input type="date" v-model="endDate" @change="fetchFilteredMedicineData"
                                     class="border rounded p-2" />
+
+                                <label for="category" class="font-bold">Category:</label>
+                                <select v-model="selectedCategory" @change="fetchFilteredMedicineData"
+                                    class="border rounded p-2">
+                                    <option value="">All Categories</option>
+                                    <option v-for="(category, index) in categories" :key="index" :value="category">
+                                        {{ category }}
+                                    </option>
+                                </select>
+
                             </div>
                         </div>
                         <div class="flex w-full max-md:min-w-[90%] overflow-x-auto">
@@ -340,6 +396,12 @@ export default {
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
+                                        <!-- Conditionally render the message if no patient data is available -->
+                                        <tr v-if="StatisticsPatientData.length === 0" class="hover:bg-[#ddd]">
+                                            <td colspan="3" class="text-center text-[20px] py-4">Belum ada pasien yang
+                                                kekurangan obat
+                                            </td>
+                                        </tr>
                                         <tr v-for="patient in StatisticsPatientData" :key="patient.id"
                                             class="hover:bg-[#ddd]">
                                             <td class="td-general max-md:pl-3 td-text-general">
@@ -405,4 +467,3 @@ export default {
         </div>
     </div>
 </template>
-

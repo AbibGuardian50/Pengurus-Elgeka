@@ -18,7 +18,7 @@ export default {
                 },
             });
             if (response.data.Message === "Success to Get Leukocytes Data") {
-                toast.success('Data Hasil Lab Leukocytes Berhasil Dimuat');
+                toast.success('Data Hasil Lab Leukosit Berhasil Dimuat');
             }
             this.InfoPatient = response.data.Data;
             this.InfoPatient.forEach((item, index) => {
@@ -44,19 +44,25 @@ export default {
             let filtered = this.InfoPatient;
 
             // Filter by data value
+            // Filter by data value
             if (this.selectedFilter) {
                 filtered = filtered.filter(item => {
                     const value = parseFloat(item.Data);
-                    if (this.selectedFilter === '<3500') {
-                        return value < 3500;
-                    } else if (this.selectedFilter === '3500 - 10500') {
-                        return value >= 3500 && value <= 10500;
-                    } else if (this.selectedFilter === '>10500') {
-                        return value > 10500;
+                    if (this.selectedFilter === '< 2000') {
+                        return value < 2000;
+                    } else if (this.selectedFilter === '2000 - 3500') {
+                        return value >= 2000 && value < 3500;
+                    } else if (this.selectedFilter === '3500 - 12000') {
+                        return value >= 3500 && value < 12000;
+                    } else if (this.selectedFilter === '12000 - 100000') {
+                        return value >= 12000 && value < 100000;
+                    } else if (this.selectedFilter === '> 100000') {
+                        return value >= 100000;
                     }
                     return true;
                 });
             }
+
 
             // Filter by date range
             if (this.startDate && this.endDate) {
@@ -205,7 +211,7 @@ export default {
         <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
             <!-- Your content -->
             <div class="heading-div-general max-[1400px]:justify-start max-[1400px]:gap-4 max-md:gap-2">
-                <p class="title-heading-general">Data hasil Lab Leukocytes</p>
+                <p class="title-heading-general">Data hasil Lab Leukosit</p>
                 <a href="/HasilLabLeukocytes"
                     class="flex items-center gap-2 font-inter font-medium text-[20px] leading-5 text-blueblack"><span><svg
                             width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -224,9 +230,11 @@ export default {
                 <select id="filter" v-model="selectedFilter" @change="filterData"
                     class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
                     <option value="">Pilih Filter</option>
-                    <option value="<3500">&lt; 3500</option>
-                    <option value="3500 - 10500">3500 - 10500</option>
-                    <option value=">10500">&gt; 10500</option>
+                    <option value="< 2000">&lt; 2000</option>
+                    <option value="2000 - 3500">2000 - 3500</option>
+                    <option value="3500 - 12000">3500 - 12000</option>
+                    <option value="12000 - 100000">12000 - 100000</option>
+                    <option value="> 100000">&gt; 100000</option>
                 </select>
             </div>
 
@@ -266,16 +274,19 @@ export default {
                                 Nama
                             </th>
                             <th scope="col" class="th-general max-lg:px-1">
+                                Gender
+                            </th>
+                            <th scope="col" class="th-general max-lg:px-1">
                                 Email
                             </th>
                             <th scope="col" class="th-general max-lg:px-1">
-                                Handphone
+                                Nomor Telepon
                             </th>
                             <th scope="col" class="th-general max-lg:px-1">
                                 Data
                             </th>
                             <th scope="col" class="th-general max-lg:px-1">
-                                Notes
+                                Catatan
                             </th>
                             <th @click="sortData('Date')" scope="col"
                                 class="cursor-pointer flex items-center gap-1 th-general max-lg:px-1">
@@ -305,6 +316,10 @@ export default {
                                         </div>
                                     </div>
                                 </div>
+                            </td>
+                            <td class="td-general max-lg:w-[5%]">
+                                <p v-if="data.Gender === 'male'" class="td-text-general">Laki-laki</p>
+                                <p v-else-if="data.Gender === 'female'" class="td-text-general">Perempuan</p>
                             </td>
                             <td class="td-general max-lg:w-[5%]">
                                 <p class="td-text-general">{{ data.Email }}</p>

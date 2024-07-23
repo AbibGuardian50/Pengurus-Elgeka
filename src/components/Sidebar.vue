@@ -194,13 +194,13 @@ export default {
                                             <li
                                                 class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                 <a href="/HasilLabHeartRate">
-                                                    Heart Rate
+                                                    Detak Jantung
                                                 </a>
                                             </li>
                                             <li
                                                 class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                 <a href="/HasilLabBloodPressure">
-                                                    Blood Pressure
+                                                    Tekanan Darah
                                                 </a>
                                             </li>
                                         </ul>
@@ -432,13 +432,13 @@ export default {
                                                             <li
                                                                 class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                                 <a href="/HasilLabHeartRate">
-                                                                    Heart Rate
+                                                                    Detak Jantung
                                                                 </a>
                                                             </li>
                                                             <li
                                                                 class="flex gap-2 font-bold font-inter text-[16px] leading-5 text-midnightshadow">
                                                                 <a href="/HasilLabBloodPressure">
-                                                                    Blood Pressure
+                                                                    Tekanan Darah
                                                                 </a>
                                                             </li>
                                                         </ul>

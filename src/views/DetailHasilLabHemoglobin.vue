@@ -255,6 +255,9 @@ export default {
                                 Nama
                             </th>
                             <th scope="col" class="th-general max-md:pl-0">
+                                Gender
+                            </th>
+                            <th scope="col" class="th-general max-md:pl-0">
                                 Email
                             </th>
                             <th scope="col" class="th-general max-md:pl-0">
@@ -296,6 +299,10 @@ export default {
                                         </div>
                                     </div>
                                 </div>
+                            </td>
+                            <td class="td-general">
+                                <p v-if="data.Gender === 'male'" class="td-text-general">Laki-laki</p>
+                                <p v-else-if="data.Gender === 'female'" class="td-text-general">Perempuan</p>
                             </td>
                             <td class="td-general">
                                 <p class="td-text-general">{{ data.Email }}</p>

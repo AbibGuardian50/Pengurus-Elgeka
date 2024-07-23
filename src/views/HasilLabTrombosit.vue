@@ -127,7 +127,7 @@ export default {
                 const itemDate = new Date(item.Date); // Ganti dengan field tanggal yang sesuai
                 const start = this.startDate ? new Date(this.startDate) : null;
                 const end = this.endDate ? new Date(this.endDate) : null;
-                
+
                 if (start && end) {
                     return itemDate >= start && itemDate <= end;
                 } else if (start) {
@@ -141,22 +141,29 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data
             const DataLabTrombositCounts = {
-                '< 135.000': 0,
-                '135.000 - 371.000': 0,
-                '> 371.000': 0,
+                '< 70.000': 0,
+                '70.000 - 150.000': 0,
+                '150.000 - 450.000': 0,
+                '450.000 - 800.000': 0,
+                '> 800.000': 0,
             };
             filteredData.forEach(item => {
                 const DataLabTrombosit = item.Data;
                 if (DataLabTrombosit !== 0 && DataLabTrombosit !== null) {
-                    if (DataLabTrombosit > 371) {
-                        DataLabTrombositCounts['> 371.000']++;
-                    } else if (DataLabTrombosit > 135) {
-                        DataLabTrombositCounts['135.000 - 371.000']++;
-                    } else if (DataLabTrombosit <= 135) {
-                        DataLabTrombositCounts['< 135.000']++;
+                    if (DataLabTrombosit > 800) {
+                        DataLabTrombositCounts['> 800.000']++;
+                    } else if (DataLabTrombosit >= 450) {
+                        DataLabTrombositCounts['450.000 - 800.000']++;
+                    } else if (DataLabTrombosit >= 150) {
+                        DataLabTrombositCounts['150.000 - 450.000']++;
+                    } else if (DataLabTrombosit >= 70) {
+                        DataLabTrombositCounts['70.000 - 150.000']++;
+                    } else if (DataLabTrombosit <= 70) {
+                        DataLabTrombositCounts['< 70.000']++;
                     }
                 }
             });
+
 
             // Persiapkan data untuk chart
             const chartData = {
@@ -164,9 +171,11 @@ export default {
                 datasets: [{
                     label: 'Jumlah Orang',
                     backgroundColor: [
-                        '#FFD700', 
-                        '#008000',
-                        '#FF0000'  
+                        '#FF0000',  // Merah
+                        '#FFD700',  // kuning
+                        '#008000', // hijau
+                        '#FFD700',  // kuning
+                        '#FF0000',  // Merah
                     ],
                     borderWidth: 1,
                     data: Object.values(DataLabTrombositCounts),
@@ -186,20 +195,27 @@ export default {
         <Sidebar />
         <div class="flex flex-col flex-grow p-4">
             <div class="flex flex-col md:flex-row md:gap-4 items-center justify-between max-[600px]:w-full">
-                <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 max-sm:p-2 w-full md:w-2/3 lg:w-[53%]">
-                    <p class="font-assistant text-[18px] leading-6 font-semibold text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
+                <div
+                    class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 max-sm:p-2 w-full md:w-2/3 lg:w-[53%]">
+                    <p
+                        class="font-assistant text-[18px] leading-6 font-semibold text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
                         GRAFIK DATA TROMBOSIT
                     </p>
                     <div class="flex flex-col md:flex-row items-center gap-4 mb-4 w-full">
                         <div class="flex flex-col md:flex-row items-center gap-4 w-full">
-                            <label for="startDate" class="text-sm font-semibold font-poppins text-gray-700">Mulai Tanggal:</label>
-                            <input type="date" id="startDate" v-model="startDate" class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm w-full md:w-auto">
+                            <label for="startDate" class="text-sm font-semibold font-poppins text-gray-700">Mulai
+                                Tanggal:</label>
+                            <input type="date" id="startDate" v-model="startDate"
+                                class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm w-full md:w-auto">
                         </div>
                         <div class="flex flex-col md:flex-row items-center gap-4 w-full">
-                            <label for="endDate" class="text-sm font-semibold font-poppins text-gray-700">Akhir Tanggal:</label>
-                            <input type="date" id="endDate" v-model="endDate" class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm w-full md:w-auto">
+                            <label for="endDate" class="text-sm font-semibold font-poppins text-gray-700">Akhir
+                                Tanggal:</label>
+                            <input type="date" id="endDate" v-model="endDate"
+                                class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm w-full md:w-auto">
                         </div>
-                        <button @click="filterData" class="px-4 py-2 bg-teal text-white rounded-md shadow-sm font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full md:w-auto">
+                        <button @click="filterData"
+                            class="px-4 py-2 bg-teal text-white rounded-md shadow-sm font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full md:w-auto">
                             Terapkan
                         </button>
                     </div>
@@ -207,16 +223,22 @@ export default {
                         <Bar v-if="loaded" :data="DataLabTrombosit" :options="HasilLabTrombositOptions" class="w-full" />
                     </div>
                 </div>
-                <div class="flex flex-col justify-between p-4 bg-cover bg-center bg-work rounded-md h-full w-full md:w-1/3 lg:w-1/2 mt-4 md:mt-0">
+                <div
+                    class="flex flex-col justify-between p-4 bg-cover bg-center bg-work rounded-md h-full w-full md:w-1/3 lg:w-1/2 mt-4 md:mt-0">
                     <div class="flex flex-col gap-4">
-                        <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA TROMBOSIT KESELURUHAN</p>
-                        <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang data TROMBOSIT</p>
+                        <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA TROMBOSIT KESELURUHAN
+                        </p>
+                        <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang data
+                            TROMBOSIT</p>
                     </div>
                     <div class="flex items-center justify-end">
                         <a href="/DetailHasilLabtrombosit" target="_blank">
                             <button class="font-opensans text-white flex items-center gap-2 pb-4">Read more
-                                <svg width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M1 6.00156H8.586L6.293 8.29456C6.03304 8.54563 5.92879 8.91743 6.0203 9.26706C6.11182 9.61669 6.38486 9.88974 6.73449 9.98125C7.08412 10.0728 7.45592 9.96857 7.707 9.70856L11.707 5.70856C11.8945 5.52106 12 5.26938 12 5.00156C12 4.73375 11.8945 4.48206 11.707 4.29456L7.707 0.294563C7.45592 0.0345405 7.08412 -0.0696805 6.73449 0.0218439C6.38486 0.113368 6.11182 0.386413 6.0203 0.736036C5.92879 1.08566 6.03304 1.45746 6.293 1.70856L8.586 3.00156H1C0.447715 3.00156 0 3.44928 0 4.00156C0 4.55384 0.447715 5.00156 1 5.00156V6.00156Z" fill="white"/>
+                                <svg width="12" height="11" viewBox="0 0 12 11" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M1 6.00156H8.586L6.293 8.29456C6.03304 8.54563 5.92879 8.91743 6.0203 9.26706C6.11182 9.61669 6.38486 9.88974 6.73449 9.98125C7.08412 10.0728 7.45592 9.96857 7.707 9.70856L11.707 5.70856C11.8945 5.52106 12 5.26938 12 5.00156C12 4.73375 11.8945 4.48206 11.707 4.29456L7.707 0.294563C7.45592 0.0345405 7.08412 -0.0696805 6.73449 0.0218439C6.38486 0.113368 6.11182 0.386413 6.0203 0.736036C5.92879 1.08566 6.03304 1.45746 6.293 1.70856L8.586 3.00156H1C0.447715 3.00156 0 3.44928 0 4.00156C0 4.55384 0.447715 5.00156 1 5.00156V6.00156Z"
+                                        fill="white" />
                                 </svg>
                             </button>
                         </a>

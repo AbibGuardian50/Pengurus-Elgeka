@@ -1,11 +1,12 @@
 <script>
-import Sidebar from "../components/Sidebar.vue"
-import axios from 'axios'
+import Sidebar from "../components/Sidebar.vue";
+import axios from 'axios';
 import VueCookies from 'vue-cookies';
 import { useToast } from 'vue-toastification';
 
 export default {
     async created() {
+        await this.fetchSpecializations();
         try {
             const toast = useToast();
             const response = await axios.get('https://elgeka-web-api-production.up.railway.app/api/v1/infoRS');
@@ -13,13 +14,13 @@ export default {
                 toast.success('Data Rumah Sakit Berhasil Dimuat');
             }
             this.InfoRS = response.data.result.data;
-            this.InfoRS.sort((x, y) => x.id - y.id)
+            this.InfoRS.sort((x, y) => x.id - y.id);
             this.InfoRS.forEach((item, index) => {
                 item.no = index + 1;
             });
-            this.totalPages = Math.ceil(this.InfoRS.length / this.perPage); // Calculate total pages
-            this.updatePaginatedData(); // Update paginated data
-            console.log(response)
+            this.totalPages = Math.ceil(this.InfoRS.length / this.perPage);
+            this.updatePaginatedData();
+            console.log(response);
         } catch (error) {
             console.error(error);
         }
@@ -29,56 +30,70 @@ export default {
     },
     data() {
         return {
+            specializations: [],
             InfoRS: [],
-            showcreatehospital: [],
+            showcreatehospital: false,
             url: 'https://elgeka-web-api-production.up.railway.app/',
             form: {
                 image: '',
-                nama_rs: [],
-                lokasi_rs: [],
-                link_maps: [],
-                latlong: [],
-                info_kontak: []
+                nama_rs: '',
+                lokasi_rs: '',
+                link_maps: '',
+                latlong: '',
+                info_kontak: '',
+                data_dokter: [{ name: '', qualification: '' }] // New field for data_dokter
             },
             formErrors: {
                 image: '',
             },
             errorMessage: '',
             showcreatehospital: false,
-            perPage: 5, // Number of items per page
-            currentPage: 1, // Current page
-            totalPages: 0, // Total pages
-            paginatedInfoRS: [], // Paginated data
-            sortColumn: 'no', // Column to sort by
-            sortDirection: 'asc' // Sort direction
-        }
+            perPage: 5,
+            currentPage: 1,
+            totalPages: 0,
+            paginatedInfoRS: [],
+            sortColumn: 'no',
+            sortDirection: 'asc'
+        };
     },
     methods: {
+        async fetchSpecializations() {
+            try {
+                const response = await axios.get('https://elgeka-web-api-production.up.railway.app/api/v1/dataSpesialis');
+                if (response.data.code === 200) {
+                    this.specializations = response.data.result.data;
+                } else {
+                    console.error('Failed to fetch specializations');
+                }
+            } catch (error) {
+                console.error('Error fetching specializations:', error);
+            }
+        },
         updatePaginatedData() {
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
             this.paginatedInfoRS = this.InfoRS.slice(startIndex, endIndex);
         },
         goToPage(pageNumber) {
-            this.currentPage = pageNumber; // Set current page to the selected page number
-            this.updatePaginatedData(); // Update paginated data for the selected page
+            this.currentPage = pageNumber;
+            this.updatePaginatedData();
         },
         nextPage() {
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
-                this.updatePaginatedData(); // Update paginated data when navigating to next page
+                this.updatePaginatedData();
             }
         },
         prevPage() {
             if (this.currentPage > 1) {
                 this.currentPage--;
-                this.updatePaginatedData(); // Update paginated data when navigating to previous page
+                this.updatePaginatedData();
             }
         },
         createhospital() {
             const toast = useToast();
-            const tokenlogin = VueCookies.get('TokenAuthorization')
-            const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/infoRS'
+            const tokenlogin = VueCookies.get('TokenAuthorization');
+            const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/infoRS';
             const formData = new FormData();
             formData.append('image', this.form.image);
             formData.append('nama_rs', this.form.nama_rs);
@@ -86,6 +101,13 @@ export default {
             formData.append('link_maps', this.form.link_maps);
             formData.append('latlong', this.form.latlong);
             formData.append('info_kontak', this.form.info_kontak);
+            // Format data_dokter into the desired string format
+            const formattedDoctors = this.form.data_dokter.map(doctor => {
+                const specialization = this.selectedSpecialization ? `,${this.selectedSpecialization}` : '';
+                return `${doctor.name} ${doctor.qualification}${specialization}`;
+            }).join(', ');
+
+            formData.append('data_dokter', formattedDoctors);
             axios.post(url, formData, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                 .then(response => {
                     console.log(response);
@@ -95,19 +117,19 @@ export default {
                             window.location.reload();
                         }, 1000);
                     } else if (response.data.message === 'Error Creating Info RS: Rumah Sakit already exists') {
-                        toast.error ('Nama Rumah Sakit yang sama sudah ada, mohon untuk mengganti dengan nama yang lain')
+                        toast.error('Nama Rumah Sakit yang sama sudah ada, mohon untuk mengganti dengan nama yang lain');
                     }
                 })
                 .catch(error => {
                     const toast = useToast();
-                    toast.errpr('Terdapat kesalahan pada sistem, mohon coba lagi');
-                    console.log(error)
-                })
+                    toast.error('Terdapat kesalahan pada sistem, mohon coba lagi');
+                    console.log(error);
+                });
         },
         deletehospital(id) {
             if (confirm('Apakah kamu yakin untuk menghapus data rumah sakit ini?')) {
-                const tokenlogin = VueCookies.get('TokenAuthorization')
-                const url = `https://elgeka-web-api-production.up.railway.app/api/v1/infoRS/${id}`
+                const tokenlogin = VueCookies.get('TokenAuthorization');
+                const url = `https://elgeka-web-api-production.up.railway.app/api/v1/infoRS/${id}`;
                 axios.delete(url, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                     .then(response => {
                         console.log(response.data);
@@ -115,35 +137,26 @@ export default {
                     })
                     .catch(error => {
                         console.log(error);
-                    })
+                    });
             }
         },
-        toggleModalCreateHospital: function () {
+        toggleModalCreateHospital() {
             this.showcreatehospital = !this.showcreatehospital;
         },
         handleFileChange(event) {
-            // Mengambil file yang dipilih oleh pengguna
             const selectedFile = event.target.files[0];
-            // Mengatur file yang dipilih ke dalam variabel edited.image
             this.form.image = selectedFile;
             const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
             if (!allowedExtensions.exec(selectedFile.name)) {
                 const toast = useToast();
                 this.errorMessage = 'Hanya gambar dengan format PNG, JPEG, atau JPG yang diizinkan!';
                 toast.warning('Hanya gambar dengan format PNG, JPEG, atau JPG yang diizinkan!');
-                // alert('Hanya gambar dengan format PNG, JPEG, atau JPG yang diizinkan!');
-                // Atau, Anda dapat mengatur pesan kesalahan pada variabel data untuk ditampilkan dalam template
-                // this.errorMessage = 'Hanya gambar dengan format PNG, JPEG, atau JPG yang diizinkan!';
-                // Bersihkan nilai input file
                 event.target.value = '';
-            } else if (selectedFile.size > 1024 * 1024) { // 1024 KB * 1024 = 1MB
+            } else if (selectedFile.size > 1024 * 1024) {
                 this.errorMessage = 'Ukuran gambar tidak boleh lebih dari 1MB!';
-                // Bersihkan nilai input file
                 event.target.value = '';
             } else {
-                // Lakukan proses upload file
-                // this.uploadFile(file);
-                this.errorMessage = ''; // Bersihkan pesan error jika file valid
+                this.errorMessage = '';
             }
         },
         sortData(column) {
@@ -170,6 +183,17 @@ export default {
             });
             this.updatePaginatedData();
         },
+        addDoctor() {
+            this.form.data_dokter.push({ name: '', qualification: '' });
+        },
+        removeDoctor(index) {
+            if (this.form.data_dokter.length > 1) {
+                this.form.data_dokter.splice(index, 1);
+            }
+        },
+        getFullDoctorName(doctor) {
+            return `${doctor.name} ${doctor.qualification}`;
+        },
         sortNoColumn() {
             if (this.sortOrder === 'asc') {
                 this.InfoRS.sort((a, b) => a.no - b.no);
@@ -185,7 +209,7 @@ export default {
 </script>
 
 <template >
-    <div class="flex ">
+    <div class="flex min-h-screen">
         <Sidebar />
 
         <div class="pl-8 max-sm:pl-2 pt-4 w-full bg-offwhite">
@@ -226,6 +250,9 @@ export default {
                                 Kontak
                             </th>
                             <th scope="col" class="th-general">
+                                Data Dokter
+                            </th>
+                            <th scope="col" class="th-general">
                                 Link Google Maps
                             </th>
                             <th scope="col" class="th-general">
@@ -251,14 +278,18 @@ export default {
                             <td class="td-general">
                                 <p class="td-text-general">{{ data.info_kontak }}</p>
                             </td>
-                            <td class="px-3 py-4 min-w-[200px] whitespace-normal break-words max-w-[201px] text-wrap">
-                                <a :href="data.link_maps" target="_blank"
-                                    class="td-text-general hover:text-teal">{{
-                                        data.link_maps }}</a>
+                            <td class="td-general">
+                                <p v-if="data.data_dokter" class="td-text-general">{{ data.data_dokter }}</p>
+                                <p v-else-if="data.data_dokter ===  null" class="td-text-general">Belum ada data dokter</p>
+                            </td>
+                            <td class="px-3 py-4 min-w-[200px] whitespace-normal break-words max-w-[201px] text-wrap underline underline-offset-1">
+                                <a :href="data.link_maps" target="_blank" class="td-text-general hover:text-teal">{{
+                                    data.link_maps }}</a>
                             </td>
 
                             <td class="td-general">
-                                <img class="bg-hospital bg-cover bg-center w-[160px] h-[160px]" :src="url + data.image_url">
+                                <img class="bg-hospital bg-cover bg-center w-full h-full object-cover"
+                                    :src="url + data.image_url">
                             </td>
 
                             <td
@@ -278,7 +309,7 @@ export default {
 
 
             <!-- Pagination navigation -->
-            <div class="ml-8 mt-4 flex justify-center">
+            <div class="ml-8 my-8 flex justify-center">
                 <button @click="prevPage" :disabled="currentPage === 1"
                     class="px-4 py-2 mr-2 bg-teal  text-white rounded-md">Previous</button>
                 <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
@@ -314,22 +345,42 @@ export default {
                                 <div class="flex gap-2 flex-col">
                                     <label for="nama lengkap"
                                         class="font-poppins font-bold text-base text-teal">Nama</label>
-                                    <input class="border border-black py-4 min-w-[550px] max-md:min-w-full pl-2 rounded-md" type="text"
-                                        required name="nama lengkap" id="" v-model="form.nama_rs"
+                                    <input class="border border-black py-4 w-full max-md:min-w-full pl-2 rounded-md"
+                                        type="text" required name="nama lengkap" id="" v-model="form.nama_rs"
                                         placeholder="Nama Rumah Sakit">
                                 </div>
                                 <div class="flex gap-2 flex-col">
                                     <label for="alamat" class="font-poppins font-bold text-base text-teal">Alamat</label>
-                                    <input class="border border-black py-4 min-w-[550px] max-md:min-w-full pl-2 rounded-md" type="text"
-                                        required name="alamat" id="" v-model="form.lokasi_rs"
+                                    <input class="border border-black py-4 w-full max-md:min-w-full pl-2 rounded-md"
+                                        type="text" required name="alamat" id="" v-model="form.lokasi_rs"
                                         placeholder="Contoh format: Jatiwaringin, Kota Bekasi">
                                 </div>
 
                                 <div class="flex gap-2 flex-col">
                                     <label for="Kontak" class="font-poppins font-bold text-base text-teal">Kontak</label>
-                                    <input class="border border-black py-4 min-w-[550px] max-md:min-w-full pl-2 rounded-md" type="text"
-                                        required name="Kontak" id="" v-model="form.info_kontak"
+                                    <input class="border border-black py-4 w-full max-md:min-w-full pl-2 rounded-md"
+                                        type="text" required name="Kontak" id="" v-model="form.info_kontak"
                                         placeholder="Nomor Telepon Rumah Sakit">
+                                </div>
+
+                                <div class="flex gap-2 flex-col">
+                                    <label for="Nama Dokter" class="font-poppins font-bold text-base text-teal">Nama
+                                        Dokter</label>
+                                    <div v-for="(doctor, index) in form.data_dokter" :key="index" class="flex gap-2">
+                                        <input class="border border-black py-4 w-[80%] max-md:min-w-[50%] pl-2 rounded-md"
+                                            placeholder="Masukkan nama dokter" type="text" :id="'doctor_name_' + index"
+                                            v-model="doctor.name" required />
+                                        <select v-model="selectedSpecialization" required>
+                                            <option v-for="spec in specializations" :key="spec.id"
+                                                :value="spec.nama_spesialis">
+                                                {{ spec.nama_spesialis }}
+                                            </option>
+                                        </select>
+                                        <button class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded"
+                                            type="button" @click="removeDoctor(index)">Hapus</button>
+                                    </div>
+                                    <button class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded"
+                                        type="button" @click="addDoctor">Tambah Dokter</button>
                                 </div>
 
                                 <div class="flex gap-2 flex-col relative">
@@ -339,7 +390,8 @@ export default {
                                         <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
                                             required name="Google Maps" id="" v-model="form.latlong"
                                             placeholder="Masukkan Latlong">
-                                        <a target="_blank" href="https://drive.google.com/file/d/1E_CxXklR2mKt91QnyOwIK-djzOxSWeCb/view?usp=sharing"><span
+                                        <a target="_blank"
+                                            href="https://drive.google.com/file/d/1E_CxXklR2mKt91QnyOwIK-djzOxSWeCb/view?usp=sharing"><span
                                                 class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
@@ -362,7 +414,8 @@ export default {
                                         <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
                                             required name="Google Maps" id="" v-model="form.link_maps"
                                             placeholder="Link/URL Google Maps">
-                                        <a target="_blank" href="https://drive.google.com/file/d/1i5NRONlsZcNzV13tsd6Y66O3fHr1j7on/view?usp=sharing"><span
+                                        <a target="_blank"
+                                            href="https://drive.google.com/file/d/1i5NRONlsZcNzV13tsd6Y66O3fHr1j7on/view?usp=sharing"><span
                                                 class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
@@ -381,9 +434,11 @@ export default {
                                     <label for="Foto Profil" class="font-poppins font-bold text-base text-teal">Gambar
                                         Lengkap</label>
                                     <input @change="handleFileChange"
-                                        class="border border-black py-4 min-w-[550px] max-md:min-w-full pl-2 rounded-md" type="file" required
-                                        name="Foto Profil" id="" accept="image/png, image/jpg, image/jpeg" />
-                                    <div v-if="errorMessage" class="text-red text-sm font-bold mb-4">{{ errorMessage }}</div>
+                                        class="border border-black py-4 w-full max-md:min-w-full pl-2 rounded-md"
+                                        type="file" required name="Foto Profil" id=""
+                                        accept="image/png, image/jpg, image/jpeg" />
+                                    <div v-if="errorMessage" class="text-red text-sm font-bold mb-4">{{ errorMessage }}
+                                    </div>
                                 </div>
 
 
@@ -409,3 +464,4 @@ export default {
         </div>
     </div>
 </template>
+

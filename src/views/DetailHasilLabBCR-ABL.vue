@@ -46,10 +46,16 @@ export default {
             if (this.selectedFilter) {
                 filtered = filtered.filter(item => {
                     const value = parseFloat(item.Data);
-                    if (this.selectedFilter === '<0.001') {
-                        return value < 0.001;
-                    } else if (this.selectedFilter === '0.001-10') {
-                        return value >= 0.001 && value <= 10;
+                    if (this.selectedFilter === '<0.00032') {
+                        return value < 0.00032;
+                    } else if (this.selectedFilter === '0.00032-0.001') {
+                        return value >= 0.00032 && value <= 0.001;
+                    } else if (this.selectedFilter === '0.001-0.1') {
+                        return value > 0.001 && value <= 0.1;
+                    } else if (this.selectedFilter === '0.1-1') {
+                        return value > 0.1 && value <= 1;
+                    } else if (this.selectedFilter === '1-10') {
+                        return value > 1 && value <= 10;
                     } else if (this.selectedFilter === '>10') {
                         return value > 10;
                     }
@@ -187,7 +193,7 @@ export default {
 </script>
 
 <template>
-    <div class="flex bg-offwhite h-full">
+    <div class="flex bg-offwhite min-h-screen">
         <Sidebar />
 
         <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
@@ -211,10 +217,13 @@ export default {
                 <label for="filter" class="font-medium font-poppins text-blueblack">Filter Data:</label>
                 <select id="filter" v-model="selectedFilter" @change="filterData"
                     class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
-                    <option value="">Pilih Filter</option>
-                    <option value="<0.001">&lt; 0.001</option>
-                    <option value="0.001-10">0.001 - 10</option>
-                    <option value=">10">&gt; 10</option>
+                    <option value="">Select Filter</option>
+                        <option value="<0.00032">  &lt 0.00032 </option>
+                        <option value="0.00032-0.001">0.00032 - 0.001</option>
+                        <option value="0.001-0.1">0.001 - 0.1</option>
+                        <option value="0.1-1">0.1 - 1</option>
+                        <option value="1-10">1 - 10</option>
+                        <option value=">10">> 10</option>
                 </select>
             </div>
 
@@ -253,6 +262,9 @@ export default {
                             <th scope="col" class="th-general max-lg:px-1">
                                 Nama
                             </th>
+                            <!-- <th scope="col" class="th-general max-lg:px-1">
+                                Gender
+                            </th> -->
                             <th scope="col" class="th-general max-lg:px-1">
                                 Email
                             </th>
@@ -288,6 +300,10 @@ export default {
                             <td class="td-general max-lg:px-1">
                                 {{ item.Name }}
                             </td>
+                            <!-- <td class="td-general">
+                                <p v-if="item.Gender === 'male'" class="td-text-general">Laki-laki</p>
+                                <p v-else-if="item.Gender === 'female'" class="td-text-general">Perempuan</p>
+                            </td> -->
                             <td class="td-general max-lg:px-1">
                                 <p class="td-text-general">{{ item.Email }}</p>
                             </td>
@@ -308,7 +324,7 @@ export default {
                 </table>
             </div>
             <!-- Pagination navigation -->
-            <div class=" mt-4 flex justify-center">
+            <div class="my-8 flex justify-center">
                 <button @click="prevPage" :disabled="currentPage === 1"
                     class="px-4 py-2 mr-2 bg-teal text-white rounded-md">Previous</button>
                 <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"

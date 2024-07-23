@@ -49,16 +49,22 @@ export default {
             if (this.selectedFilter) {
                 filtered = filtered.filter((item) => {
                     const value = parseFloat(item.Data);
-                    if (this.selectedFilter === '<135000') {
-                        return value < 135000;
-                    } else if (this.selectedFilter === '135000 - 371000') {
-                        return value >= 135000 && value <= 371000;
-                    } else if (this.selectedFilter === '>371000') {
-                        return value > 371000;
+                    if (this.selectedFilter === '<70000') {
+                        return value < 70000;
+                    } else if (this.selectedFilter === '70000 - 150000') {
+                        return value >= 70000 && value < 150000;
+                    } else if (this.selectedFilter === '150000 - 450000') {
+                        return value >= 150000 && value < 450000;
+                    } else if (this.selectedFilter === '450000 - 800000') {
+                        return value >= 450000 && value < 800000;
+                    } else if (this.selectedFilter === '>800000') {
+                        return value >= 800000;
                     }
                     return true;
                 });
             }
+
+
             // Filter by date range
             if (this.startDate && this.endDate) {
                 const toast = useToast()
@@ -221,9 +227,12 @@ export default {
                 <select id="filter" v-model="selectedFilter" @change="filterData"
                     class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
                     <option value="">Pilih Filter</option>
-                    <option value="<135000">&lt; 135000</option>
-                    <option value="135000 - 371000">135000 - 371000</option>
-                    <option value=">371000">&gt; 371000</option>
+                    <option value="<70000">&lt; 70.000</option>
+                    <option value="70000 - 150000">70.000 - 150.000</option>
+                    <option value="150000 - 450000">150.000 - 450.000</option>
+                    <option value="450000 - 800000">450.000 - 800.000</option>
+                    <option value=">800000">&gt; 800.000</option>
+
                 </select>
             </div>
 
@@ -262,6 +271,9 @@ export default {
                             <th scope="col" class="th-general max-lg:px-1">
                                 Nama
                             </th>
+                            <!-- <th scope="col" class="th-general max-lg:px-1">
+                                Gender
+                            </th> -->
                             <th scope="col" class="th-general max-lg:px-1">
                                 Email
                             </th>
@@ -303,6 +315,10 @@ export default {
                                     </div>
                                 </div>
                             </td>
+                            <!-- <td class="td-general">
+                                <p v-if="data.Gender === 'male'" class="td-text-general">Laki-laki</p>
+                                <p v-else-if="data.Gender === 'female'" class="td-text-general">Perempuan</p>
+                            </td> -->
                             <td class="px-3 py-4 max-lg:px-1 max-[1450px]:w-[10%]">
                                 <p class="td-text-general">{{ data.Email }}</p>
                             </td>

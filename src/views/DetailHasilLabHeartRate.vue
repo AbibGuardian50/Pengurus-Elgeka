@@ -250,28 +250,26 @@ export default {
                                     </svg>
                                 </span>
                             </th>
-                            <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                            <th scope="col" class="th-general max-lg:px-1">
                                 Nama
                             </th>
-                            <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                            <!-- <th scope="col" class="th-general max-lg:px-1">
+                                Gender
+                            </th> -->
+                            <th scope="col" class="th-general max-lg:px-1">
                                 Email
                             </th>
-                            <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                            <th scope="col" class="th-general max-lg:px-1">
                                 Handphone
                             </th>
-                            <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                            <th scope="col" class="th-general max-lg:px-1">
                                 Data
                             </th>
-                            <th scope="col"
-                                class="px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                            <th scope="col" class="th-general max-lg:px-1">
                                 Notes
                             </th>
                             <th @click="sortData('Date')" scope="col"
-                                class="cursor-pointer flex items-center gap-1 px-3 py-3 max-w-[250px] text-left font-bold font-poppins text-black text-base">
+                                class="cursor-pointer flex items-center  gap-1 th-general max-lg:px-1">
                                 Tanggal
                                 <span v-if="sortColumn === 'Date'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                 <span v-else>
@@ -302,6 +300,10 @@ export default {
                                     </div>
                                 </div>
                             </td>
+                            <!-- <td class="td-general">
+                                <p v-if="data.Gender === 'male'" class="td-text-general">Laki-laki</p>
+                                <p v-else-if="data.Gender === 'female'" class="td-text-general">Perempuan</p>
+                            </td> -->
                             <td class="px-3 py-4 min-w-[250px] max-w-[301px]">
                                 <p class="font-poppins font-normal leading-4 text-black text-base">{{ data.Email }}</p>
                             </td>

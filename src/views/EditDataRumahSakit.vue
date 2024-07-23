@@ -42,6 +42,7 @@ export default {
             formData.append('link_maps', this.DataHospital.link_maps);
             formData.append('latlong', this.DataHospital.latlong);
             formData.append('info_kontak', this.DataHospital.info_kontak);
+            formData.append('data_dokter', this.DataHospital.data_dokter);
             const url = `https://elgeka-web-api-production.up.railway.app/api/v1/infoRS/${id}`
             axios.patch(url, formData, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                 .then(response => {
@@ -102,6 +103,7 @@ export default {
                 link_maps: [],
                 latlong: [],
                 info_kontak: [],
+                data_dokter: [{ name: ''}],
             }
         }
     },
@@ -151,6 +153,13 @@ export default {
                             <input
                                 class="border border-black py-2 md:py-3 lg:py-4 w-full min-w-[250px] md:min-w-[400px] lg:min-w-[550px] pl-2 rounded-md"
                                 type="text" required name="Kontak" v-model="DataHospital.info_kontak" id="">
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="Nama Dokter" class="font-poppins font-bold text-base text-teal">Nama Dokter</label>
+                            <input
+                                class="border border-black py-2 md:py-3 lg:py-4 w-full min-w-[250px] md:min-w-[400px] lg:min-w-[550px] pl-2 rounded-md"
+                                type="text" required name="Nama Dokter" v-model="DataHospital.data_dokter" id="">
                         </div>
 
                         <div class="flex flex-col gap-2">
