@@ -226,19 +226,19 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data untuk male
             const DataLabHemoglobinCountsMale = {
-                '< 12': 0,
-                '12 - 16': 0,
-                '> 16': 0,
+                '< 13': 0,
+                '13 - 17': 0,
+                '> 17': 0,
             };
             filteredDataMale.forEach(item => {
                 const DataLabHemoglobin = item.Data;
                 if (DataLabHemoglobin !== 0 && DataLabHemoglobin !== null) {
-                    if (DataLabHemoglobin < 12) {
-                        DataLabHemoglobinCountsMale['< 12']++;
-                    } else if (DataLabHemoglobin <= 16) {
-                        DataLabHemoglobinCountsMale['12 - 16']++;
-                    } else if (DataLabHemoglobin > 16) {
-                        DataLabHemoglobinCountsMale['> 16']++;
+                    if (DataLabHemoglobin < 13) {
+                        DataLabHemoglobinCountsMale['< 13']++;
+                    } else if (DataLabHemoglobin <= 17) {
+                        DataLabHemoglobinCountsMale['13 - 17']++;
+                    } else if (DataLabHemoglobin > 17) {
+                        DataLabHemoglobinCountsMale['> 17']++;
                     }
                 }
             });

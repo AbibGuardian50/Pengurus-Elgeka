@@ -173,10 +173,10 @@ export default {
                 datasets: [{
                     label: 'Jumlah Orang',
                     backgroundColor: [
+                        '#008000', // Hijau
                         '#FF0000', // Merah
                         '#FFD700', // Kuning
                         '#FFD700', // Kuning
-                        '#008000', // Hijau
                         '#FFD700', // Kuning
                         '#FF0000'  // Merah
                     ],
