@@ -67,7 +67,7 @@ export default {
         },
         filteredPatientData() {
             const today = new Date();
-            const cutoffDate = new Date(today.setDate(today.getDate() - 30));
+            const cutoffDate = new Date(today.setDate(today.getDate() - 7));
 
             return this.StatisticsPatientData.filter(patient => {
                 return patient.ListMedicine.some(medicine =>
@@ -351,13 +351,13 @@ export default {
                         <!-- Date Filter -->
                         <div class="flex justify-center py-4">
                             <div class="flex max-md:flex-col items-center gap-4">
-                                <h1 class="font-poppins text-red font-bold">*Filter bisa digabung</h1>
                                 <label for="startDate" class="font-bold">Start Date:</label>
                                 <input type="date" v-model="startDate" @change="filterData" class="border rounded p-2" />
 
                                 <label for="endDate" class="font-bold">End Date:</label>
                                 <input type="date" v-model="endDate" @change="filterData" class="border rounded p-2" />
 
+                                &
                                 <label for="category" class="font-bold">Category:</label>
                                 <select v-model="selectedCategory" @change="fetchFilteredMedicineData"
                                     class="border rounded p-2">
@@ -401,23 +401,14 @@ export default {
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr class="hover:bg-[#ddd]">
-                                            <th class="th-general">
-                                                PASIEN</th>
-                                            <th class="th-general">
-                                                OBAT</th>
-                                            <th class="th-general">
-                                                JUMLAH</th>
+                                            <th class="th-general">PASIEN</th>
+                                            <th class="th-general">OBAT</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
 
 
                                         <!-- Conditionally render the message if no patient data is available -->
-                                        <tr v-if="filteredPatientData.length === 0" class="hover:bg-[#ddd]">
-                                            <td colspan="3" class="text-center text-[20px] py-4">Belum ada pasien yang
-                                                kekurangan obat
-                                            </td>
-                                        </tr>
                                         <tr v-for="patient in filteredPatientData" :key="patient.id"
                                             class="hover:bg-[#ddd]">
                                             <td class="td-general max-md:pl-3 td-text-general">
@@ -429,20 +420,9 @@ export default {
                                                     if (selectedStock !== null) {
                                                         stockCondition = med.Stock <= selectedStock;
                                                     }
-                                                    return stockCondition && new Date(med.Date) <= new Date(new Date().setDate(new Date().getDate() - 1));
+                                                    return stockCondition && new Date(med.Date) <= new Date(new Date().setDate(new Date().getDate() - 7));
                                                 })" :key="mIndex" class="flex">
-                                                    <p class="td-text-general">- {{ medicine.Name }}</p>
-                                                </div>
-                                            </td>
-                                            <td class="td-general max-md:pl-3">
-                                                <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => {
-                                                    let stockCondition = true;
-                                                    if (selectedStock !== null) {
-                                                        stockCondition = med.Stock <= selectedStock;
-                                                    }
-                                                    return stockCondition && new Date(med.Date) <= new Date(new Date().setDate(new Date().getDate() - 1));
-                                                })" :key="mIndex" class="flex py-[0.2rem]">
-                                                    <p class="td-text-general">{{ medicine.Stock }}</p>
+                                                    <p class="td-text-general">- {{ medicine.Name }} ({{ medicine.Stock }})</p>
                                                 </div>
                                             </td>
                                         </tr>

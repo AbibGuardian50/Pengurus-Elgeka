@@ -267,7 +267,11 @@ export default {
                 labels: Object.keys(DataLabHemoglobinCountsMale),
                 datasets: [{
                     label: 'Jumlah Pasien',
-                    backgroundColor: '#FFD700',
+                    backgroundColor: [
+                            '#FFD700', // Kuning
+                            '#008000', // Hijau
+                            '#FF0000', // Merah
+                        ],
                     borderWidth: 1,
                     data: Object.values(DataLabHemoglobinCountsMale),
                 }],
@@ -278,7 +282,11 @@ export default {
                 labels: Object.keys(DataLabHemoglobinCountsFemale),
                 datasets: [{
                     label: 'Jumlah Pasien',
-                    backgroundColor: '#FF6347',
+                    backgroundColor: [
+                            '#FFD700', // Kuning
+                            '#008000', // Hijau
+                            '#FF0000', // Merah
+                        ],
                     borderWidth: 1,
                     data: Object.values(DataLabHemoglobinCountsFemale),
                 }],

@@ -4,7 +4,6 @@ import axios from 'axios'
 import VueCookies from 'vue-cookies'
 import { format } from 'date-fns';
 import id from 'date-fns/locale/id';
-import idLocale from 'date-fns/locale/id';
 import { useToast } from 'vue-toastification';
 
 export default {
@@ -21,14 +20,12 @@ export default {
             if (response.data.Message === "Success to Get Patient Medicine List Website") {
                 toast.success('Data pasien berhasil dimuat!')
             }
-            console.log(response);
             this.DataOwnershipMedicine = response.data.Data;
-            this.DataOwnershipMedicine.sort((x, y) => x.id - y.id)
+            this.DataOwnershipMedicine.sort((x, y) => x.id - y.id);
             this.DataOwnershipMedicine.forEach((item, index) => {
                 item.no = index + 1;
             });
-            this.totalPages = Math.ceil(this.DataOwnershipMedicine.length / this.perPage); // Calculate total pages
-            this.updatePaginatedData(); // Update paginated data
+            this.updatePaginatedData(); // Initialize pagination
         } catch (error) {
             const toast = useToast()
             if (error.message === "Request failed with status code 401") {
@@ -46,20 +43,54 @@ export default {
             currentPage: 1, // Current page
             totalPages: 0, // Total pages
             paginatedDataOwnershipMedicine: [],
-            DataOwnershipMedicine: [], // Paginated data
+            DataOwnershipMedicine: [], // Full data
+            stockFilter: '', // Stock filter value
+            dateFilter: '', // Date filter value
             sortColumn: 'no', // Column to sort by
             sortDirection: 'asc' // Sort direction
         }
     },
     methods: {
         formatDate(dateString) {
-            // Ubah format tanggal
             return format(new Date(dateString), 'dd MMMM yyyy HH:mm', { locale: id });
         },
+        applyFilters() {
+        let filteredData = this.DataOwnershipMedicine.map(patient => {
+            // Filter the medicines for the current patient
+            const filteredMedicines = patient.ListMedicine.filter(medicine => {
+                let matchesStock = true;
+                let matchesDate = true;
+                
+                if (this.stockFilter) {
+                    matchesStock = medicine.Stock <= this.stockFilter;
+                }
+                
+                if (this.dateFilter) {
+                    matchesDate = new Date(medicine.Date) <= new Date(this.dateFilter);
+                }
+                
+                return matchesStock && matchesDate;
+            });
+            
+            // Only return the patient if they have any medicines that meet the filter criteria
+            if (filteredMedicines.length > 0) {
+                return {
+                    ...patient,
+                    ListMedicine: filteredMedicines
+                };
+            } else {
+                return null;
+            }
+        }).filter(patient => patient !== null); // Remove patients without filtered medicines
+
+        return filteredData;
+    },
         updatePaginatedData() {
+            const filteredData = this.applyFilters();
+            this.totalPages = Math.ceil(filteredData.length / this.perPage); // Recalculate total pages based on filtered data
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
-            this.paginatedDataOwnershipMedicine = this.DataOwnershipMedicine.slice(startIndex, endIndex);
+            this.paginatedDataOwnershipMedicine = filteredData.slice(startIndex, endIndex);
         },
         goToPage(pageNumber) {
             this.currentPage = pageNumber; // Set current page to the selected page number
@@ -101,19 +132,11 @@ export default {
             });
             this.updatePaginatedData();
         },
-        sortNoColumn() {
-            if (this.sortOrder === 'asc') {
-                this.DataOwnershipMedicine.sort((a, b) => a.no - b.no);
-                this.sortOrder = 'desc';
-            } else {
-                this.DataOwnershipMedicine.sort((a, b) => b.no - a.no);
-                this.sortOrder = 'asc';
-            }
-            this.updatePaginatedData();
-        },
     }
 }
 </script>
+
+
 
 <template>
     <div class="flex bg-offwhite">
@@ -133,6 +156,14 @@ export default {
             </div>
 
             <p class="font-normal text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
+
+            <div class="my-4">
+                <div class="flex gap-4">
+                    <input type="number" v-model="stockFilter" placeholder="Max Stock" class="px-2 py-1 border rounded" />
+                    <input type="date" v-model="dateFilter" class="px-2 py-1 border rounded" />
+                    <button @click="updatePaginatedData" class="px-4 py-2 bg-teal text-white rounded-md">Filter</button>
+                </div>
+            </div>
 
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
                 <table class="min-w-full divide-y divide-gray-200 overflow-x-auto">
@@ -178,7 +209,8 @@ export default {
                         </tr>
                     </thead>
 
-                    <tbody v-for="(data, index) in paginatedDataOwnershipMedicine" :key="index" class="divide-y divide-gray-200">
+                    <tbody v-for="(data, index) in paginatedDataOwnershipMedicine" :key="index"
+                        class="divide-y divide-gray-200">
                         <tr>
                             <td class="td-general td-text-general">
                                 {{ data.no }}
