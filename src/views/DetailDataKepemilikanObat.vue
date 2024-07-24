@@ -178,7 +178,7 @@ export default {
                         </tr>
                     </thead>
 
-                    <tbody v-for="(data, index) in DataOwnershipMedicine" :key="index" class="divide-y divide-gray-200">
+                    <tbody v-for="(data, index) in paginatedDataOwnershipMedicine" :key="index" class="divide-y divide-gray-200">
                         <tr>
                             <td class="td-general td-text-general">
                                 {{ data.no }}
