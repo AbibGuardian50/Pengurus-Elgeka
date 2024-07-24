@@ -46,7 +46,7 @@ export default {
 
 
             this.doctorData = {
-                labels: DoctorData,
+                labels: DoctorData.map(label => this.trimLabel(label)),
                 datasets: [
                     {
                         label: 'Jumlah Pasien',
@@ -60,15 +60,29 @@ export default {
 
             const HospitalPerDoctorCount = {};
             responseListDoctor.forEach(doctor => {
-                const hospitalName = doctor.HospitalName;
-                if (HospitalPerDoctorCount[hospitalName]) {
-                    HospitalPerDoctorCount[hospitalName]++;
+                const hospitals = doctor.HospitalName.split(','); // Assuming multiple hospitals are comma-separated
+                hospitals.forEach(hospital => {
+                    hospital = hospital.trim();
+                    if (HospitalPerDoctorCount[hospital]) {
+                        HospitalPerDoctorCount[hospital]++;
+                    } else {
+                        HospitalPerDoctorCount[hospital] = 1;
+                    }
+                });
+            });
+            // Prepare hospital data for chart
+            const consolidatedHospitalCount = {};
+            Object.keys(HospitalPerDoctorCount).forEach(hospitalName => {
+                const baseName = this.trimLabel(hospitalName);
+                if (consolidatedHospitalCount[baseName]) {
+                    consolidatedHospitalCount[baseName] += HospitalPerDoctorCount[hospitalName];
                 } else {
-                    HospitalPerDoctorCount[hospitalName] = 1;
+                    consolidatedHospitalCount[baseName] = HospitalPerDoctorCount[hospitalName];
                 }
             });
-            const labels = Object.keys(HospitalPerDoctorCount);
-            const data = Object.values(HospitalPerDoctorCount);
+
+            const labels = Object.keys(consolidatedHospitalCount).map(label => this.trimLabel(label));
+            const data = Object.values(consolidatedHospitalCount);
 
             this.HospitalPerDoctorData = {
                 labels: labels,
@@ -93,7 +107,7 @@ export default {
                     SpecialistDoctorCount[Specialist] = 1;
                 }
             });
-            const labelspoli = Object.keys(SpecialistDoctorCount);
+            const labelspoli = Object.keys(SpecialistDoctorCount).map(label => this.trimLabel(label));
             const datapoli = Object.values(SpecialistDoctorCount);
 
             this.SpecialistPerDoctorData = {
@@ -308,6 +322,9 @@ export default {
         };
     },
     methods: {
+        trimLabel(label) {
+            return label.length > 10 ? label.substring(0, 10) + '...' : label;
+        }
         // generateRandomColor() {
         //     const letters = '0123456789ABCDEF';
         //     let color = '#';
@@ -324,23 +341,18 @@ export default {
     <div class="flex">
         <Sidebar></Sidebar>
         <div class="flex-1 bg-offwhite max-w-full p-4">
-            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6">Data Pasien Dokter</h1>
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6">Data Dokter</h1>
             <div v-if="loaded">
-                <div class="flex gap-4 max-w-[1000px] max-md:flex-col mb-8">
+                <div class="flex gap-4 max-w-[80%] max-md:flex-col mb-8">
                     <div class="bg-white shadow-md rounded-lg min-w-[50%] max-w-[85%] max-md:min-w-[100%] p-6 max-sm:p-1">
-                        <h2 class="max-sm:text-[16px] max-sm:text-center sm:text-2xl font-bold font-opensans mb-4">Grafik Jumlah Pasien per Dokter</h2>
+                        <h2 class="max-sm:text-[16px] max-sm:text-center sm:text-2xl font-bold font-opensans mb-4">Grafik Jumlah Pasien per Dokter Aktif</h2>
                         <Bar :data="doctorData" :options="TotalDoctorOptions"></Bar>
                     </div>
-                    <div
-                        class="flex flex-col p-4 bg-work bg-no-repeat bg-center bg-cover h-full rounded-md w-full">
+                    <div class="flex flex-col p-4 bg-work bg-no-repeat bg-center bg-cover rounded-md w-full">
                         <div class="flex flex-col justify-between">
                             <div class="flex flex-col gap-4 mb-8">
-                                <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA UMUM DOKTER
-                                </p>
-                                <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut
-                                    tentang
-                                    data
-                                    umum Dokter</p>
+                                <p class="pt-8 font-opensans text-white font-bold text-[16px] leading-4">DATA UMUM DOKTER</p>
+                                <p class="font-opensans text-white font-normal text-[16px] leading-4">Baca lebih lanjut tentang data umum Dokter</p>
                             </div>
                             <div class="">
                                 <a href="/detaildataumumdokter"><button
@@ -359,14 +371,15 @@ export default {
                     </div>
                 </div>
 
-                <div class="flex gap-4 max-w-[1000px] max-md:flex-col">
-                    <div class="bg-white max-sm:text-[16px] max-sm:text-center min-w-[50%]  max-[1000px]:max-w-[50%] max-md:min-w-[100%] shadow-md rounded-lg p-6 max-sm:p-1 mb-8">
-                        <h2 class="sm:text-2xl font-bold mb-4">Grafik Jumlah Dokter per Rumah Sakit
-                        </h2>
+                <div class="flex gap-4 max-w-[80%] max-md:flex-col">
+                    <div
+                        class="bg-white max-sm:text-[16px] max-sm:text-center min-w-[50%]  max-[1000px]:max-w-[50%] max-md:min-w-[100%] shadow-md rounded-lg p-6 max-sm:p-1 mb-8">
+                        <h2 class="sm:text-2xl font-bold mb-4">Grafik Jumlah Dokter Aktif per Rumah Sakit</h2>
                         <Bar :data="HospitalPerDoctorData" :options="HospitalOptions"></Bar>
                     </div>
-                    <div class="bg-white max-sm:text-[16px] max-sm:text-center min-w-[50%] max-[1000px]:max-w-[50%] max-md:min-w-[100%] shadow-md rounded-lg p-6 max-sm:p-1 mb-8">
-                        <h2 class="sm:text-2xl font-bold mb-4">Grafik Jumlah Dokter per Spesialis</h2>
+                    <div
+                        class="bg-white max-sm:text-[16px] max-sm:text-center min-w-[50%] max-[1000px]:max-w-[50%] max-md:min-w-[100%] shadow-md rounded-lg p-6 max-sm:p-1 mb-8">
+                        <h2 class="sm:text-2xl font-bold mb-4">Grafik Jumlah Dokter Aktif per Spesialis</h2>
                         <Bar :data="SpecialistPerDoctorData" :options="SpecialistDoctorOptions"></Bar>
                     </div>
                 </div>
@@ -393,5 +406,4 @@ export default {
     100% {
         transform: rotate(360deg);
     }
-}
-</style>
+}</style>

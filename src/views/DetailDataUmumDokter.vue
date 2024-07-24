@@ -144,10 +144,11 @@ export default {
         sortDataByHospital(event) {
             this.selectedHospital = event.target.value;
 
-            this.InfoPatient = this.originalInfoPatient.filter(item =>
-                (!this.selectedHospital || item.HospitalName === this.selectedHospital) &&
-                item.Name.toLowerCase().includes(this.searchQuery.toLowerCase())
-            );
+            this.InfoPatient = this.originalInfoPatient.filter(item => {
+                const hospitalList = item.HospitalName.split(',').map(name => name.trim());
+                return (this.selectedHospital === '' || hospitalList.includes(this.selectedHospital)) &&
+                    item.Name.toLowerCase().includes(this.searchQuery.toLowerCase());
+            });
 
             this.InfoPatient.forEach((item, index) => {
                 item.no = index + 1;
@@ -169,9 +170,17 @@ export default {
             this.updatePaginatedData();
         },
 
-        getHospitalNames() {
-            const hospitals = this.originalInfoPatient.map(item => item.HospitalName);
-            this.hospitalNames = [...new Set(hospitals)];
+        async getHospitalNames() {
+            const hospitalSet = new Set(); // Use a Set to maintain unique hospital names
+
+            this.originalInfoPatient.forEach(item => {
+                const hospitalList = item.HospitalName.split(',').map(name => name.trim());
+                hospitalList.forEach(name => {
+                    hospitalSet.add(name); // Add each hospital name to the Set
+                });
+            });
+
+            this.hospitalNames = Array.from(hospitalSet); // Convert Set to Array
         },
     }
 }
@@ -179,7 +188,7 @@ export default {
 
 
 <template>
-    <div class="flex bg-offwhite">
+    <div class="flex bg-offwhite min-h-screen">
         <Sidebar />
 
         <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
@@ -197,7 +206,7 @@ export default {
             </div>
             <p class="font-light font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Dokter</p>
             <!-- Fitur Sortir -->
-            <div class=" my-4">
+            <div class="my-4">
                 <label for="sortHospital" class="font-bold font-poppins text-blueblack">Sortir Berdasarkan Rumah
                     Sakit:</label>
                 <select id="sortHospital" @change="sortDataByHospital" class="ml-2 border border-gray-300 p-2 rounded">
@@ -205,6 +214,7 @@ export default {
                     <option v-for="hospital in hospitalNames" :key="hospital" :value="hospital">{{ hospital }}</option>
                 </select>
             </div>
+
             <div class=" my-4">
                 <label for="searchDoctor" class="font-bold font-poppins text-blueblack">Cari Nama Dokter:</label>
                 <input type="text" id="searchDoctor" v-model="searchQuery" @input="updateSearch"
