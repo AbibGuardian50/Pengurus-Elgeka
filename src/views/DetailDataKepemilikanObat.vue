@@ -212,7 +212,7 @@ export default {
                                 Obat yang dimiliki
                             </th>
                             <th scope="col" class="th-general">
-                                Tanggal
+                                Tanggal Pengambilan Obat
                             </th>
                             <!-- <th scope="col" class="th-general">
                                 Stok Obat
