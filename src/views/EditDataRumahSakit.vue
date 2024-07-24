@@ -159,7 +159,7 @@ export default {
                             <label for="Nama Dokter" class="font-poppins font-bold text-base text-teal">Nama Dokter</label>
                             <input
                                 class="border border-black py-2 md:py-3 lg:py-4 w-full min-w-[250px] md:min-w-[400px] lg:min-w-[550px] pl-2 rounded-md"
-                                type="text" required name="Nama Dokter" v-model="DataHospital.data_dokter" id="">
+                                type="text" name="Nama Dokter" v-model="DataHospital.data_dokter" id="">
                         </div>
 
                         <div class="flex flex-col gap-2">

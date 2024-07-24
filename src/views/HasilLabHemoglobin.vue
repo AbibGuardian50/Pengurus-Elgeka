@@ -302,18 +302,18 @@ export default {
                     class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 max-sm:p-2 w-full md:w-2/3 lg:w-[53%]">
                     <p
                         class="font-assistant text-[18px] leading-6 font-semibold text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
-                        GRAFIK DATA HEMOGLOBIN MALE
+                        GRAFIK DATA HEMOGLOBIN LAKI-LAKI
                     </p>
                     <div class="flex flex-col md:flex-row items-center gap-4 mb-4 w-full">
                         <div class="flex flex-col md:flex-row items-center gap-4 w-full">
                             <label for="startDateMale" class="text-sm font-semibold font-poppins text-gray-700">Mulai
-                                Tanggal (Male):</label>
+                                Tanggal:</label>
                             <input type="date" id="startDateMale" v-model="startDateMale"
                                 class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm w-full md:w-auto">
                         </div>
                         <div class="flex flex-col md:flex-row items-center gap-4 w-full">
                             <label for="endDateMale" class="text-sm font-semibold font-poppins text-gray-700">Akhir Tanggal
-                                (Male):</label>
+                            :</label>
                             <input type="date" id="endDateMale" v-model="endDateMale"
                                 class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm w-full md:w-auto">
                         </div>
@@ -330,18 +330,18 @@ export default {
                     <div class="w-full h-auto mb-8">
                         <p
                             class="font-assistant text-[18px] leading-6 font-semibold text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6]">
-                            GRAFIK DATA HEMOGLOBIN FEMALE
+                            GRAFIK DATA HEMOGLOBIN PEREMPUAN
                         </p>
                         <div class="flex flex-col md:flex-row items-center gap-4 mb-4 w-full">
                             <div class="flex flex-col md:flex-row items-center gap-4 w-full">
                                 <label for="startDateFemale" class="text-sm font-semibold font-poppins text-gray-700">Mulai
-                                    Tanggal (Female):</label>
+                                    Tanggal:</label>
                                 <input type="date" id="startDateFemale" v-model="startDateFemale"
                                     class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm w-full md:w-auto">
                             </div>
                             <div class="flex flex-col md:flex-row items-center gap-4 w-full">
                                 <label for="endDateFemale" class="text-sm font-semibold font-poppins text-gray-700">Akhir
-                                    Tanggal (Female):</label>
+                                    Tanggal:</label>
                                 <input type="date" id="endDateFemale" v-model="endDateFemale"
                                     class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm w-full md:w-auto">
                             </div>
