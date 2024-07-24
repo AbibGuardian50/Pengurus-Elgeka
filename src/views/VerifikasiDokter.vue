@@ -145,7 +145,7 @@ export default {
 </script>
 
 <template>
-    <div class="flex">
+    <div class="flex min-h-screen">
         <Sidebar />
 
         <div class="pl-8 max-sm:pl-2 pt-4 w-full bg-offwhite">
