@@ -72,13 +72,7 @@ export default {
                         })
                     },
                     legend: {
-                        labels: {
-                            color: "#222539",
-                            font: (context) => ({
-                                size: Math.min(Math.max(context.chart.width / 40, 12), 20),
-                                weight: 'bold'
-                            })
-                        }
+                        labels: false,
                     }
                 }
             },
@@ -128,13 +122,7 @@ export default {
                         })
                     },
                     legend: {
-                        labels: {
-                            color: "#222539",
-                            font: (context) => ({
-                                size: Math.min(Math.max(context.chart.width / 40, 12), 20),
-                                weight: 'bold'
-                            })
-                        }
+                        labels: false,
                     }
                 }
             },

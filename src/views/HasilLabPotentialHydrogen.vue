@@ -69,13 +69,7 @@ export default {
                         }
                     },
                     legend: {
-                        labels: {
-                            color: "#222539",
-                            font: {
-                                size: 16,
-                                weight: 'bold'
-                            }
-                        }
+                        labels: false,
                     }
                 }
             },
