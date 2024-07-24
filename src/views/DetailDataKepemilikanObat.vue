@@ -158,9 +158,20 @@ export default {
             <p class="font-normal text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
 
             <div class="my-4">
-                <div class="flex gap-4">
-                    <input type="number" v-model="stockFilter" placeholder="Max Stock" class="px-2 py-1 border rounded" />
-                    <input type="date" v-model="dateFilter" class="px-2 py-1 border rounded" />
+                <div class="flex gap-4 items-center">
+                    <div>
+                        <label for="max stock">Batas Maksimum Obat : </label>
+                        <input type="number" v-model="stockFilter" placeholder="Max Stock" class="px-2 py-1 border rounded" />
+                        
+                    </div>
+
+                    <div>&</div>
+                    
+                    <div>
+                        <label for="datefilter">Batas Tanggal </label>
+                        <input type="date" v-model="dateFilter" class="px-2 py-1 border rounded" />
+                    </div>
+
                     <button @click="updatePaginatedData" class="px-4 py-2 bg-teal text-white rounded-md">Filter</button>
                 </div>
             </div>
