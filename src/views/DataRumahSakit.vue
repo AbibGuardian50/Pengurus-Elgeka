@@ -413,6 +413,7 @@ export default {
                                     <div v-for="(doctor, index) in form.data_dokter" :key="index" class="flex gap-2">
                                         <select class="border border-black py-4 w-[80%] max-md:min-w-[50%] pl-2 rounded-md"
                                             required>
+                                            <option value="">Pilih Dokter</option>
                                             <option v-for="doc in DoctorData" :value="doc.Name">
                                                 {{ doc.Name }}
                                             </option>

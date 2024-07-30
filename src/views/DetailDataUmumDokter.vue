@@ -320,12 +320,12 @@ export default {
                             <td class="td-general">
                                 <div class="relative">
                                     <div v-if="data.status === 'aktif'" class="relative">
-    <button @click="DeactivateDoctor(data.ID)"
-        class="flex cursor-pointer gap-2 bg-teal text-white font-semibold font-poppins items-center justify-between py-2 px-4 rounded-md">
-        <span>Aktif</span>
-        <img src="../assets/arrow-down.svg" class="w-4 h-4">
-    </button>
-</div>
+                                        <button @click="DeactivateDoctor(data.ID)"
+                                            class="flex cursor-pointer gap-2 bg-teal text-white font-semibold font-poppins items-center justify-between py-2 px-4 rounded-md">
+                                            <span>Aktif</span>
+                                            <img src="../assets/arrow-down.svg" class="w-4 h-4">
+                                        </button>
+                                    </div>
 
 
                                     <button v-else-if="data.status === 'nonaktif'"
