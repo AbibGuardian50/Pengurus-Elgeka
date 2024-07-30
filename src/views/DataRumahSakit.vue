@@ -426,11 +426,11 @@ export default {
                                 </div>
 
                                 <div class="flex gap-2 flex-col relative">
-                                    <label for="Google Maps"
+                                    <label for="Latlong"
                                         class="font-poppins font-bold text-base text-teal">Latlong</label>
                                     <div class="relative">
                                         <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
-                                            required name="Google Maps" id="" v-model="form.latlong"
+                                            required name="Latlong" id="" v-model="form.latlong"
                                             placeholder="Masukkan Latlong">
                                         <a target="_blank"
                                             href="https://drive.google.com/file/d/1E_CxXklR2mKt91QnyOwIK-djzOxSWeCb/view?usp=sharing"><span
