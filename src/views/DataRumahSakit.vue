@@ -6,7 +6,7 @@ import { useToast } from 'vue-toastification';
 
 export default {
     async created() {
-        await this.fetchSpecializations();
+        await this.fetchDoctorData();
         try {
             const toast = useToast();
             const response = await axios.get('https://elgeka-web-api-production.up.railway.app/api/v1/infoRS');
@@ -33,6 +33,7 @@ export default {
             specializations: [],
             InfoRS: [],
             showcreatehospital: false,
+            showedithospital: false,
             url: 'https://elgeka-web-api-production.up.railway.app/',
             form: {
                 image: '',
@@ -41,32 +42,35 @@ export default {
                 link_maps: '',
                 latlong: '',
                 info_kontak: '',
-                data_dokter: [{ name: ''}] // New field for data_dokter
+                data_dokter: [{ name: '' }] // New field for data_dokter
             },
             formErrors: {
                 image: '',
             },
             errorMessage: '',
-            showcreatehospital: false,
             perPage: 5,
             currentPage: 1,
             totalPages: 0,
             paginatedInfoRS: [],
             sortColumn: 'no',
-            sortDirection: 'asc'
+            sortDirection: 'asc',
+            DoctorData: [],
+            isLoading: false,
         };
     },
     methods: {
-        async fetchSpecializations() {
+        async fetchDoctorData() {
             try {
-                const response = await axios.get('https://elgeka-web-api-production.up.railway.app/api/v1/dataSpesialis');
-                if (response.data.code === 200) {
-                    this.specializations = response.data.result.data;
+                const tokenlogin = VueCookies.get('TokenAuthorization');
+                const response = await axios.get('https://elgeka-mobile-production.up.railway.app/api/doctor/list/website', { headers: { 'Authorization': `Bearer ${tokenlogin}` } });
+                if (response.data.Message === 'Success to Get Doctor List') {
+                    this.DoctorData = response.data.Data;
+                    console.log(this.DoctorData);
                 } else {
-                    console.error('Failed to fetch specializations');
+                    console.error('Failed to fetch Doctor Data');
                 }
             } catch (error) {
-                console.error('Error fetching specializations:', error);
+                console.error('Error fetching Doctor Data:', error);
             }
         },
         updatePaginatedData() {
@@ -139,8 +143,41 @@ export default {
                     });
             }
         },
-        toggleModalCreateHospital() {
-            this.showcreatehospital = !this.showcreatehospital;
+        edithospital(id) {
+            const toast = useToast();
+            const tokenlogin = VueCookies.get('TokenAuthorization')
+            const formData = new FormData();
+            formData.append('nama_rs', this.form.nama_rs);
+            formData.append('lokasi_rs', this.form.lokasi_rs);
+            formData.append('image', this.form.image);
+            formData.append('link_maps', this.form.link_maps);
+            formData.append('latlong', this.form.latlong);
+            formData.append('info_kontak', this.form.info_kontak);
+            const formattedDoctors = this.form.data_dokter.map(doctor => {
+                return `${doctor.name}`;
+            }).join(', ');
+            formData.append('data_dokter', formattedDoctors);
+            const url = `https://elgeka-web-api-production.up.railway.app/api/v1/infoRS/${id}`
+            axios.patch(url, formData, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
+                .then(response => {
+                    console.log(response.data)
+                    this.resulterror = response.data
+                    if (response.data.code === 200) {
+                        toast.success('Edit data rumah sakit berhasil');
+                        this.$router.push('/datarumahsakit')
+                    } else if (response.data.message === 'Error Update Info RS by ID: Rumah Sakit already exists') {
+                        toast.error('Nama Rumah Sakit yang sama sudah ada, mohon untuk mengganti dengan nama yang lain')
+                    } else {
+                        toast.error('terdapat kesalahan, mohon coba lagi')
+                    }
+                })
+                .catch(error => {
+                    const toast = useToast()
+                    if (error.message === "Request failed with status code 401") {
+                        toast.error('Error code 401, Mohon untuk logout lalu login kembali')
+                    }
+                    console.log(error)
+                })
         },
         handleFileChange(event) {
             const selectedFile = event.target.files[0];
@@ -182,8 +219,15 @@ export default {
             });
             this.updatePaginatedData();
         },
+        toggleModalCreateHospital() {
+            this.showcreatehospital = !this.showcreatehospital;
+        },
+        toggleModalEditHospital() {
+            this.showedithospital = !this.showedithospital;
+        },
+
         addDoctor() {
-            this.form.data_dokter.push({ name: ''});
+            this.form.data_dokter.push({ name: '' });
         },
         removeDoctor(index) {
             if (this.form.data_dokter.length > 1) {
@@ -279,9 +323,10 @@ export default {
                             </td>
                             <td class="td-general">
                                 <p v-if="data.data_dokter" class="td-text-general">{{ data.data_dokter }}</p>
-                                <p v-else-if="data.data_dokter ===  null" class="td-text-general">Belum ada data dokter</p>
+                                <p v-else-if="data.data_dokter === null" class="td-text-general">Belum ada data dokter</p>
                             </td>
-                            <td class="px-3 py-4 min-w-[200px] whitespace-normal break-words max-w-[201px] text-wrap underline underline-offset-1">
+                            <td
+                                class="px-3 py-4 min-w-[200px] whitespace-normal break-words max-w-[201px] text-wrap underline underline-offset-1">
                                 <a :href="data.link_maps" target="_blank" class="td-text-general hover:text-teal">{{
                                     data.link_maps }}</a>
                             </td>
@@ -293,8 +338,8 @@ export default {
 
                             <td
                                 class="px-3 max-[1075px]:px-2 py-4 flex flex-col gap-2 justify-center items-center whitespace-nowrap text-sm font-medium">
-                                <a :href="'editdatarumahsakit/' + data.id">
-                                    <button
+                                <a>
+                                    <button @click="toggleModalEditHospital(data.id)"
                                         class="py-1 px-8 max-[1075px]:px-0 rounded-[5px] w-[110px] bg-white font-bold text-base text-teal shadow-s">Edit</button>
                                 </a>
                                 <button href="#" @click="deletehospital(data.id)"
@@ -321,6 +366,146 @@ export default {
             <!-- Modal Create Rumah Sakit -->
             <div>
                 <form v-if="showcreatehospital" @submit.prevent="createhospital()"
+                    class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center max-[600px]:justify-start max-[600px]:items-start flex">
+                    <div class="relative w-auto my-6 max-[600px]:my-0 mx-auto max-w-6xl">
+                        <!--content-->
+                        <div
+                            class="border border-red rounded-lg shadow-lg relative flex flex-col w-full max-[600px]:w-[85%] bg-white outline-none focus:outline-none">
+                            <!--header-->
+                            <div class="flex items-start justify-between p-5 border-b-2 border-black rounded-t">
+                                <h3 class="text-[40px] text-teal font-semibold font-poppins">
+                                    Data RSUD Bandung
+                                </h3>
+                                <button
+                                    class="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                                    v-on:click="toggleModalCreateHospital()">
+                                    <span
+                                        class="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                                    </span>
+                                </button>
+                            </div>
+                            <!--body-->
+                            <div class="flex flex-col gap-8 relative p-6">
+                                <div class="flex gap-2 flex-col">
+                                    <label for="nama lengkap"
+                                        class="font-poppins font-bold text-base text-teal">Nama</label>
+                                    <input class="border border-black py-4 w-full max-md:min-w-full pl-2 rounded-md"
+                                        type="text" required name="nama lengkap" id="" v-model="form.nama_rs"
+                                        placeholder="Nama Rumah Sakit">
+                                </div>
+                                <div class="flex gap-2 flex-col">
+                                    <label for="alamat" class="font-poppins font-bold text-base text-teal">Alamat</label>
+                                    <input class="border border-black py-4 w-full max-md:min-w-full pl-2 rounded-md"
+                                        type="text" required name="alamat" id="" v-model="form.lokasi_rs"
+                                        placeholder="Contoh format: Jatiwaringin, Kota Bekasi">
+                                </div>
+
+                                <div class="flex gap-2 flex-col">
+                                    <label for="Kontak" class="font-poppins font-bold text-base text-teal">Kontak</label>
+                                    <input class="border border-black py-4 w-full max-md:min-w-full pl-2 rounded-md"
+                                        type="text" required name="Kontak" id="" v-model="form.info_kontak"
+                                        placeholder="Nomor Telepon Rumah Sakit">
+                                </div>
+
+                                <div class="flex gap-2 flex-col">
+                                    <label for="Nama Dokter" class="font-poppins font-bold text-base text-teal">Nama
+                                        Dokter</label>
+                                    <div v-for="(doctor, index) in form.data_dokter" :key="index" class="flex gap-2">
+                                        <select class="border border-black py-4 w-[80%] max-md:min-w-[50%] pl-2 rounded-md"
+                                            required>
+                                            <option v-for="doc in DoctorData" :value="doc.Name">
+                                                {{ doc.Name }}
+                                            </option>
+                                        </select>
+                                        <button class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded"
+                                            type="button" @click="removeDoctor(index)">Hapus</button>
+                                    </div>
+                                    <button class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded"
+                                        type="button" @click="addDoctor">Tambah Dokter</button>
+                                </div>
+
+                                <div class="flex gap-2 flex-col relative">
+                                    <label for="Google Maps"
+                                        class="font-poppins font-bold text-base text-teal">Latlong</label>
+                                    <div class="relative">
+                                        <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
+                                            required name="Google Maps" id="" v-model="form.latlong"
+                                            placeholder="Masukkan Latlong">
+                                        <a target="_blank"
+                                            href="https://drive.google.com/file/d/1E_CxXklR2mKt91QnyOwIK-djzOxSWeCb/view?usp=sharing"><span
+                                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <g clip-path="url(#clip0_1706_972)">
+                                                        <path
+                                                            d="M6.06016 6.00004C6.2169 5.55449 6.52626 5.17878 6.93347 4.93946C7.34067 4.70015 7.81943 4.61267 8.28495 4.69252C8.75047 4.77236 9.17271 5.01439 9.47688 5.37573C9.78106 5.73706 9.94753 6.19439 9.94683 6.66671C9.94683 8.00004 7.94683 8.66671 7.94683 8.66671M8.00016 11.3334H8.00683M14.6668 8.00004C14.6668 11.6819 11.6821 14.6667 8.00016 14.6667C4.31826 14.6667 1.3335 11.6819 1.3335 8.00004C1.3335 4.31814 4.31826 1.33337 8.00016 1.33337C11.6821 1.33337 14.6668 4.31814 14.6668 8.00004Z"
+                                                            stroke="#98A2B3" stroke-width="1.33333" stroke-linecap="round"
+                                                            stroke-linejoin="round" />
+                                                    </g>
+                                                </svg>
+                                            </span></a>
+                                    </div>
+                                </div>
+
+
+                                <div class="flex gap-2 flex-col relative">
+                                    <label for="Google Maps" class="font-poppins font-bold text-base text-teal">Link Google
+                                        Maps</label>
+                                    <div class="relative">
+                                        <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
+                                            required name="Google Maps" id="" v-model="form.link_maps"
+                                            placeholder="Link/URL Google Maps">
+                                        <a target="_blank"
+                                            href="https://drive.google.com/file/d/1i5NRONlsZcNzV13tsd6Y66O3fHr1j7on/view?usp=sharing"><span
+                                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <g clip-path="url(#clip0_1706_972)">
+                                                        <path
+                                                            d="M6.06016 6.00004C6.2169 5.55449 6.52626 5.17878 6.93347 4.93946C7.34067 4.70015 7.81943 4.61267 8.28495 4.69252C8.75047 4.77236 9.17271 5.01439 9.47688 5.37573C9.78106 5.73706 9.94753 6.19439 9.94683 6.66671C9.94683 8.00004 7.94683 8.66671 7.94683 8.66671M8.00016 11.3334H8.00683M14.6668 8.00004C14.6668 11.6819 11.6821 14.6667 8.00016 14.6667C4.31826 14.6667 1.3335 11.6819 1.3335 8.00004C1.3335 4.31814 4.31826 1.33337 8.00016 1.33337C11.6821 1.33337 14.6668 4.31814 14.6668 8.00004Z"
+                                                            stroke="#98A2B3" stroke-width="1.33333" stroke-linecap="round"
+                                                            stroke-linejoin="round" />
+                                                    </g>
+                                                </svg>
+                                            </span></a>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-2 flex-col">
+                                    <label for="Foto Profil" class="font-poppins font-bold text-base text-teal">Gambar
+                                        Lengkap</label>
+                                    <input @change="handleFileChange"
+                                        class="border border-black py-4 w-full max-md:min-w-full pl-2 rounded-md"
+                                        type="file" required name="Foto Profil" id=""
+                                        accept="image/png, image/jpg, image/jpeg" />
+                                    <div v-if="errorMessage" class="text-red text-sm font-bold mb-4">{{ errorMessage }}
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <!--footer-->
+                            <div class="flex items-center justify-center p-6 border-t-2 border-black rounded-b">
+                                <button
+                                    class="text-white bg-teal border hover:text-white active:bg-teal-600 font-bold uppercase text-sm px-12 py-3 rounded outline-none focus:outline-none mr-1 mb-1   "
+                                    type="submit">
+                                    Simpan
+                                </button>
+                                <button
+                                    class="text-teal bg-white border active:bg-teal-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
+                                    type="button" v-on:click="toggleModalCreateHospital()">
+                                    Batal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div v-if="showcreatehospital" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
+            </div>
+
+            <!-- Modal Edit Rumah Sakit -->
+            <div>
+                <form v-if="showedithospital" @submit.prevent="edithospital()"
                     class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center max-[600px]:justify-start max-[600px]:items-start flex">
                     <div class="relative w-auto my-6 max-[600px]:my-0 mx-auto max-w-6xl">
                         <!--content-->
@@ -445,14 +630,14 @@ export default {
                                 </button>
                                 <button
                                     class="text-teal bg-white border active:bg-teal-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
-                                    type="button" v-on:click="toggleModalCreateHospital()">
+                                    type="button" v-on:click="toggleModalEditHospital()">
                                     Batal
                                 </button>
                             </div>
                         </div>
                     </div>
                 </form>
-                <div v-if="showcreatehospital" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
+                <div v-if="showedithospital" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
             </div>
         </div>
     </div>

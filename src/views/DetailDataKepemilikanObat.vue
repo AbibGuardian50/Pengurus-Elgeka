@@ -168,7 +168,7 @@ export default {
                     <div>&</div>
                     
                     <div>
-                        <label for="datefilter">Batas Tanggal </label>
+                        <label for="datefilter">Batas Tanggal pengambilan obat :  </label>
                         <input type="date" v-model="dateFilter" class="px-2 py-1 border rounded" />
                     </div>
 
