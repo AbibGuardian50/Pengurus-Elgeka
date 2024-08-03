@@ -31,6 +31,7 @@ export default {
     data() {
         return {
             specializations: [],
+            editHospitalId: null,
             InfoRS: [],
             showcreatehospital: false,
             showedithospital: false,
@@ -108,7 +109,7 @@ export default {
             // Format data_dokter into the desired string format
             const formattedDoctors = this.form.data_dokter.map(doctor => {
                 return `${doctor.name}`;
-            }).join(', ');
+            }).join(';  ');
 
             formData.append('data_dokter', formattedDoctors);
             axios.post(url, formData, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
@@ -143,7 +144,7 @@ export default {
                     });
             }
         },
-        edithospital(id) {
+        edithospital() {
             const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const formData = new FormData();
@@ -155,9 +156,9 @@ export default {
             formData.append('info_kontak', this.form.info_kontak);
             const formattedDoctors = this.form.data_dokter.map(doctor => {
                 return `${doctor.name}`;
-            }).join(', ');
+            }).join(';  ');
             formData.append('data_dokter', formattedDoctors);
-            const url = `https://elgeka-web-api-production.up.railway.app/api/v1/infoRS/${id}`
+            const url = `https://elgeka-web-api-production.up.railway.app/api/v1/infoRS/${this.editHospitalId}`
             axios.patch(url, formData, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                 .then(response => {
                     console.log(response.data)
@@ -222,33 +223,59 @@ export default {
         toggleModalCreateHospital() {
             this.showcreatehospital = !this.showcreatehospital;
         },
-        toggleModalEditHospital() {
+        toggleModalEditHospital(hospital) {
             this.showedithospital = !this.showedithospital;
-        },
-
-        addDoctor() {
-            this.form.data_dokter.push({ name: '' });
-        },
-        removeDoctor(index) {
-            if (this.form.data_dokter.length > 1) {
-                this.form.data_dokter.splice(index, 1);
-            }
-        },
-        getFullDoctorName(doctor) {
-            return `${doctor.name}`;
-        },
-        sortNoColumn() {
-            if (this.sortOrder === 'asc') {
-                this.InfoRS.sort((a, b) => a.no - b.no);
-                this.sortOrder = 'desc';
+            if (hospital) {
+                this.editHospitalId = hospital.id;
+                this.form = {
+                    nama_rs: hospital.nama_rs,
+                    image: hospital.image,
+                    lokasi_rs: hospital.lokasi_rs,
+                    link_maps: hospital.link_maps,
+                    latlong: hospital.latlong,
+                    info_kontak: hospital.info_kontak,
+                    data_dokter: hospital.data_dokter.split(';  ').map(doctorName => {
+                        return { name: doctorName }; // Ensure this matches expected format
+                    })
+                };
             } else {
-                this.InfoRS.sort((a, b) => b.no - a.no);
-                this.sortOrder = 'asc';
+                // Reset form data when closing modal without a medicine object
+                this.form = {
+                    image: '',
+                    nama_rs: '',
+                    lokasi_rs: '',
+                    link_maps: '',
+                    latlong: '',
+                    info_kontak: '',
+                    data_dokter: [{ name: '' }] // New field for data_dokter
+                };
             }
-            this.updatePaginatedData();
-        },
-    }
+        }
+    },
+
+    addDoctor() {
+        this.form.data_dokter.push({ name: '' });
+    },
+    removeDoctor(index) {
+        if (this.form.data_dokter.length > 1) {
+            this.form.data_dokter.splice(index, 1);
+        }
+    },
+    getFullDoctorName(doctor) {
+        return `${doctor.name}`;
+    },
+    sortNoColumn() {
+        if (this.sortOrder === 'asc') {
+            this.InfoRS.sort((a, b) => a.no - b.no);
+            this.sortOrder = 'desc';
+        } else {
+            this.InfoRS.sort((a, b) => b.no - a.no);
+            this.sortOrder = 'asc';
+        }
+        this.updatePaginatedData();
+    },
 }
+
 </script>
 
 <template >
@@ -307,42 +334,43 @@ export default {
                             </th>
                         </tr>
                     </thead>
-                    <tbody v-for="data in paginatedInfoRS" :key="data.id" class=" divide-y divide-gray-200">
+                    <tbody v-for="hospital in paginatedInfoRS" :key="hospital.id" class=" divide-y divide-gray-200">
                         <tr>
                             <td class="td-general">
-                                {{ data.no }}
+                                {{ hospital.no }}
                             </td>
                             <td class="td-general">
-                                <p class="td-text-general">{{ data.nama_rs }}</p>
+                                <p class="td-text-general">{{ hospital.nama_rs }}</p>
                             </td>
                             <td class="td-general">
-                                <p class="td-text-general">{{ data.lokasi_rs }}</p>
+                                <p class="td-text-general">{{ hospital.lokasi_rs }}</p>
                             </td>
                             <td class="td-general">
-                                <p class="td-text-general">{{ data.info_kontak }}</p>
+                                <p class="td-text-general">{{ hospital.info_kontak }}</p>
                             </td>
                             <td class="td-general">
-                                <p v-if="data.data_dokter" class="td-text-general">{{ data.data_dokter }}</p>
-                                <p v-else-if="data.data_dokter === null" class="td-text-general">Belum ada data dokter</p>
+                                <p v-if="hospital.data_dokter" class="td-text-general">{{ hospital.data_dokter }}</p>
+                                <p v-else-if="hospital.data_dokter === null" class="td-text-general">Belum ada data dokter
+                                </p>
                             </td>
                             <td
                                 class="px-3 py-4 min-w-[200px] whitespace-normal break-words max-w-[201px] text-wrap underline underline-offset-1">
-                                <a :href="data.link_maps" target="_blank" class="td-text-general hover:text-teal">{{
-                                    data.link_maps }}</a>
+                                <a :href="hospital.link_maps" target="_blank" class="td-text-general hover:text-teal">{{
+                                    hospital.link_maps }}</a>
                             </td>
 
                             <td class="td-general">
                                 <img class="bg-hospital bg-cover bg-center w-full h-full object-cover"
-                                    :src="url + data.image_url">
+                                    :src="url + hospital.image_url">
                             </td>
 
                             <td
                                 class="px-3 max-[1075px]:px-2 py-4 flex flex-col gap-2 justify-center items-center whitespace-nowrap text-sm font-medium">
                                 <a>
-                                    <button @click="toggleModalEditHospital(data.id)"
+                                    <button @click="toggleModalEditHospital(hospital)"
                                         class="py-1 px-8 max-[1075px]:px-0 rounded-[5px] w-[110px] bg-white font-bold text-base text-teal shadow-s">Edit</button>
                                 </a>
-                                <button href="#" @click="deletehospital(data.id)"
+                                <button href="#" @click="deletehospital(hospital.id)"
                                     class="py-1 px-8 max-[1075px]:px-0 rounded-[5px] w-[110px] shadow-s bg-white bg-opacity-64 text-teal font-bold text-base ">Hapus</button>
                             </td>
                         </tr>
@@ -411,10 +439,11 @@ export default {
                                     <label for="Nama Dokter" class="font-poppins font-bold text-base text-teal">Nama
                                         Dokter</label>
                                     <div v-for="(doctor, index) in form.data_dokter" :key="index" class="flex gap-2">
-                                        <select class="border border-black py-4 w-[80%] max-md:min-w-[50%] pl-2 rounded-md"
+                                        <select v-model="form.data_dokter[index].name"
+                                            class="border border-black py-4 w-[80%] max-md:min-w-[50%] pl-2 rounded-md"
                                             required>
                                             <option value="">Pilih Dokter</option>
-                                            <option v-for="doc in DoctorData" :value="doc.Name">
+                                            <option v-for="doc in DoctorData" :key="doc.ID" :value="doc.Name">
                                                 {{ doc.Name }}
                                             </option>
                                         </select>
@@ -426,8 +455,7 @@ export default {
                                 </div>
 
                                 <div class="flex gap-2 flex-col relative">
-                                    <label for="Latlong"
-                                        class="font-poppins font-bold text-base text-teal">Latlong</label>
+                                    <label for="Latlong" class="font-poppins font-bold text-base text-teal">Latlong</label>
                                     <div class="relative">
                                         <input class="border border-black py-4 pl-2 pr-10 rounded-md w-full" type="text"
                                             required name="Latlong" id="" v-model="form.latlong"
@@ -505,8 +533,8 @@ export default {
             </div>
 
             <!-- Modal Edit Rumah Sakit -->
-            <div>
-                <form v-if="showedithospital" @submit.prevent="edithospital()"
+            <div v-if="showedithospital">
+                <form @submit.prevent="edithospital()"
                     class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center max-[600px]:justify-start max-[600px]:items-start flex">
                     <div class="relative w-auto my-6 max-[600px]:my-0 mx-auto max-w-6xl">
                         <!--content-->
@@ -552,9 +580,14 @@ export default {
                                     <label for="Nama Dokter" class="font-poppins font-bold text-base text-teal">Nama
                                         Dokter</label>
                                     <div v-for="(doctor, index) in form.data_dokter" :key="index" class="flex gap-2">
-                                        <input class="border border-black py-4 w-[80%] max-md:min-w-[50%] pl-2 rounded-md"
-                                            placeholder="Masukkan nama dokter" type="text" :id="'doctor_name_' + index"
-                                            v-model="doctor.name" required />
+                                        <select v-model="form.data_dokter[index].name"
+                                            class="border border-black py-4 w-[80%] max-md:min-w-[50%] pl-2 rounded-md"
+                                            required>
+                                            <option value="">Pilih Dokter</option>
+                                            <option v-for="doc in DoctorData" :value="doc.Name">
+                                                {{ doc.Name }}
+                                            </option>
+                                        </select>
                                         <button class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded"
                                             type="button" @click="removeDoctor(index)">Hapus</button>
                                     </div>
@@ -614,8 +647,7 @@ export default {
                                         Lengkap</label>
                                     <input @change="handleFileChange"
                                         class="border border-black py-4 w-full max-md:min-w-full pl-2 rounded-md"
-                                        type="file" required name="Foto Profil" id=""
-                                        accept="image/png, image/jpg, image/jpeg" />
+                                        type="file" name="Foto Profil" id="" accept="image/png, image/jpg, image/jpeg" />
                                     <div v-if="errorMessage" class="text-red text-sm font-bold mb-4">{{ errorMessage }}
                                     </div>
                                 </div>
@@ -640,6 +672,8 @@ export default {
                 </form>
                 <div v-if="showedithospital" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
             </div>
+
+
         </div>
     </div>
 </template>
