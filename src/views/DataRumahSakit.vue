@@ -165,7 +165,7 @@ export default {
                     this.resulterror = response.data
                     if (response.data.code === 200) {
                         toast.success('Edit data rumah sakit berhasil');
-                        this.$router.push('/datarumahsakit')
+                        window.location.reload();
                     } else if (response.data.message === 'Error Update Info RS by ID: Rumah Sakit already exists') {
                         toast.error('Nama Rumah Sakit yang sama sudah ada, mohon untuk mengganti dengan nama yang lain')
                     } else {
@@ -250,30 +250,31 @@ export default {
                     data_dokter: [{ name: '' }] // New field for data_dokter
                 };
             }
-        }
+        },
+        addDoctor() {
+            this.form.data_dokter.push({ name: '' });
+        },
+        removeDoctor(index) {
+            if (this.form.data_dokter.length > 1) {
+                this.form.data_dokter.splice(index, 1);
+            }
+        },
+        getFullDoctorName(doctor) {
+            return `${doctor.name}`;
+        },
+        sortNoColumn() {
+            if (this.sortOrder === 'asc') {
+                this.InfoRS.sort((a, b) => a.no - b.no);
+                this.sortOrder = 'desc';
+            } else {
+                this.InfoRS.sort((a, b) => b.no - a.no);
+                this.sortOrder = 'asc';
+            }
+            this.updatePaginatedData();
+        },
     },
 
-    addDoctor() {
-        this.form.data_dokter.push({ name: '' });
-    },
-    removeDoctor(index) {
-        if (this.form.data_dokter.length > 1) {
-            this.form.data_dokter.splice(index, 1);
-        }
-    },
-    getFullDoctorName(doctor) {
-        return `${doctor.name}`;
-    },
-    sortNoColumn() {
-        if (this.sortOrder === 'asc') {
-            this.InfoRS.sort((a, b) => a.no - b.no);
-            this.sortOrder = 'desc';
-        } else {
-            this.InfoRS.sort((a, b) => b.no - a.no);
-            this.sortOrder = 'asc';
-        }
-        this.updatePaginatedData();
-    },
+
 }
 
 </script>
@@ -349,7 +350,7 @@ export default {
                                 <p class="td-text-general">{{ hospital.info_kontak }}</p>
                             </td>
                             <td class="td-general">
-                                <p v-if="hospital.data_dokter" class="td-text-general">{{ hospital.data_dokter }}</p>
+                                <p v-if="hospital.data_dokter" class="td-text-general line-clamp-4">{{ hospital.data_dokter }}</p>
                                 <p v-else-if="hospital.data_dokter === null" class="td-text-general">Belum ada data dokter
                                 </p>
                             </td>
