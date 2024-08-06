@@ -105,7 +105,7 @@ export default {
 </script>
 
 <template>
-    <div class="flex bg-offwhite">
+    <div class="flex bg-offwhite min-h-screen">
         <Sidebar />
 
         <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
@@ -134,7 +134,7 @@ export default {
                     <thead>
                         <tr class="border-b-[0.5px] border-b-lightgray">
                             <th scope="col"
-                                class="px-3 py-3 max-[1300px]:pb-0 max-[1300px]:pt-6 max-[1200px]:pl-0 max-w-[50px] flex items-center gap-1 text-left font-bold font-poppins text-black text-base cursor-pointer"
+                                class="th-general"
                                 @click="sortNoColumn">
                                 No
                                 <span v-if="sortOrder === 'asc'">
@@ -172,6 +172,9 @@ export default {
                             </th>
                             <th scope="col" class="th-general">
                                 Nomor HP
+                            </th>
+                            <th scope="col" class="th-general">
+                                Dokter
                             </th>
                             <th scope="col" class="th-general">
                                 Email
@@ -216,6 +219,10 @@ export default {
                             <td class="px-3 py-4">
                                 <p class="td-text-general">{{ data.PhoneNumber }}
                                 </p>
+                            </td>
+                            <td class="px-3 py-4">
+                                <p v-if="data.PersonalDoctor" class="td-text-general">{{ data.PersonalDoctor }}</p>
+                                <p v-else-if="!data.PersonalDoctor" class="td-text-general">Belum Ada</p>
                             </td>
                             <td class="px-3 py-4">
                                 <p class="td-text-general">{{ data.Email }}</p>
