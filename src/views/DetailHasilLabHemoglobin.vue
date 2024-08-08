@@ -46,16 +46,26 @@ export default {
             if (this.selectedFilter) {
                 filtered = filtered.filter((item) => {
                     const value = parseFloat(item.Data);
-                    if (this.selectedFilter === '<12') {
-                        return value < 12;
-                    } else if (this.selectedFilter === '12 - 17') {
-                        return value >= 12 && value <= 17;
-                    } else if (this.selectedFilter === '>17') {
+                    if (this.selectedFilter === '< 9') {
+                        return value < 9;
+                    } else if (this.selectedFilter === '< 13') {
+                        return value < 13;
+                    } else if (this.selectedFilter === '9 - 15') {
+                        return value >= 9 && value <= 15;
+                    } else if (this.selectedFilter === '13 - 17') {
+                        return value >= 13 && value <= 17;
+                    } else if (this.selectedFilter === '> 15') {
+                        return value > 15;
+                    } else if (this.selectedFilter === '> 17') {
                         return value > 17;
                     }
                     return true;
-
                 });
+            }
+
+            // Filter by gender
+            if (this.selectedGender) {
+                filtered = filtered.filter(item => item.Gender === this.selectedGender);
             }
 
             // Filter by date range
@@ -103,6 +113,7 @@ export default {
             sortDirection: 'asc', // Sort direction
             sortOrder: 'asc',
             selectedFilter: '',  // Add selectedFilter
+            selectedGender: '', // Add selectedGender
             startDate: '',
             endDate: ''
         }
@@ -188,7 +199,7 @@ export default {
 </script>
 
 <template>
-    <div class="flex bg-offwhite">
+    <div class="flex bg-offwhite min-h-screen">
         <Sidebar />
 
         <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
@@ -208,24 +219,46 @@ export default {
             <p class="font-normal font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
 
             <!-- Filter Dropdown -->
-            <div class="mb-4">
-                <label for="filter" class="font-medium font-poppins text-blueblack">Filter Data:</label>
-                <select id="filter" v-model="selectedFilter" @change="filterData"
-                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
-                    <option value="">Pilih Filter</option>
-                    <option value="<12">&lt; 12</option>
-                    <option value="12 - 17">12 - 17</option>
-                    <option value=">17">&gt; 17</option>
-                </select>
+            <div class="flex gap-4 max-sm:flex-col max-sm:gap-0">
+                <div class="mb-4">
+                    <label for="filter" class="font-medium font-poppins text-blueblack">Filter Data:</label>
+                    <select id="filter" v-model="selectedFilter" @change="filterData"
+                        class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
+                        <option value="">Pilih Filter</option>
+                        <option value="< 9"> &lt; 9</option>
+                        <option value="< 13">&lt; 13</option>
+                        <option value="9 - 15">9 - 15</option>
+                        <option value="13 - 17">13 - 17</option>
+                        <option value="> 15">&gt; 15</option>
+                        <option value="> 17">&gt; 17</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="filter" class="font-medium font-poppins text-blueblack">Filter Gender:</label>
+                    <select id="filter" v-model="selectedGender" @change="filterData"
+                        class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
+                        <option value="">Pilih Filter</option>
+                        <option value="male">Laki-Laki</option>
+                        <option value="female">Perempuan</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="mb-4">
-                <label for="startDate" class="font-medium font-poppins text-blueblack">Tanggal Mulai:</label>
-                <input type="date" id="startDate" v-model="startDate"
-                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
-                <label for="endDate" class="font-medium font-poppins text-blueblack ml-4">Tanggal Akhir:</label>
-                <input type="date" id="endDate" v-model="endDate"
-                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
+
+            <div class="mb-4 flex max-sm:flex max-sm:flex-col max-sm:gap-2 max-sm:items-start">
+                <div>
+                    <label for="startDate" class="font-medium font-poppins text-blueblack">Tanggal Mulai:</label>
+                    <input type="date" id="startDate" v-model="startDate"
+                        class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
+                </div>
+
+                <div>
+                    <label for="endDate" class="font-medium font-poppins text-blueblack ml-4">Tanggal Akhir:</label>
+                    <input type="date" id="endDate" v-model="endDate"
+                        class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins" />
+                </div>
+
             </div>
 
             <div class="overflow-x-auto max-w-full max-[700px]:max-w-[85%]">
@@ -285,8 +318,7 @@ export default {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(data, index) in paginatedInfoPatient" :key="index"
-                            class="divide-y divide-gray-200">
+                        <tr v-for="(data, index) in paginatedInfoPatient" :key="index" class="divide-y divide-gray-200">
                             <td
                                 class="px-3 py-4 whitespace-nowrap font-poppins min-w-[50px] max-w-[51px] font-normal leading-4 text-black text-base">
                                 {{ data.no }}

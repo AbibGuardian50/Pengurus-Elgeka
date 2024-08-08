@@ -19,6 +19,7 @@ export default {
             });
             if (response.data.Message === "Success to Get Leukocytes Data") {
                 toast.success('Data Hasil Lab Leukosit Berhasil Dimuat');
+                console.log(response);
             }
             this.InfoPatient = response.data.Data;
             this.InfoPatient.forEach((item, index) => {
@@ -61,6 +62,11 @@ export default {
                     }
                     return true;
                 });
+            }
+
+            // Filter by gender
+            if (this.selectedGender) {
+                filtered = filtered.filter(item => item.Gender === this.selectedGender);
             }
 
 
@@ -111,6 +117,7 @@ export default {
             sortDirection: 'asc', // Sort direction
             sortOrder: 'asc',
             selectedFilter: '',  // Add selectedFilter
+            selectedGender: '', // Add selectedGender
             startDate: '',
             endDate: ''
         }
@@ -205,7 +212,7 @@ export default {
 
 
 <template>
-    <div class="flex bg-offwhite">
+    <div class="flex bg-offwhite min-h-screen">
         <Sidebar />
 
         <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">
@@ -225,18 +232,31 @@ export default {
             <p class="font-normal font-poppins text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
 
             <!-- Filter Dropdown -->
-            <div class="mb-4">
-                <label for="filter" class="font-medium font-poppins text-blueblack">Filter Data:</label>
-                <select id="filter" v-model="selectedFilter" @change="filterData"
-                    class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
-                    <option value="">Pilih Filter</option>
-                    <option value="< 2000">&lt; 2000</option>
-                    <option value="2000 - 3500">2000 - 3500</option>
-                    <option value="3500 - 12000">3500 - 12000</option>
-                    <option value="12000 - 100000">12000 - 100000</option>
-                    <option value="> 100000">&gt; 100000</option>
-                </select>
+            <div class="flex gap-4 max-sm:flex-col max-sm:gap-0">
+                <div class="mb-4">
+                    <label for="filter" class="font-medium font-poppins text-blueblack">Filter Data:</label>
+                    <select id="filter" v-model="selectedFilter" @change="filterData"
+                        class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
+                        <option value="">Pilih Filter</option>
+                        <option value="< 2000">&lt; 2000</option>
+                        <option value="2000 - 3500">2000 - 3500</option>
+                        <option value="3500 - 12000">3500 - 12000</option>
+                        <option value="12000 - 100000">12000 - 100000</option>
+                        <option value="> 100000">&gt; 100000</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="filter" class="font-medium font-poppins text-blueblack">Filter Gender:</label>
+                    <select id="filter" v-model="selectedGender" @change="filterData"
+                        class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
+                        <option value="">Pilih Filter</option>
+                        <option value="male">Laki-Laki</option>
+                        <option value="female">Perempuan</option>
+                    </select>
+                </div>
             </div>
+
 
             <div class="mb-4">
                 <label for="startDate" class="font-medium font-poppins text-blueblack">Tanggal Mulai:</label>

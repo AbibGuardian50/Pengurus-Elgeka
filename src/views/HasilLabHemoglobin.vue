@@ -233,19 +233,19 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data untuk female
             const DataLabHemoglobinCountsFemale = {
-                '< 12': 0,
-                '12 - 16': 0,
-                '> 16': 0,
+                '< 9': 0,
+                '9 - 15': 0,
+                '> 15': 0,
             };
             filteredDataFemale.forEach(item => {
                 const DataLabHemoglobin = item.Data;
                 if (DataLabHemoglobin !== 0 && DataLabHemoglobin !== null) {
-                    if (DataLabHemoglobin < 12) {
-                        DataLabHemoglobinCountsFemale['< 12']++;
-                    } else if (DataLabHemoglobin <= 16) {
-                        DataLabHemoglobinCountsFemale['12 - 16']++;
-                    } else if (DataLabHemoglobin > 16) {
-                        DataLabHemoglobinCountsFemale['> 16']++;
+                    if (DataLabHemoglobin < 9) {
+                        DataLabHemoglobinCountsFemale['< 9']++;
+                    } else if (DataLabHemoglobin <= 15) {
+                        DataLabHemoglobinCountsFemale['12 - 15']++;
+                    } else if (DataLabHemoglobin > 15) {
+                        DataLabHemoglobinCountsFemale['> 15']++;
                     }
                 }
             });
