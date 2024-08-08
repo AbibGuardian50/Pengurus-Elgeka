@@ -19,7 +19,6 @@ export default {
             });
             if (response.data.Message === "Success to Get Leukocytes Data") {
                 toast.success('Data Hasil Lab Leukosit Berhasil Dimuat');
-                console.log(response);
             }
             this.InfoPatient = response.data.Data;
             this.InfoPatient.forEach((item, index) => {
