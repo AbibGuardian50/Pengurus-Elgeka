@@ -283,7 +283,7 @@ export default {
 
 
 <template>
-    <div class="flex bg-offwhite h-full">
+    <div class="flex bg-offwhite min-h-screen">
         <Sidebar />
 
         <div class="ml-8 max-sm:ml-2 pt-4 w-full bg-offwhite">

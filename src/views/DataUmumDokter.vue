@@ -338,7 +338,7 @@ export default {
 </script>
 
 <template>
-    <div class="flex">
+    <div class="flex min-h-screen">
         <Sidebar></Sidebar>
         <div class="flex-1 bg-offwhite max-w-full p-4">
             <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6">Data Dokter</h1>

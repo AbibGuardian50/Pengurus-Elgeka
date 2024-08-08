@@ -391,7 +391,7 @@ p {
 
 
 <template>
-    <div class="flex bg-offwhite">
+    <div class="flex bg-offwhite min-h-screen">
         <Sidebar />
 
         <div class="flex flex-col gap-4 pt-4 pl-4 w-full lg:w-auto max-md:w-[95%]">
