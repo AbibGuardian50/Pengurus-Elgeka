@@ -65,7 +65,7 @@ export default {
         filteredPatients() {
             return this.getRandomFilteredPatients(this.StatisticsPatientData, 100); // Adjust the count as needed
         },
-        filteredPatientData() {
+        filteredPatientData() { //memfilter pasien untuk hanya menampilkan mereka yang memiliki obat dengan tanggal lebih dari 7 hari yang lalu.
             const today = new Date();
             const cutoffDate = new Date(today.setDate(today.getDate() - 7));
 
@@ -107,8 +107,6 @@ export default {
 
             this.updateData(filteredData);
         },
-
-
         getRandomFilteredPatients(patients, count) {
             const today = new Date();
             const cutoffDate = new Date(today.setDate(today.getDate() - 8));
@@ -392,8 +390,10 @@ export default {
 
                             <div class="my-4">
                                 <label for="stockFilter"
-                                    class="font-hindsiliguri text-teal font-medium text-[14px] leading-[18px]">Filter batas maksimum obat:</label>
-                                <input id="stockFilter" type="number" v-model.number="selectedStock" class="bg-white border border-gray-300 rounded-md py-2 px-3"
+                                    class="font-hindsiliguri text-teal font-medium text-[14px] leading-[18px]">Filter batas
+                                    maksimum obat:</label>
+                                <input id="stockFilter" type="number" v-model.number="selectedStock"
+                                    class="bg-white border border-gray-300 rounded-md py-2 px-3"
                                     placeholder="Masukkan batas maksimum" />
                             </div>
 
@@ -409,7 +409,7 @@ export default {
 
 
                                         <!-- Conditionally render the message if no patient data is available -->
-                                        <tr v-for="patient in filteredPatientData" :key="patient.id"
+                                        <tr v-for="patient in filteredPatientData" :key="patient.id"  
                                             class="hover:bg-[#ddd]">
                                             <td class="td-general max-md:pl-3 td-text-general">
                                                 {{ patient.Name }}
@@ -420,14 +420,14 @@ export default {
                                                     if (selectedStock !== null) {
                                                         stockCondition = med.Stock <= selectedStock;
                                                     }
+                                                    // daftar obat untuk setiap pasien difilter lebih lanjut berdasarkan stok dan tanggal obat.
                                                     return stockCondition && new Date(med.Date) <= new Date(new Date().setDate(new Date().getDate() - 7));
                                                 })" :key="mIndex" class="flex">
-                                                    <p class="td-text-general">- {{ medicine.Name }} ({{ medicine.Stock }})</p>
+                                                    <p class="td-text-general">- {{ medicine.Name }} ({{ medicine.Stock }})
+                                                    </p>
                                                 </div>
                                             </td>
                                         </tr>
-
-
 
                                     </tbody>
                                 </table>

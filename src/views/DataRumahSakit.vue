@@ -544,7 +544,7 @@ export default {
                             <!--header-->
                             <div class="flex items-start justify-between p-5 border-b-2 border-black rounded-t">
                                 <h3 class="text-[40px] text-teal font-semibold font-poppins">
-                                    Data RSUD Bandung
+                                    Data Rumah Sakit
                                 </h3>
                                 <button
                                     class="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
