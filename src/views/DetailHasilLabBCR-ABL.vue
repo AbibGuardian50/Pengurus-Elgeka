@@ -50,8 +50,10 @@ export default {
                         return value < 0.00032;
                     } else if (this.selectedFilter === '0.00032-0.001') {
                         return value >= 0.00032 && value <= 0.001;
-                    } else if (this.selectedFilter === '0.001-0.1') {
-                        return value > 0.001 && value <= 0.1;
+                    } else if (this.selectedFilter === '0.001-0.01') {
+                        return value > 0.001 && value <= 0.01;
+                    } else if (this.selectedFilter === '0.01-0.1') {  // Added range
+                        return value > 0.01 && value <= 0.1;
                     } else if (this.selectedFilter === '0.1-1') {
                         return value > 0.1 && value <= 1;
                     } else if (this.selectedFilter === '1-10') {
@@ -62,6 +64,7 @@ export default {
                     return true;
                 });
             }
+
 
             // Filter by date range
             if (this.startDate && this.endDate) {
@@ -218,12 +221,13 @@ export default {
                 <select id="filter" v-model="selectedFilter" @change="filterData"
                     class="ml-2 p-2 border rounded-md bg-white text-blueblack font-poppins">
                     <option value="">Select Filter</option>
-                        <option value="<0.00032">  &lt 0.00032 </option>
-                        <option value="0.00032-0.001">0.00032 - 0.001</option>
-                        <option value="0.001-0.1">0.001 - 0.1</option>
-                        <option value="0.1-1">0.1 - 1</option>
-                        <option value="1-10">1 - 10</option>
-                        <option value=">10">> 10</option>
+                    <option value="<0.00032"> &lt 0.00032 </option>
+                    <option value="0.00032-0.001">0.00032 - 0.001</option>
+                    <option value="0.001-0.01">0.001 - 0.01</option>
+                    <option value="0.01-0.1">0.01 - 0.1</option>
+                    <option value="0.1-1">0.1 - 1</option>
+                    <option value="1-10">1 - 10</option>
+                    <option value=">10">> 10</option>
                 </select>
             </div>
 

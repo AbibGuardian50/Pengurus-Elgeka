@@ -134,14 +134,17 @@ export default {
             });
 
             // Menghitung jumlah kemunculan setiap nilai Data
+            // Menghitung jumlah kemunculan setiap nilai Data
             const DataLabBcrAblCounts = {
                 '< 0.00032': 0,
                 '0.00032 - 0.001': 0,
-                '0.001 - 0.1': 0,
+                '0.001 - 0.01': 0,
+                '0.01 - 0.1': 0,
                 '0.1 - 1': 0,
                 '1 - 10': 0,
                 '> 10': 0,
             };
+
             filteredData.forEach(item => {
                 const DataLabBCR = item.Data;
                 if (DataLabBCR !== null) {
@@ -151,8 +154,10 @@ export default {
                         DataLabBcrAblCounts['1 - 10']++;
                     } else if (DataLabBCR > 0.1) {
                         DataLabBcrAblCounts['0.1 - 1']++;
+                    } else if (DataLabBCR > 0.01) {
+                        DataLabBcrAblCounts['0.01 - 0.1']++;
                     } else if (DataLabBCR > 0.001) {
-                        DataLabBcrAblCounts['0.001 - 0.1']++;
+                        DataLabBcrAblCounts['0.001 - 0.01']++;
                     } else if (DataLabBCR > 0.00032) {
                         DataLabBcrAblCounts['0.00032 - 0.001']++;
                     } else {
@@ -160,6 +165,7 @@ export default {
                     }
                 }
             });
+
 
             // Persiapkan data untuk chart
             const chartData = {
@@ -169,6 +175,7 @@ export default {
                     backgroundColor: [
                         '#008000', // Hijau
                         '#FF0000', // Merah
+                        '#FFD700', // Kuning
                         '#FFD700', // Kuning
                         '#FFD700', // Kuning
                         '#FFD700', // Kuning
