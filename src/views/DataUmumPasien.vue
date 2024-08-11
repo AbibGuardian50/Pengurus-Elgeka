@@ -1,18 +1,22 @@
 <script>
 import Sidebar from "../components/Sidebar.vue"; // Import komponen Sidebar
+import Loading from "../components/Loading.vue"; // Import komponen Loading
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
 import axios from 'axios'; // Import axios untuk melakukan HTTP requests
 import VueCookies from 'vue-cookies'; // Import VueCookies untuk mengelola cookies
 import { Bar, Pie } from 'vue-chartjs'; // Import komponen Bar dan Pie dari vue-chartjs
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js'; // Import elemen-elemen yang diperlukan dari Chart.js
 import { useToast } from 'vue-toastification'; // Import useToast untuk menampilkan notifikasi
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement); // Registrasi elemen-elemen yang diperlukan dari Chart.js
+ChartJS.register(ChartDataLabels, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement); // Registrasi elemen-elemen yang diperlukan dari Chart.js
 
 export default {
     components: {
         Sidebar, // Menambahkan Sidebar sebagai komponen yang digunakan
         Bar,
         Pie,
+        Loading
     },
     data() {
         return {
@@ -143,10 +147,10 @@ export default {
                     'AB-': '#CC79A7',
                     'B-': '#56B4E9',
                     'O-': '#E69F00',
-                    'A+': '#D32F2F',   
-                    'AB+': '#7B1FA2',  
-                    'B+': '#1976D2',   
-                    'O+': '#388E3C'    
+                    'A+': '#D32F2F',
+                    'AB+': '#7B1FA2',
+                    'B+': '#1976D2',
+                    'O+': '#388E3C'
                 };
 
                 this.BloodData = {
@@ -187,6 +191,12 @@ export default {
             // Opsi untuk chart golongan darah
             const options = {
                 responsive: true,
+                layout: {
+                    padding: {
+                        top: 20,
+                        bottom: 20,
+                    }
+                },
                 plugins: {
                     tooltip: {
                         titleFont: {
@@ -197,18 +207,41 @@ export default {
                         }
                     },
                     legend: {
+                        position: 'bottom', // Ubah posisi legend ke bawah
                         labels: {
                             color: "#222539",
                             font: {
                                 size: fontSize + 1,
                                 weight: 'bold'
-                            }
+                            },
+                            padding: 20,
                         }
                     },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        offset: 5,
+                        formatter: (value, context) => {
+                            if (value === 0) {
+                                return ''; // Tidak menampilkan label jika nilai datanya adalah 0
+                            }
+                            let sum = 0;
+                            const dataArr = context.chart.data.datasets[0].data;
+                            dataArr.forEach(data => {
+                                sum += data;
+                            });
+                            const percentage = ((value / sum) * 100).toFixed(2) + '%';
+                            return percentage;
+                        },
+                        font: {
+                            weight: 'bold',
+                        }
+                    }
                 }
             };
             return options;
         },
+
         getChartOptions(fontSize, isHorizontal = false) {
             // Opsi untuk chart umur dan kabupaten
             const options = {
@@ -359,7 +392,6 @@ export default {
 }
 </script>
 
-
 <style>
 .container {
     max-width: 100%;
@@ -388,13 +420,13 @@ p {
 }
 </style>
 
-
-
 <template>
     <div class="flex bg-offwhite min-h-screen">
         <Sidebar />
 
-        <div class="flex flex-col gap-4 pt-4 pl-4 w-full lg:w-auto max-md:w-[95%]">
+        <Loading v-if="!loaded" /> <!-- Tampilkan loading jika data belum dimuat -->
+
+        <div v-else class="flex flex-col gap-4 pt-4 pl-4 w-full lg:w-auto max-md:w-[95%]">
             <div class="flex flex-col gap-4 min-[1400px]:flex-row max-w-[1100px]">
                 <div
                     class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 max-sm:p-1 w-full max-[1400px]:w-[800px] max-[1000px]:max-w-[600px] max-md:w-[95%] lg:pl-8 lg:py-4 lg:pr-8">
@@ -429,8 +461,9 @@ p {
 
             <div class="flex flex-col gap-4 lg:flex-row pb-8 max-w-[1100px]">
                 <div
-                    class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-2 w-full lg:w-auto max-md:w-[95%]">
-                    <p class="font-assistant text-[18px] font-semibold leading-5 text-midnightblue pt-4">Grafik Pasien
+                    class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 w-full lg:w-auto max-md:w-[95%]">
+                    <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 lg:pl-8">Grafik
+                        Pasien
                         berdasarkan Golongan Darah</p>
                     <Pie v-if="loaded" :data="BloodData" :options="BloodOptions"
                         class="border border-lightsilver rounded-lg w-full min-w-[30%] max-w-[550px] p-2 h-full max-h-[350px] text-white" />
