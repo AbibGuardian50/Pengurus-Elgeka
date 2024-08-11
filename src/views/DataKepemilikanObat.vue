@@ -366,10 +366,10 @@ export default {
                         <!-- Date Filter -->
                         <div class="flex justify-center py-4">
                             <div class="flex max-md:flex-col items-center gap-4">
-                                <label for="startDate" class="font-bold">Start Date:</label>
+                                <label for="startDate" class="font-bold">Tanggal Awal:</label>
                                 <input type="date" v-model="startDate" @change="filterData" class="border rounded p-2" />
 
-                                <label for="endDate" class="font-bold">End Date:</label>
+                                <label for="endDate" class="font-bold">Tanggal Akhir:</label>
                                 <input type="date" v-model="endDate" @change="filterData" class="border rounded p-2" />
 
                                 &
