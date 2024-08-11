@@ -1,5 +1,6 @@
 <script>
 import Sidebar from "../components/Sidebar.vue"
+import KepemilikanObatLite from "../components/KepemilikanObatLite.vue"
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
 import { Bar, Pie, Doughnut } from 'vue-chartjs'
@@ -23,6 +24,7 @@ export default {
             categories: [],
             selectedCategory: '',
             selectedStock: '',
+            daysAgo: 7, // Default value
         }
     },
     async created() {
@@ -33,7 +35,7 @@ export default {
             const patientDataPromise = this.fetchPatientData(tokenlogin);
             const medicineDataPromise = this.fetchMedicineData(tokenlogin);
             const [patientData, medicineData] = await Promise.all([patientDataPromise, medicineDataPromise]);
-            this.StatisticsPatientData = this.getRandomFilteredPatients(patientData, 3)
+            this.StatisticsPatientData = this.filterPatientsByStockAndDate(this.allData);
 
             // Save fetched patient data to allData
             this.allData = patientData;
@@ -56,6 +58,7 @@ export default {
         window.removeEventListener('resize', this.updateChartFontSizes);
     },
     components: {
+        KepemilikanObatLite,
         Sidebar,
         Bar,
         Pie,
@@ -63,18 +66,17 @@ export default {
     },
     computed: {
         filteredPatients() {
-            return this.getRandomFilteredPatients(this.StatisticsPatientData, 100); // Adjust the count as needed
+            return this.getRandomFilteredPatients(this.StatisticsPatientData); // Adjust the count as needed
         },
-        filteredPatientData() { //memfilter pasien untuk hanya menampilkan mereka yang memiliki obat dengan tanggal lebih dari 7 hari yang lalu.
+        filteredPatientData() {
             const today = new Date();
-            const cutoffDate = new Date(today.setDate(today.getDate() - 7));
+            const cutoffDate = new Date(today.setDate(today.getDate() - (this.daysAgo || 7)));
 
             return this.StatisticsPatientData.filter(patient => {
-                return patient.ListMedicine.some(medicine =>
-                    new Date(medicine.Date) <= cutoffDate
-                );
+                return patient.ListMedicine.some(medicine => medicine.Stock < 10 && new Date(medicine.Date) > cutoffDate);
             });
         }
+
     },
     methods: {
         filterData() {
@@ -107,16 +109,17 @@ export default {
 
             this.updateData(filteredData);
         },
-        getRandomFilteredPatients(patients, count) {
+        filterPatientsByStockAndDate(patients) {
             const today = new Date();
-            const cutoffDate = new Date(today.setDate(today.getDate() - 8));
+            const cutoffDate = new Date(today.setDate(today.getDate() - (this.daysAgo || 7)));
 
             const filteredPatients = patients.filter(patient => {
                 return patient.ListMedicine.some(medicine => medicine.Stock < 10 && new Date(medicine.Date) > cutoffDate);
             });
 
-            return filteredPatients.sort(() => Math.random() - 0.5).slice(0, count);
+            return filteredPatients;
         },
+
 
         // Method to fetch filtered medicine data based on category
         async fetchFilteredMedicineData() {
@@ -126,7 +129,7 @@ export default {
 
         // Methods to fetch data remain unchanged
         updateData(filteredData) {
-            this.TotalPatientWithMedicine = this.totalPatientCount;
+            this.TotalPatientWithMedicine = this.calculateTotalPatientWithMedicine(filteredData);;
             this.MedicineData = this.processMedicineData(filteredData);
             this.HospitalPerMedicineData = this.processHospitalData(filteredData);
         },
@@ -205,6 +208,13 @@ export default {
             this.MedicineOptions.plugins.tooltip.titleFont.size = fontSize + 2;
             this.MedicineOptions.plugins.tooltip.bodyFont.size = fontSize + 2;
             this.MedicineOptions.plugins.legend.labels.font.size = fontSize + 2;
+        },
+        validateDaysAgo(value) {
+            if (value <= 0) {
+                this.daysAgo = ''; // Reset to empty string or default value
+                const toast = useToast();
+                toast.error('Jumlah hari harus lebih besar dari 0');
+            }
         },
         async fetchPatientData(token) {
             const toast = useToast();
@@ -322,7 +332,14 @@ export default {
         calculateTotalPatientWithMedicine(patients) {
             return patients.length;
         },
-    }
+    },
+    watch: {
+        daysAgo(newVal) {
+            this.StatisticsPatientData = this.filterPatientsByStockAndDate(this.allData);
+            this.filterData(); // Apply filters with updated `daysAgo`
+        }
+    },
+
 }
 </script>
 
@@ -388,62 +405,8 @@ export default {
                                     TotalPatientWithMedicine }}</p>
                             </div>
 
-                            <div class="my-4">
-                                <label for="stockFilter"
-                                    class="font-hindsiliguri text-teal font-medium text-[14px] leading-[18px]">Filter batas
-                                    maksimum obat:</label>
-                                <input id="stockFilter" type="number" v-model.number="selectedStock"
-                                    class="bg-white border border-gray-300 rounded-md py-2 px-3"
-                                    placeholder="Masukkan batas maksimum" />
-                            </div>
-
-                            <div class="w-full max-md:px-0 px-4 overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                        <tr class="hover:bg-[#ddd]">
-                                            <th class="th-general">PASIEN</th>
-                                            <th class="th-general">OBAT</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-
-
-                                        <!-- Conditionally render the message if no patient data is available -->
-                                        <tr v-for="patient in filteredPatientData" :key="patient.id"  
-                                            class="hover:bg-[#ddd]">
-                                            <td class="td-general max-md:pl-3 td-text-general">
-                                                {{ patient.Name }}
-                                            </td>
-                                            <td class="td-general max-md:pl-3">
-                                                <div v-for="(medicine, mIndex) in patient.ListMedicine.filter(med => {
-                                                    let stockCondition = true;
-                                                    if (selectedStock !== null) {
-                                                        stockCondition = med.Stock <= selectedStock;
-                                                    }
-                                                    // daftar obat untuk setiap pasien difilter lebih lanjut berdasarkan stok dan tanggal obat.
-                                                    return stockCondition && new Date(med.Date) <= new Date(new Date().setDate(new Date().getDate() - 7));
-                                                })" :key="mIndex" class="flex">
-                                                    <p class="td-text-general">- {{ medicine.Name }} ({{ medicine.Stock }})
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-
-                                    </tbody>
-                                </table>
-                                <div class="mt-4">
-                                    <a href="/detaildataumumkepemilikanobat">
-                                        <button class="font-opensans text-black flex items-center gap-2 pl-4 pb-4">
-                                            Read more
-                                            <svg width="12" height="11" viewBox="0 0 12 11" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M1 6.00156H8.586L6.293 8.29456C6.03304 8.54563 5.92879 8.91743 6.0203 9.26706C6.11182 9.61669 6.38486 9.88974 6.73449 9.98125C7.08412 10.0728 7.45593 9.96851 7.707 9.70856L11.707 5.70856C11.8951 5.52095 12.0008 5.26621 12.0008 5.00056C12.0008 4.7349 11.8951 4.48017 11.707 4.29256L7.707 0.292556C7.31598 -0.097909 6.68247 -0.0974613 6.292 0.293556C5.90153 0.684574 5.90198 1.31809 6.293 1.70856L8.586 4.00156H1C0.447715 4.00156 0 4.44927 0 5.00156C0 5.55384 0.447715 6.00156 1 6.00156Z"
-                                                    fill="black" />
-                                            </svg>
-                                        </button>
-                                    </a>
-                                </div>
+                            <div>
+                                <KepemilikanObatLite />
                             </div>
 
                         </div>
@@ -472,6 +435,5 @@ export default {
                     </div>
                 </div>
             </div>
-        </div>
     </div>
-</template>
+</div></template>
