@@ -33,6 +33,15 @@ export default {
             }
             console.error(error);
         }
+
+        // Fetching medicine names for the dropdown filter
+        try {
+            const response = await axios.get('https://elgeka-web-api-production.up.railway.app/api/v1/dataObat');
+            this.medicineNames = response.data.result.data;
+            console.log(this.medicineNames);
+        } catch (error) {
+            console.error('Error fetching medicine names:', error);
+        }
     },
     components: {
         Sidebar
@@ -44,6 +53,8 @@ export default {
             totalPages: 0, // Total pages
             paginatedDataOwnershipMedicine: [],
             DataOwnershipMedicine: [], // Full data
+            medicineNames: [], // List of medicine names
+            medicineFilter: '', // Medicine name filter value
             stockFilter: '', // Stock filter value
             dateFilter: '', // Date filter value
             sortColumn: 'no', // Column to sort by
@@ -51,8 +62,11 @@ export default {
         }
     },
     methods: {
-        formatDate(dateString) {
+        formatDateDefault(dateString) {
             return format(new Date(dateString), 'dd MMMM yyyy HH:mm', { locale: id });
+        },
+        formatDate(dateString) {
+            return format(new Date(dateString), 'dd MMMM yyyy', { locale: id });
         },
         applyFilters() {
         let filteredData = this.DataOwnershipMedicine.map(patient => {
@@ -60,6 +74,7 @@ export default {
             const filteredMedicines = patient.ListMedicine.filter(medicine => {
                 let matchesStock = true;
                 let matchesDate = true;
+                let matchesMedicineName = true;
                 
                 if (this.stockFilter) {
                     matchesStock = medicine.Stock <= this.stockFilter;
@@ -68,8 +83,13 @@ export default {
                 if (this.dateFilter) {
                     matchesDate = new Date(medicine.Date) <= new Date(this.dateFilter);
                 }
+
+                // Apply medicine name filter
+                if (this.medicineFilter !== '') {
+                    matchesMedicineName = medicine.Name === this.medicineFilter;
+                }
                 
-                return matchesStock && matchesDate;
+                return matchesStock && matchesDate && matchesMedicineName;
             });
             
             // Only return the patient if they have any medicines that meet the filter criteria
@@ -83,7 +103,43 @@ export default {
             }
         }).filter(patient => patient !== null); // Remove patients without filtered medicines
 
+        // Sort the filtered medicines by the nearest pickup date
+        filteredData.forEach(patient => {
+            patient.ListMedicine.sort((a, b) => {
+                const dayDifferenceA = Math.ceil((new Date(a.Date) - new Date()) / (1000 * 60 * 60 * 24));
+                const dayDifferenceB = Math.ceil((new Date(b.Date) - new Date()) / (1000 * 60 * 60 * 24));
+                return dayDifferenceA - dayDifferenceB;
+            });
+        });
+
         return filteredData;
+        },
+        calculateNextPickup(medicineDate) {
+        const medicineDateObj = new Date(medicineDate);
+        medicineDateObj.setHours(0, 0, 0, 0); // Set time to 00:00:00
+
+        const nextPickupDate = new Date(medicineDateObj);
+        nextPickupDate.setDate(medicineDateObj.getDate() + 30);
+        nextPickupDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set time to 00:00:00
+
+        const dayDifference = Math.ceil((nextPickupDate - today) / (1000 * 60 * 60 * 24));
+
+        let displayMessage;
+        if (dayDifference > 0) {
+            displayMessage = `${dayDifference} hari lagi`;
+        } else if (dayDifference === 0) {
+            displayMessage = "Hari ini";
+        } else {
+            displayMessage = `${Math.abs(dayDifference)} hari yang lalu`;
+        }
+
+        return {
+            nextPickupDateFormatted: this.formatDate(nextPickupDate),
+            displayMessage: displayMessage
+        };
     },
         updatePaginatedData() {
             const filteredData = this.applyFilters();
@@ -156,18 +212,30 @@ export default {
             <p class="font-normal text-[20px] leading-7 text-blueblack mt-4">Biodata Pasien</p>
 
             <div class="my-4">
-                <div class="flex gap-4 items-center">
-                    <div>
+                <div class="flex gap-4 items-center max-sm:flex-col max-sm:gap-2 max-sm:items-start">
+                    <div class="max-sm:flex max-sm:flex-col max-sm:gap-2">
                         <label for="max stock">Batas Maksimum Obat : </label>
-                        <input type="number" v-model="stockFilter" placeholder="Max Stock" class="px-2 py-1 border rounded" />
+                        <input type="number" v-model="stockFilter" placeholder="Max Stock" class="px-2 py-1 border border-teal rounded" />
                         
                     </div>
 
                     <div>&</div>
                     
-                    <div>
+                    <div class="max-sm:flex max-sm:flex-col max-sm:gap-2">
                         <label for="datefilter">Batas Tanggal pengambilan obat :  </label>
-                        <input type="date" v-model="dateFilter" class="px-2 py-1 border rounded" />
+                        <input type="date" v-model="dateFilter" class="px-2 py-1 border border-teal rounded" />
+                    </div>
+
+                    <div>&</div>
+
+                    <div>
+                        <label for="medicineFilter">Nama Obat: </label>
+                        <select v-model="medicineFilter" class="px-2 py-1 border rounded border-teal">
+                            <option selected value="">Semua Obat</option>
+                            <option v-for="medicine in medicineNames" :key="medicine.nama_obat" :value="medicine.nama_obat">
+                                {{ medicine.nama_obat }}
+                            </option>
+                        </select>
                     </div>
 
                     <button @click="updatePaginatedData" class="px-4 py-2 bg-teal text-white rounded-md">Filter</button>
@@ -210,11 +278,11 @@ export default {
                                 Obat yang dimiliki
                             </th>
                             <th scope="col" class="th-general">
+                                Pengambilan Obat Sebelumnya
+                            </th>
+                            <th scope="col" class="th-general">
                                 Tanggal Pengambilan Obat
                             </th>
-                            <!-- <th scope="col" class="th-general">
-                                Stok Obat
-                            </th> -->
                         </tr>
                     </thead>
 
@@ -251,11 +319,11 @@ export default {
                                     <p class="td-text-general">Tidak Diketahui</p>
                                 </div>
                             </td>
-                            <td class="td-general max-[1000px]:min-w-[8rem]">
+                            <td class="td-general">
                                 <div v-if="data.ListMedicine && data.ListMedicine.length > 0">
                                     <div v-for="(medicine, mIndex) in data.ListMedicine" :key="mIndex">
                                         <p class="td-text-general leading-6">
-                                            {{ formatDate(medicine.Date) || 'Tidak Diketahui' }}
+                                            {{ formatDateDefault(medicine.Date) }}
                                         </p>
                                     </div>
                                 </div>
@@ -263,6 +331,22 @@ export default {
                                     <p class="td-text-general">Tidak Diketahui</p>
                                 </div>
                             </td>
+
+                            <td class="td-general">
+                                <div v-if="data.ListMedicine && data.ListMedicine.length > 0">
+                                    <div v-for="(medicine, mIndex) in data.ListMedicine" :key="mIndex">
+                                        <p class="td-text-general leading-6">
+                                            {{ calculateNextPickup(medicine.Date).nextPickupDateFormatted || 'Tidak Diketahui' }}
+                                            - {{ calculateNextPickup(medicine.Date).displayMessage }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <p class="td-text-general">Tidak Diketahui</p>
+                                </div>
+                            </td>
+
+                            
 
                         </tr>
                     </tbody>
