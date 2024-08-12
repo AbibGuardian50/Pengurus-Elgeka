@@ -120,7 +120,7 @@ export default {
                     <div>
                         <label for="max stock">Batas Maksimum Obat : </label>
                         <input type="number" v-model="stockFilter" placeholder="Max Stock" min="1"
-                            class="px-2 py-1 border rounded" />
+                            class="px-2 py-1 border rounded border-teal" />
 
                     </div>
 
@@ -129,7 +129,7 @@ export default {
                     <div>
                         <label for="datefilter">Batas Tanggal pengambilan obat : </label>
                         <input type="date" min="1945-01-01" placeholder="dd/mm/yyyy" v-model="dateFilter"
-                            class="px-2 py-1 border rounded" />
+                            class="px-2 py-1 border rounded border-teal" />
                     </div>
                 </div>
             </div>
