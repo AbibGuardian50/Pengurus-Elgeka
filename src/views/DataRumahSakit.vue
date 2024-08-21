@@ -3,27 +3,17 @@ import Sidebar from "../components/Sidebar.vue";
 import axios from 'axios';
 import VueCookies from 'vue-cookies';
 import { useToast } from 'vue-toastification';
+import { debounce } from 'lodash';
+
 
 export default {
     async created() {
-        await this.fetchDoctorData();
-        try {
-            const toast = useToast();
-            const response = await axios.get('https://elgeka-web-api-production.up.railway.app/api/v1/infoRS');
-            if (response.data.message === "Get Info RS Successfully") {
-                toast.success('Data Rumah Sakit Berhasil Dimuat');
-            }
-            this.InfoRS = response.data.result.data;
-            this.InfoRS.sort((x, y) => x.id - y.id);
-            this.InfoRS.forEach((item, index) => {
-                item.no = index + 1;
-            });
-            this.totalPages = Math.ceil(this.InfoRS.length / this.perPage);
-            this.updatePaginatedData();
-            console.log(response);
-        } catch (error) {
-            console.error(error);
+        // Panggil data dokter jika rumah sakit pertama tersedia
+        if (this.InfoRS.length > 0) {
+            const firstHospitalName = this.InfoRS[0].nama_rs;
+            await this.fetchEditDoctorData(firstHospitalName);
         }
+        await this.fetchHospitalData();
     },
     components: {
         Sidebar
@@ -56,10 +46,53 @@ export default {
             sortColumn: 'no',
             sortDirection: 'asc',
             DoctorData: [],
+            EditDoctorData: [],
             isLoading: false,
         };
     },
     methods: {
+        // Panggil data rumah sakit
+        async fetchHospitalData() {
+            try {
+                const toast = useToast();
+                const response = await axios.get('https://elgeka-web-api-production.up.railway.app/api/v1/infoRS');
+                if (response.data.message === "Get Info RS Successfully") {
+                    toast.success('Data Rumah Sakit Berhasil Dimuat');
+                    this.InfoRS = response.data.result.data;
+                    this.InfoRS.sort((x, y) => x.id - y.id);
+                    this.totalPages = Math.ceil(this.InfoRS.length / this.perPage);
+                    this.updatePaginatedData();
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        // Panggil data dokter berdasarkan nama_rs
+        async fetchDoctorDataByHospitalName(hospital_name) {
+            const toast = useToast();
+            try {
+                const tokenlogin = VueCookies.get('TokenAuthorization');
+                const response = await axios.get(`https://elgeka-mobile-production.up.railway.app/api/doctor/list/hospital/website/${hospital_name}`, { headers: { 'Authorization': `Bearer ${tokenlogin}` } });
+                if (response.data.Data[0].doctors === null) {
+                    toast.warning('Data dokter kosong di rumah sakit tersebut')
+                    console.warn('Data dokter kosong')
+                } else if (response.data.Message === 'Success to Get Doctor Hospital List') {
+                    this.DoctorData = response.data.Data.flatMap(item => item.doctors);
+                    console.log(this.DoctorData);
+                } else {
+                    console.error('Failed to fetch Doctor Data');
+                }
+            } catch (error) {
+                console.error('Error fetching Doctor Data:', error);
+            }
+        },
+        // Update data dokter ketika nama_rs berubah
+        // Menggunakan debounce pada fungsi perubahan nama rumah sakit
+        onHospitalNameChange: debounce(function () {
+            if (this.form.nama_rs) {
+                this.fetchDoctorDataByHospitalName(this.form.nama_rs);
+            }
+        }, 2000), // jeda 2 detik sebelum memanggil API
         async fetchDoctorData() {
             try {
                 const tokenlogin = VueCookies.get('TokenAuthorization');
@@ -72,6 +105,20 @@ export default {
                 }
             } catch (error) {
                 console.error('Error fetching Doctor Data:', error);
+            }
+        },
+        async fetchEditDoctorData(hospital_name) {
+            try {
+                const tokenlogin = VueCookies.get('TokenAuthorization');
+                const response = await axios.get(`https://elgeka-mobile-production.up.railway.app/api/doctor/list/hospital/website/${hospital_name}`, { headers: { 'Authorization': `Bearer ${tokenlogin}` } });
+                if (response.data.Message === 'Success to Get Doctor Hospital List') {
+                    this.EditDoctorData = response.data.Data.flatMap(item => item.doctors);
+                    console.log(this.EditDoctorData);
+                } else {
+                    console.error('Failed to fetch Doctor Hospital Data');
+                }
+            } catch (error) {
+                console.error('Error fetching Doctor Hospital Data:', error);
             }
         },
         updatePaginatedData() {
@@ -110,7 +157,6 @@ export default {
             const formattedDoctors = this.form.data_dokter.map(doctor => {
                 return `${doctor.name}`;
             }).join(';  ');
-
             formData.append('data_dokter', formattedDoctors);
             axios.post(url, formData, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                 .then(response => {
@@ -222,8 +268,11 @@ export default {
         },
         toggleModalCreateHospital() {
             this.showcreatehospital = !this.showcreatehospital;
+            if (this.showcreatehospital) {
+                this.onHospitalNameChange(); // Panggil data dokter ketika modal dibuka
+            }
         },
-        toggleModalEditHospital(hospital) {
+        async toggleModalEditHospital(hospital) {
             this.showedithospital = !this.showedithospital;
             if (hospital) {
                 this.editHospitalId = hospital.id;
@@ -235,11 +284,13 @@ export default {
                     latlong: hospital.latlong,
                     info_kontak: hospital.info_kontak,
                     data_dokter: hospital.data_dokter.split(';  ').map(doctorName => {
-                        return { name: doctorName }; // Ensure this matches expected format
+                        return { name: doctorName };
                     })
                 };
+                // Fetch doctor data specific to the hospital
+                await this.fetchEditDoctorData(hospital.nama_rs);
             } else {
-                // Reset form data when closing modal without a medicine object
+                // Reset form data when closing modal without a hospital object
                 this.form = {
                     image: '',
                     nama_rs: '',
@@ -247,7 +298,7 @@ export default {
                     link_maps: '',
                     latlong: '',
                     info_kontak: '',
-                    data_dokter: [{ name: '' }] // New field for data_dokter
+                    data_dokter: [{ name: '' }]
                 };
             }
         },
@@ -273,13 +324,10 @@ export default {
             this.updatePaginatedData();
         },
     },
-
-
 }
-
 </script>
 
-<template >
+<template>
     <div class="flex min-h-screen">
         <Sidebar />
 
@@ -350,7 +398,7 @@ export default {
                                 <p class="td-text-general">{{ hospital.info_kontak }}</p>
                             </td>
                             <td class="td-general">
-                                <p v-if="hospital.data_dokter" class="td-text-general line-clamp-4">{{ hospital.data_dokter }}</p>
+                                <p v-if="hospital.data_dokter" class="td-text-general line-clamp-4">{{ hospital.data_dokter}}</p>
                                 <p v-else-if="hospital.data_dokter === null" class="td-text-general">Belum ada data dokter
                                 </p>
                             </td>
@@ -359,12 +407,10 @@ export default {
                                 <a :href="hospital.link_maps" target="_blank" class="td-text-general hover:text-teal">{{
                                     hospital.link_maps }}</a>
                             </td>
-
                             <td class="td-general">
                                 <img class="bg-hospital bg-cover bg-center w-full h-full object-cover"
                                     :src="url + hospital.image_url">
                             </td>
-
                             <td
                                 class="px-3 max-[1075px]:px-2 py-4 flex flex-col gap-2 justify-center items-center whitespace-nowrap text-sm font-medium">
                                 <a>
@@ -375,12 +421,9 @@ export default {
                                     class="py-1 px-8 max-[1075px]:px-0 rounded-[5px] w-[110px] shadow-s bg-white bg-opacity-64 text-teal font-bold text-base ">Hapus</button>
                             </td>
                         </tr>
-
                     </tbody>
                 </table>
             </div>
-
-
             <!-- Pagination navigation -->
             <div class="ml-8 my-8 flex justify-center">
                 <button @click="prevPage" :disabled="currentPage === 1"
@@ -391,7 +434,6 @@ export default {
                 <button @click="nextPage" :disabled="currentPage === totalPages"
                     class="px-4 py-2 bg-teal  text-white rounded-md">Next</button>
             </div>
-
             <!-- Modal Create Rumah Sakit -->
             <div>
                 <form v-if="showcreatehospital" @submit.prevent="createhospital()"
@@ -416,11 +458,11 @@ export default {
                             <!--body-->
                             <div class="flex flex-col gap-8 relative p-6">
                                 <div class="flex gap-2 flex-col">
-                                    <label for="nama lengkap"
-                                        class="font-poppins font-bold text-base text-teal">Nama</label>
+                                    <label for="nama lengkap" class="font-poppins font-bold text-base text-teal">Nama
+                                        (Perhatikan kapital)</label>
                                     <input class="border border-black py-4 w-full max-md:min-w-full pl-2 rounded-md"
-                                        type="text" required name="nama lengkap" id="" v-model="form.nama_rs"
-                                        placeholder="Nama Rumah Sakit">
+                                        v-model="form.nama_rs" @input="onHospitalNameChange" type="text"
+                                        placeholder="Nama Rumah Sakit (Perhatikan kapital)" />
                                 </div>
                                 <div class="flex gap-2 flex-col">
                                     <label for="alamat" class="font-poppins font-bold text-base text-teal">Alamat</label>
@@ -428,25 +470,20 @@ export default {
                                         type="text" required name="alamat" id="" v-model="form.lokasi_rs"
                                         placeholder="Contoh format: Jatiwaringin, Kota Bekasi">
                                 </div>
-
                                 <div class="flex gap-2 flex-col">
                                     <label for="Kontak" class="font-poppins font-bold text-base text-teal">Kontak</label>
                                     <input class="border border-black py-4 w-full max-md:min-w-full pl-2 rounded-md"
                                         type="text" required name="Kontak" id="" v-model="form.info_kontak"
                                         placeholder="Nomor Telepon Rumah Sakit">
                                 </div>
-
                                 <div class="flex gap-2 flex-col">
                                     <label for="Nama Dokter" class="font-poppins font-bold text-base text-teal">Nama
                                         Dokter</label>
                                     <div v-for="(doctor, index) in form.data_dokter" :key="index" class="flex gap-2">
                                         <select v-model="form.data_dokter[index].name"
-                                            class="border border-black py-4 w-[80%] max-md:min-w-[50%] pl-2 rounded-md"
-                                            required>
-                                            <option value="">Pilih Dokter</option>
-                                            <option v-for="doc in DoctorData" :key="doc.ID" :value="doc.Name">
-                                                {{ doc.Name }}
-                                            </option>
+                                            class="border border-black py-4 w-[80%] max-md:min-w-[50%] pl-2 rounded-md">
+                                            <option v-for="doctor in DoctorData" :value="doctor">{{
+                                                doctor }}</option>
                                         </select>
                                         <button class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded"
                                             type="button" @click="removeDoctor(index)">Hapus</button>
@@ -454,7 +491,6 @@ export default {
                                     <button class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded"
                                         type="button" @click="addDoctor">Tambah Dokter</button>
                                 </div>
-
                                 <div class="flex gap-2 flex-col relative">
                                     <label for="Latlong" class="font-poppins font-bold text-base text-teal">Latlong</label>
                                     <div class="relative">
@@ -476,8 +512,6 @@ export default {
                                             </span></a>
                                     </div>
                                 </div>
-
-
                                 <div class="flex gap-2 flex-col relative">
                                     <label for="Google Maps" class="font-poppins font-bold text-base text-teal">Link Google
                                         Maps</label>
@@ -500,7 +534,6 @@ export default {
                                             </span></a>
                                     </div>
                                 </div>
-
                                 <div class="flex gap-2 flex-col">
                                     <label for="Foto Profil" class="font-poppins font-bold text-base text-teal">Gambar
                                         Lengkap</label>
@@ -511,8 +544,6 @@ export default {
                                     <div v-if="errorMessage" class="text-red text-sm font-bold mb-4">{{ errorMessage }}
                                     </div>
                                 </div>
-
-
                             </div>
                             <!--footer-->
                             <div class="flex items-center justify-center p-6 border-t-2 border-black rounded-b">
@@ -531,8 +562,7 @@ export default {
                     </div>
                 </form>
                 <div v-if="showcreatehospital" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
-            </div>
-
+            </div>            
             <!-- Modal Edit Rumah Sakit -->
             <div v-if="showedithospital">
                 <form @submit.prevent="edithospital()"
@@ -569,14 +599,12 @@ export default {
                                         type="text" required name="alamat" id="" v-model="form.lokasi_rs"
                                         placeholder="Contoh format: Jatiwaringin, Kota Bekasi">
                                 </div>
-
                                 <div class="flex gap-2 flex-col">
                                     <label for="Kontak" class="font-poppins font-bold text-base text-teal">Kontak</label>
                                     <input class="border border-black py-4 w-full max-md:min-w-full pl-2 rounded-md"
                                         type="text" required name="Kontak" id="" v-model="form.info_kontak"
                                         placeholder="Nomor Telepon Rumah Sakit">
                                 </div>
-
                                 <div class="flex gap-2 flex-col">
                                     <label for="Nama Dokter" class="font-poppins font-bold text-base text-teal">Nama
                                         Dokter</label>
@@ -585,8 +613,8 @@ export default {
                                             class="border border-black py-4 w-[80%] max-md:min-w-[50%] pl-2 rounded-md"
                                             required>
                                             <option value="">Pilih Dokter</option>
-                                            <option v-for="doc in DoctorData" :value="doc.Name">
-                                                {{ doc.Name }}
+                                            <option v-for="doc in EditDoctorData" :value="doc">
+                                                {{ doc }}
                                             </option>
                                         </select>
                                         <button class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded"
@@ -595,7 +623,6 @@ export default {
                                     <button class="bg-teal text-white font-bold font-poppins py-2 px-4 rounded"
                                         type="button" @click="addDoctor">Tambah Dokter</button>
                                 </div>
-
                                 <div class="flex gap-2 flex-col relative">
                                     <label for="Google Maps"
                                         class="font-poppins font-bold text-base text-teal">Latlong</label>
@@ -618,8 +645,6 @@ export default {
                                             </span></a>
                                     </div>
                                 </div>
-
-
                                 <div class="flex gap-2 flex-col relative">
                                     <label for="Google Maps" class="font-poppins font-bold text-base text-teal">Link Google
                                         Maps</label>
@@ -642,7 +667,6 @@ export default {
                                             </span></a>
                                     </div>
                                 </div>
-
                                 <div class="flex gap-2 flex-col">
                                     <label for="Foto Profil" class="font-poppins font-bold text-base text-teal">Gambar
                                         Lengkap</label>
@@ -652,8 +676,6 @@ export default {
                                     <div v-if="errorMessage" class="text-red text-sm font-bold mb-4">{{ errorMessage }}
                                     </div>
                                 </div>
-
-
                             </div>
                             <!--footer-->
                             <div class="flex items-center justify-center p-6 border-t-2 border-black rounded-b">
@@ -673,9 +695,6 @@ export default {
                 </form>
                 <div v-if="showedithospital" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
             </div>
-
-
         </div>
     </div>
 </template>
-
