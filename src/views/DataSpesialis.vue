@@ -230,7 +230,7 @@ export default {
                                 Deskripsi
                             </th>
                             <th scope="col" class="">
-                                <button v-on:click="toggleModalcreatespecialist"                                     class="bg-teal px-4 py-1 rounded-md text-left font-semibold text-white text-base">Tambah</button>
+                                <button v-on:click="toggleModalcreatespecialist" class="bg-teal px-4 py-1 rounded-md text-left font-semibold text-white text-base">Tambah</button>
                             </th>
                         </tr>
                     </thead>
@@ -308,7 +308,7 @@ export default {
                                 <button
                                     class="text-white bg-teal border hover:text-white active:bg-teal-600 font-bold uppercase text-sm px-12 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
                                     type="submit">
-                                    {{ isEditing ? 'Update' : 'Simpan' }}
+                                    {{ isEditing ? 'Simpan' : 'Update' }}
                                 </button>
                                 <button
                                     class="text-teal bg-white border active:bg-teal-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1"

@@ -220,7 +220,7 @@ export default {
                     datalabels: {
                         anchor: 'end',
                         align: 'end',
-                        offset: 5,
+                        offset: 1,
                         formatter: (value, context) => {
                             if (value === 0) {
                                 return ''; // Tidak menampilkan label jika nilai datanya adalah 0
@@ -462,9 +462,7 @@ p {
             <div class="flex flex-col gap-4 lg:flex-row pb-8 max-w-[1100px]">
                 <div
                     class="flex flex-col items-center justify-center gap-4 bg-white rounded-lg p-4 w-full lg:w-auto max-md:w-[95%]">
-                    <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full pt-4 lg:pl-8">Grafik
-                        Pasien
-                        berdasarkan Golongan Darah</p>
+                    <p class="font-assistant text-[18px] font-bold leading-5 text-midnightblue w-full lg:pl-8">Grafik Pasien berdasarkan Golongan Darah</p>
                     <Pie v-if="loaded" :data="BloodData" :options="BloodOptions"
                         class="border border-lightsilver rounded-lg w-full min-w-[30%] max-w-[550px] p-2 h-full max-h-[350px] text-white" />
                     <div class="pb-4">
