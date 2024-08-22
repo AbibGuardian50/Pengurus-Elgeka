@@ -192,8 +192,15 @@ export default {
         },
         edithospital() {
             const toast = useToast();
+            const duplicates = this.checkDuplicateDoctors();
             const tokenlogin = VueCookies.get('TokenAuthorization')
             const formData = new FormData();
+
+            if (duplicates) {
+                toast.error(`Nama dokter berikut duplikat: ${duplicates.join(', ')}`);
+                return; // Menghentikan proses pengiriman jika ada duplikat
+            }
+
             formData.append('nama_rs', this.form.nama_rs);
             formData.append('lokasi_rs', this.form.lokasi_rs);
             formData.append('image', this.form.image);
@@ -323,6 +330,14 @@ export default {
             }
             this.updatePaginatedData();
         },
+        checkDuplicateDoctors() {
+            const doctorNames = this.form.data_dokter.map(doctor => doctor.name.trim());
+            const duplicates = doctorNames.filter((name, index) => doctorNames.indexOf(name) !== index);
+            if (duplicates.length > 0) {
+                return duplicates;
+            }
+            return null;
+        },
     },
 }
 </script>
@@ -398,7 +413,8 @@ export default {
                                 <p class="td-text-general">{{ hospital.info_kontak }}</p>
                             </td>
                             <td class="td-general">
-                                <p v-if="hospital.data_dokter" class="td-text-general line-clamp-4">{{ hospital.data_dokter}}</p>
+                                <p v-if="hospital.data_dokter" class="td-text-general line-clamp-4">{{
+                                    hospital.data_dokter }}</p>
                                 <p v-else-if="hospital.data_dokter === null" class="td-text-general">Belum ada data dokter
                                 </p>
                             </td>
@@ -562,7 +578,7 @@ export default {
                     </div>
                 </form>
                 <div v-if="showcreatehospital" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
-            </div>            
+            </div>
             <!-- Modal Edit Rumah Sakit -->
             <div v-if="showedithospital">
                 <form @submit.prevent="edithospital()"
