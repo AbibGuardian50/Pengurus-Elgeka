@@ -144,9 +144,16 @@ export default {
         },
         createhospital() {
             const toast = useToast();
+            const duplicates = this.checkDuplicateDoctors();
             const tokenlogin = VueCookies.get('TokenAuthorization');
             const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/infoRS';
             const formData = new FormData();
+
+            if (duplicates) {
+                toast.error(`Nama dokter berikut duplikat: ${duplicates.join(', ')}`);
+                return; // Menghentikan proses pengiriman jika ada duplikat
+            }
+            
             formData.append('image', this.form.image);
             formData.append('nama_rs', this.form.nama_rs);
             formData.append('lokasi_rs', this.form.lokasi_rs);
