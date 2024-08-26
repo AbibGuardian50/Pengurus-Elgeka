@@ -308,7 +308,7 @@ export default {
                                 <button
                                     class="text-white bg-teal border hover:text-white active:bg-teal-600 font-bold uppercase text-sm px-12 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
                                     type="submit">
-                                    {{ isEditing ? 'Simpan' : 'Update' }}
+                                    {{ isEditing ? 'Simpan' : 'Simpan' }}
                                 </button>
                                 <button
                                     class="text-teal bg-white border active:bg-teal-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
