@@ -151,6 +151,10 @@ export default {
                         console.log(response.data);
                         if (response.data.message === 'Create New Pengurus Success') {
                             toast.success('Pengurus baru berhasil ditambahkan ');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+
                         } else if (response.data.message === 'Error Creating New Pengurus: Username already exists') {
                             toast.error('Nama pengurus yang akan ditambahkan sudah ada, mohon untuk mengganti dengan nama yang lain');
                         }
@@ -292,8 +296,7 @@ export default {
                             <th scope="col" class="th-general max-md:px-1 ">
                                 Username
                             </th>
-                            <th @click="sortData('Status')" scope="col"
-                                class="cursor-pointer th-general max-md:px-1 ">
+                            <th @click="sortData('Status')" scope="col" class="cursor-pointer th-general max-md:px-1 ">
                                 Status
                                 <span v-if="sortColumn === 'Status'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                 <span v-else>
@@ -305,8 +308,7 @@ export default {
                                     </svg>
                                 </span>
                             </th>
-                            <th @click="sortData('Roles')" scope="col"
-                                class="cursor-pointer th-general max-md:px-1 ">
+                            <th @click="sortData('Roles')" scope="col" class="cursor-pointer th-general max-md:px-1 ">
                                 Roles
                                 <span v-if="sortColumn === 'Roles'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                 <span v-else>
@@ -326,8 +328,7 @@ export default {
                     </thead>
                     <tbody>
                         <tr v-for="data in paginatedData" :key="data.id" class="">
-                            <td
-                                class="td-general td-text-general">
+                            <td class="td-general td-text-general">
                                 {{ data.no }}</td>
                             <td class="td-general">
                                 <div class="flex items-center">
@@ -377,7 +378,8 @@ export default {
 
                 <div v-if="showcreatepengurus"
                     class="fixed inset-0 flex items-center justify-center max-md:justify-start max-md:items-start max-md:pt-4 max-md:pl-6 bg-black bg-opacity-50 max-md:z-50">
-                    <div class=" p-8 rounded-md min-w-[700px] max-md:min-w-[75%] max-w-[750px] bg-white min-h-[500px]  max-h-[520px]">
+                    <div
+                        class=" p-8 rounded-md min-w-[700px] max-md:min-w-[75%] max-w-[750px] bg-white min-h-[500px]  max-h-[520px]">
                         <h2 class="text-2xl text-teal font-poppins font-semibold mb-4">Tambah Pengurus</h2>
                         <form @submit.prevent="createpengurus">
                             <div class="mb-4">
