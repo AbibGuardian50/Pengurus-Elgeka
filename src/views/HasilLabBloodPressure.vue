@@ -284,7 +284,7 @@ export default {
 
 
 <template>
-    <div class="flex bg-offwhite h-full">
+    <div class="flex bg-offwhite min-h-screen">
         <Sidebar />
         <div class="flex flex-col flex-grow p-4">
             <div class="flex flex-col md:flex-row gap-2">
