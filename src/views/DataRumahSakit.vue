@@ -60,6 +60,9 @@ export default {
                     toast.success('Data Rumah Sakit Berhasil Dimuat');
                     this.InfoRS = response.data.result.data;
                     this.InfoRS.sort((x, y) => x.id - y.id);
+                    this.InfoRS.forEach((item, index) => {
+                        item.no = index + 1;
+                    });
                     this.totalPages = Math.ceil(this.InfoRS.length / this.perPage);
                     this.updatePaginatedData();
                 }
@@ -153,7 +156,7 @@ export default {
                 toast.error(`Nama dokter berikut duplikat: ${duplicates.join(', ')}`);
                 return; // Menghentikan proses pengiriman jika ada duplikat
             }
-            
+
             formData.append('image', this.form.image);
             formData.append('nama_rs', this.form.nama_rs);
             formData.append('lokasi_rs', this.form.lokasi_rs);
