@@ -101,6 +101,8 @@ export default {
                         }, 1000);
                     } else if (response.data.message === "Error Creating Data Obat: Data Obat already exists") {
                         toast.error('Nama obat yang akan ditambahkan sudah ada, mohon untuk menggantinya dengan nama lain');
+                    } else if (response.data.message === "Your admin status is not active, authorization denied!") {
+                        toast.error('Status akun masih nonaktif, mohon untuk diaktifkan kembali')
                     }
                 })
                 .catch(error => {
@@ -110,12 +112,17 @@ export default {
         },
         deletehospital(id) {
             if (confirm('Apakah kamu yakin untuk menghapus data obat pengurus ini?')) {
+                const toast = useToast();
                 const tokenlogin = VueCookies.get('TokenAuthorization');
                 const url = `https://elgeka-web-api-production.up.railway.app/api/v1/dataObat/${id}`;
                 axios.delete(url, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                     .then(response => {
-                        console.log(response.data);
-                        window.location.reload();
+                        if (response.status.message === 'Delete Data Obat by ID Successfully') {
+                            console.log(response.data);
+                            window.location.reload();
+                        } else if (response.data.message === "Your admin status is not active, authorization denied!") {
+                            toast.error('Status akun masih nonaktif, mohon untuk diaktifkan kembali')
+                        }
                     })
                     .catch(error => {
                         console.log(error);
@@ -140,6 +147,8 @@ export default {
                         }, 1000);
                     } else if (response.data.message === "Error Update Data Obat by ID: Data Obat already exists") {
                         toast.error('Data obat yang akan diperbarui sudah memiliki nama yang sama, mohon untuk menggantinya dengan nama lain');
+                    } else if (response.data.message === "Your admin status is not active, authorization denied!") {
+                        toast.error('Status akun masih nonaktif, mohon untuk diaktifkan kembali')
                     }
                 })
                 .catch(error => {

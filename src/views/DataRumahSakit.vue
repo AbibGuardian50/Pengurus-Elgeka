@@ -178,6 +178,8 @@ export default {
                         }, 1000);
                     } else if (response.data.message === 'Error Creating Info RS: Rumah Sakit already exists') {
                         toast.error('Nama Rumah Sakit yang sama sudah ada, mohon untuk mengganti dengan nama yang lain');
+                    } else if (response.data.message === "Your admin status is not active, authorization denied!") {
+                        toast.error('Status akun masih nonaktif, mohon untuk diaktifkan kembali')
                     }
                 })
                 .catch(error => {
@@ -188,12 +190,18 @@ export default {
         },
         deletehospital(id) {
             if (confirm('Apakah kamu yakin untuk menghapus data rumah sakit ini?')) {
+                const toast = useToast();
                 const tokenlogin = VueCookies.get('TokenAuthorization');
                 const url = `https://elgeka-web-api-production.up.railway.app/api/v1/infoRS/${id}`;
                 axios.delete(url, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                     .then(response => {
-                        console.log(response.data);
-                        window.location.reload();
+                        if (response.data.message === "Delete Info RS by ID Successfully") {
+                            console.log(response.data);
+                            window.location.reload();
+                        }
+                        else if (response.data.message === "Your admin status is not active, authorization denied!") {
+                            toast.error('Status akun masih nonaktif, mohon untuk diaktifkan kembali')
+                        }
                     })
                     .catch(error => {
                         console.log(error);
@@ -231,6 +239,8 @@ export default {
                         window.location.reload();
                     } else if (response.data.message === 'Error Update Info RS by ID: Rumah Sakit already exists') {
                         toast.error('Nama Rumah Sakit yang sama sudah ada, mohon untuk mengganti dengan nama yang lain')
+                    } else if (response.data.message === "Your admin status is not active, authorization denied!") {
+                        toast.error('Status akun masih nonaktif, mohon untuk diaktifkan kembali')
                     } else {
                         toast.error('terdapat kesalahan, mohon coba lagi')
                     }

@@ -88,6 +88,8 @@ export default {
                         }, 500);
                     } else if (response.data.message === "Error Creating Data Spesialis: Data Spesialis already exists") {
                         toast.error('Nama Spesialis yang akan ditambahkan sudah ada, mohon untuk menggantinya dengan nama lain')
+                    } else if (response.data.message === "Your admin status is not active, authorization denied!") {
+                        toast.error('Status akun masih nonaktif, mohon untuk diaktifkan kembali')
                     }
                 })
                 .catch(error => {
@@ -97,12 +99,18 @@ export default {
         },
         deletespecialist(id) {
             if (confirm('Apakah kamu yakin untuk menghapus data spesialis ini?')) {
+                const toast = useToast();
                 const tokenlogin = VueCookies.get('TokenAuthorization')
                 const url = `https://elgeka-web-api-production.up.railway.app/api/v1/dataSpesialis/${id}`
                 axios.delete(url, { headers: { 'Authorization': `Bearer ${tokenlogin}` } })
                     .then(response => {
-                        console.log(response.data);
-                        window.location.reload();
+                        if (response.status.message === "Delete Data Spesialis by ID Successfully") {
+                            console.log(response.data);
+                            window.location.reload();
+                        } else if (response.data.message === "Your admin status is not active, authorization denied!") {
+                            toast.error('Status akun masih nonaktif, mohon untuk diaktifkan kembali')
+                        }
+
                     })
                     .catch(error => {
                         console.log(error);
@@ -146,6 +154,8 @@ export default {
                         }, 500);
                     } else if (response.data.message === "Error Update Data Kategori Obat by ID: Data Kategori Obat already exists") {
                         toast.success('Data Spesialis yang akan diperbarui sudah memiliki nama yang sama, mohon untuk menggantinya dengan nama lain');
+                    } else if (response.data.message === "Your admin status is not active, authorization denied!") {
+                        toast.error('Status akun masih nonaktif, mohon untuk diaktifkan kembali')
                     }
                 })
                 .catch(error => {
@@ -230,7 +240,8 @@ export default {
                                 Deskripsi
                             </th>
                             <th scope="col" class="">
-                                <button v-on:click="toggleModalcreatespecialist" class="bg-teal px-4 py-1 rounded-md text-left font-semibold text-white text-base">Tambah</button>
+                                <button v-on:click="toggleModalcreatespecialist"
+                                    class="bg-teal px-4 py-1 rounded-md text-left font-semibold text-white text-base">Tambah</button>
                             </th>
                         </tr>
                     </thead>
@@ -245,7 +256,8 @@ export default {
                             <td class="td-general">
                                 <p class="td-text-general">{{ data.deskripsi }}</p>
                             </td>
-                            <td class="px-3 max-[1075px]:px-2 py-4 flex flex-col gap-2 justify-center items-center whitespace-nowrap text-sm font-medium">
+                            <td
+                                class="px-3 max-[1075px]:px-2 py-4 flex flex-col gap-2 justify-center items-center whitespace-nowrap text-sm font-medium">
                                 <button @click="editSpecialist(data)"
                                     class="py-1 px-8 max-[1075px]:px-0 rounded-[5px] w-[110px] bg-white font-bold text-base text-teal shadow-s">Edit</button>
                                 <button @click="deletespecialist(data.id)"
@@ -273,7 +285,8 @@ export default {
                     class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center max-[600px]:justify-start max-[600px]:items-start items-center flex">
                     <div class="relative w-auto my-6 max-[600px]:my-0 mx-auto max-w-6xl">
                         <!--content-->
-                        <div class="border border-red rounded-lg shadow-lg relative flex flex-col w-full max-[600px]:w-[85%] bg-white outline-none focus:outline-none">
+                        <div
+                            class="border border-red rounded-lg shadow-lg relative flex flex-col w-full max-[600px]:w-[85%] bg-white outline-none focus:outline-none">
                             <!--header-->
                             <div class="flex items-start justify-between p-5 border-b-2 border-black rounded-t">
                                 <h3 class="text-[40px] text-teal font-semibold font-poppins">
@@ -293,11 +306,12 @@ export default {
                                     <label for="nama_spesialis" class="font-poppins font-bold text-base text-teal">Nama
                                         Spesialis</label>
                                     <input class="border border-black py-4 min-w-[550px] max-md:min-w-full pl-2 rounded-md"
-                                        type="text" required name="nama_spesialis" id="nama_spesialis" v-model="form.nama_spesialis"
-                                        placeholder="Contoh: SP1, SP2 dll">
+                                        type="text" required name="nama_spesialis" id="nama_spesialis"
+                                        v-model="form.nama_spesialis" placeholder="Contoh: SP1, SP2 dll">
                                 </div>
                                 <div class="flex gap-2 flex-col">
-                                    <label for="deskripsi" class="font-poppins font-bold text-base text-teal">Deskripsi</label>
+                                    <label for="deskripsi"
+                                        class="font-poppins font-bold text-base text-teal">Deskripsi</label>
                                     <input class="border border-black py-4 min-w-[550px] max-md:min-w-full pl-2 rounded-md"
                                         type="text" required name="deskripsi" id="deskripsi" v-model="form.deskripsi"
                                         placeholder="Penjelasan">

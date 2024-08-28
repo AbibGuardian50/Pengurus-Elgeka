@@ -11,6 +11,10 @@ export default {
         try {
             const toast = useToast()
             const tokenlogin = VueCookies.get('TokenAuthorization')
+
+            const statusAkun = VueCookies.get('status_akun'); // Mendapatkan status akun dari cookies
+            this.statusAkunAktif = statusAkun === 'true'; // Simpan status akun sebagai boolean
+
             const url = 'https://elgeka-mobile-production.up.railway.app/api/doctor/list_inactive';
             const response = await axios.get(url, {
                 headers: {
@@ -47,7 +51,8 @@ export default {
             totalPages: 0, // Total pages
             paginatedInfoDoctor: [], // Paginated data
             sortColumn: 'no', // Column to sort by
-            sortDirection: 'asc' // Sort direction
+            sortDirection: 'asc', // Sort direction
+            statusAkunAktif: false // Default nilai dari status akun
 
         }
     },
@@ -80,6 +85,10 @@ export default {
                         console.error(error);
                     });
             }
+        },
+        showInactiveToast() {
+            const toast = useToast();
+            toast.error('Status akun masih nonaktif, mohon untuk diaktifkan kembali');
         },
         formatDate(dateString) {
             // Ubah format tanggal
@@ -234,7 +243,8 @@ export default {
                                 <p class="td-text-general">{{ data.HospitalName }}</p>
                             </td>
                             <td class="td-general">
-                                <div class="py-1 px-2 gap-2 rounded-[5px] bg-teal font-poppins font-bold text-base text-white flex">
+                                <div v-if="statusAkunAktif"
+                                    class="py-1 px-2 gap-2 rounded-[5px] bg-teal font-poppins font-bold text-base text-white flex">
                                     <button @click="editstatusdoctor(data.ID)" class="">
                                         Not Verified
                                     </button>
@@ -244,10 +254,21 @@ export default {
                                             d="M18 10L12.7071 15.2929C12.3166 15.6834 11.6834 15.6834 11.2929 15.2929L6 10"
                                             stroke="white" stroke-width="2" stroke-linecap="round" />
                                     </svg>
-
+                                </div>
+                                <div v-else class="py-1 px-2 gap-2 rounded-[5px] bg-teal font-poppins font-bold text-base text-white flex">
+                                    <button
+                                        class=""
+                                        @click="showInactiveToast()">
+                                        Not Verified
+                                    </button>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M18 10L12.7071 15.2929C12.3166 15.6834 11.6834 15.6834 11.2929 15.2929L6 10"
+                                            stroke="white" stroke-width="2" stroke-linecap="round" />
+                                    </svg>
                                 </div>
                             </td>
-
                         </tr>
                     </tbody>
                 </table>

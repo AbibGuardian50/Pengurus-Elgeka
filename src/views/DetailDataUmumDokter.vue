@@ -11,6 +11,10 @@ export default {
         try {
             const toast = useToast();
             const tokenlogin = VueCookies.get('TokenAuthorization');
+
+            const statusAkun = VueCookies.get('status_akun'); // Mendapatkan status akun dari cookies
+            this.statusAkunAktif = statusAkun === 'true'; // Simpan status akun sebagai boolean
+
             const activeDoctorsUrl = 'https://elgeka-mobile-production.up.railway.app/api/doctor/list/website';
             const inactiveDoctorsUrl = 'https://elgeka-mobile-production.up.railway.app/api/doctor/list/deactive/website';
             // Fetch active doctors
@@ -72,6 +76,7 @@ export default {
             isConfirmationModalOpen: false,
             doctorIdToDeactivate: null,
             searchQuery: '',
+            statusAkunAktif: false, // Default nilai dari status akun
             sortOrder: 'asc' // Default sort order
         }
     },
@@ -106,6 +111,10 @@ export default {
                     console.error(error);
                 }
             }
+        },
+        showInactiveToast() {
+            const toast = useToast();
+            toast.error('Status akun masih nonaktif, mohon untuk diaktifkan kembali');
         },
         sortNoColumn() {
             if (this.sortOrder === 'asc') {
@@ -318,7 +327,7 @@ export default {
                                 <p class="td-text-general">{{ data.HospitalName }}</p>
                             </td>
                             <td class="td-general">
-                                <div class="relative">
+                                <div class="relative" v-if="statusAkunAktif">
                                     <div v-if="data.status === 'aktif'" class="relative">
                                         <button @click="DeactivateDoctor(data.ID)"
                                             class="flex cursor-pointer gap-2 bg-teal text-white font-semibold font-poppins items-center justify-between py-2 px-4 rounded-md">
@@ -332,6 +341,27 @@ export default {
                                         class="flex max-lg:gap-0 cursor-default max-lg:px-0 gap-2 bg-teal items-center justify-between py-2 px-1 rounded-md">
                                         <span class="flex gap-2">
                                             <span
+                                                class="w-full focus:bg-teal px-4 focus:text-black text-white font-semibold font-poppins">
+                                                Non-aktif
+                                            </span>
+                                        </span>
+                                    </button>
+                                </div>
+
+                                <div v-else>
+                                    <div v-if="data.status === 'aktif'" class="relative">
+                                        <button @click="showInactiveToast()"
+                                            class="flex cursor-pointer gap-2 bg-teal text-white font-semibold font-poppins items-center justify-between py-2 px-4 rounded-md">
+                                            <span>Aktif</span>
+                                            <img src="../assets/arrow-down.svg" class="w-4 h-4">
+                                        </button>
+                                    </div>
+
+
+                                    <button v-else-if="data.status === 'nonaktif'"
+                                        class="flex max-lg:gap-0 cursor-default max-lg:px-0 gap-2 bg-teal items-center justify-between py-2 px-1 rounded-md">
+                                        <span class="flex gap-2">
+                                            <span @click="showInactiveToast()"
                                                 class="w-full focus:bg-teal px-4 focus:text-black text-white font-semibold font-poppins">
                                                 Non-aktif
                                             </span>
