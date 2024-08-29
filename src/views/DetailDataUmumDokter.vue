@@ -112,6 +112,33 @@ export default {
                 }
             }
         },
+        applyFilters() {
+            // Filter berdasarkan rumah sakit
+            let filteredData = this.originalInfoPatient.filter(item => {
+                const hospitalList = item.HospitalName.split(',').map(name => name.trim());
+                return this.selectedHospital === '' || hospitalList.includes(this.selectedHospital);
+            });
+
+            // Filter berdasarkan pencarian nama dokter
+            if (this.searchQuery) {
+                filteredData = filteredData.filter(patient =>
+                    patient.Name.toLowerCase().includes(this.searchQuery.toLowerCase())
+                );
+            }
+
+            // Update InfoPatient dengan hasil filter
+            this.InfoPatient = filteredData;
+
+            // Update nomor urut
+            this.InfoPatient.forEach((item, index) => {
+                item.no = index + 1;
+            });
+
+            // Update pagination
+            this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage);
+            this.currentPage = 1;
+            this.updatePaginatedData();
+        },
         showInactiveToast() {
             const toast = useToast();
             toast.error('Status akun masih nonaktif, mohon untuk diaktifkan kembali');
@@ -152,31 +179,11 @@ export default {
         },
         sortDataByHospital(event) {
             this.selectedHospital = event.target.value;
-
-            this.InfoPatient = this.originalInfoPatient.filter(item => {
-                const hospitalList = item.HospitalName.split(',').map(name => name.trim());
-                return (this.selectedHospital === '' || hospitalList.includes(this.selectedHospital)) &&
-                    item.Name.toLowerCase().includes(this.searchQuery.toLowerCase());
-            });
-
-            this.InfoPatient.forEach((item, index) => {
-                item.no = index + 1;
-            });
-
-            this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage);
-            this.currentPage = 1;
-            this.updatePaginatedData();
+            this.applyFilters();  // Gunakan satu metode untuk menerapkan semua filter
         },
 
         updateSearch() {
-            this.InfoPatient = this.originalInfoPatient.filter(patient =>
-                patient.Name.toLowerCase().includes(this.searchQuery.toLowerCase()) &&
-                (!this.selectedHospital || patient.HospitalName === this.selectedHospital)
-            );
-
-            this.currentPage = 1;
-            this.totalPages = Math.ceil(this.InfoPatient.length / this.perPage);
-            this.updatePaginatedData();
+            this.applyFilters();  // Panggil metode yang sama ketika pencarian diperbarui
         },
 
         async getHospitalNames() {
