@@ -68,81 +68,81 @@ export default {
         formatDate(dateString) {
             return format(new Date(dateString), 'dd MMMM yyyy', { locale: id });
         },
-        applyFilters() {
-        let filteredData = this.DataOwnershipMedicine.map(patient => {
-            // Filter the medicines for the current patient
-            const filteredMedicines = patient.ListMedicine.filter(medicine => {
-                let matchesStock = true;
-                let matchesDate = true;
-                let matchesMedicineName = true;
-                
-                if (this.stockFilter) {
-                    matchesStock = medicine.Stock <= this.stockFilter;
-                }
-                
-                if (this.dateFilter) {
-                    matchesDate = new Date(medicine.Date) <= new Date(this.dateFilter);
-                }
+        filterdata() {
+            let filteredData = this.DataOwnershipMedicine.map(patient => {
+                // Filter the medicines for the current patient
+                const filteredMedicines = patient.ListMedicine.filter(medicine => {
+                    let matchesStock = true;
+                    let matchesDate = true;
+                    let matchesMedicineName = true;
 
-                // Apply medicine name filter
-                if (this.medicineFilter !== '') {
-                    matchesMedicineName = medicine.Name === this.medicineFilter;
+                    if (this.stockFilter) {
+                        matchesStock = medicine.Stock <= this.stockFilter;
+                    }
+
+                    if (this.dateFilter) {
+                        matchesDate = new Date(medicine.Date) <= new Date(this.dateFilter);
+                    }
+
+                    // Apply medicine name filter
+                    if (this.medicineFilter !== '') {
+                        matchesMedicineName = medicine.Name === this.medicineFilter;
+                    }
+
+                    return matchesStock && matchesDate && matchesMedicineName;
+                });
+
+                // Only return the patient if they have any medicines that meet the filter criteria
+                if (filteredMedicines.length > 0) {
+                    return {
+                        ...patient,
+                        ListMedicine: filteredMedicines
+                    };
+                } else {
+                    return null;
                 }
-                
-                return matchesStock && matchesDate && matchesMedicineName;
+            }).filter(patient => patient !== null); // Remove patients without filtered medicines
+
+            // Sort the filtered medicines by the nearest pickup date
+            filteredData.forEach(patient => {
+                patient.ListMedicine.sort((a, b) => {
+                    const dayDifferenceA = Math.ceil((new Date(a.Date) - new Date()) / (1000 * 60 * 60 * 24));
+                    const dayDifferenceB = Math.ceil((new Date(b.Date) - new Date()) / (1000 * 60 * 60 * 24));
+                    return dayDifferenceA - dayDifferenceB;
+                });
             });
-            
-            // Only return the patient if they have any medicines that meet the filter criteria
-            if (filteredMedicines.length > 0) {
-                return {
-                    ...patient,
-                    ListMedicine: filteredMedicines
-                };
-            } else {
-                return null;
-            }
-        }).filter(patient => patient !== null); // Remove patients without filtered medicines
 
-        // Sort the filtered medicines by the nearest pickup date
-        filteredData.forEach(patient => {
-            patient.ListMedicine.sort((a, b) => {
-                const dayDifferenceA = Math.ceil((new Date(a.Date) - new Date()) / (1000 * 60 * 60 * 24));
-                const dayDifferenceB = Math.ceil((new Date(b.Date) - new Date()) / (1000 * 60 * 60 * 24));
-                return dayDifferenceA - dayDifferenceB;
-            });
-        });
-
-        return filteredData;
+            return filteredData;
         },
         calculateNextPickup(medicineDate) {
-        const medicineDateObj = new Date(medicineDate);
-        medicineDateObj.setHours(0, 0, 0, 0); // Set time to 00:00:00
+            const medicineDateObj = new Date(medicineDate);
+            medicineDateObj.setHours(0, 0, 0, 0); // Set time to 00:00:00
 
-        const nextPickupDate = new Date(medicineDateObj);
-        nextPickupDate.setDate(medicineDateObj.getDate() + 30);
-        nextPickupDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+            const nextPickupDate = new Date(medicineDateObj);
+            nextPickupDate.setDate(medicineDateObj.getDate() + 30);
+            nextPickupDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Set time to 00:00:00
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Set time to 00:00:00
 
-        const dayDifference = Math.ceil((nextPickupDate - today) / (1000 * 60 * 60 * 24));
+            const dayDifference = Math.ceil((nextPickupDate - today) / (1000 * 60 * 60 * 24));
 
-        let displayMessage;
-        if (dayDifference > 0) {
-            displayMessage = `${dayDifference} hari lagi`;
-        } else if (dayDifference === 0) {
-            displayMessage = "Hari ini";
-        } else {
-            displayMessage = `${Math.abs(dayDifference)} hari yang lalu`;
-        }
+            let displayMessage;
+            if (dayDifference > 0) {
+                displayMessage = `${dayDifference} hari lagi`;
+            } else if (dayDifference === 0) {
+                displayMessage = "Hari ini";
+            } else {
+                displayMessage = `${Math.abs(dayDifference)} hari yang lalu`;
+            }
 
-        return {
-            nextPickupDateFormatted: this.formatDate(nextPickupDate),
-            displayMessage: displayMessage
-        };
-    },
+            return {
+                nextPickupDateFormatted: this.formatDate(nextPickupDate),
+                displayMessage: displayMessage
+            };
+        },
         updatePaginatedData() {
-            const filteredData = this.applyFilters();
+            const filteredData = this.filterdata();
             this.totalPages = Math.ceil(filteredData.length / this.perPage); // Recalculate total pages based on filtered data
             const startIndex = (this.currentPage - 1) * this.perPage;
             const endIndex = startIndex + this.perPage;
@@ -215,14 +215,15 @@ export default {
                 <div class="flex gap-4 items-center max-sm:flex-col max-sm:gap-2 max-sm:items-start">
                     <div class="max-sm:flex max-sm:flex-col max-sm:gap-2">
                         <label for="max stock">Batas Maksimum Obat : </label>
-                        <input type="number" v-model="stockFilter" placeholder="Max Stock" class="px-2 py-1 border border-teal rounded" />
-                        
+                        <input type="number" v-model="stockFilter" placeholder="Max Stock"
+                            class="px-2 py-1 border border-teal rounded" />
+
                     </div>
 
                     <div>&</div>
-                    
+
                     <div class="max-sm:flex max-sm:flex-col max-sm:gap-2">
-                        <label for="datefilter">Batas Tanggal pengambilan obat :  </label>
+                        <label for="datefilter">Batas Tanggal pengambilan obat : </label>
                         <input type="date" v-model="dateFilter" class="px-2 py-1 border border-teal rounded" />
                     </div>
 
@@ -346,7 +347,7 @@ export default {
                                 </div>
                             </td>
 
-                            
+
 
                         </tr>
                     </tbody>
@@ -365,5 +366,4 @@ export default {
                     class="px-4 py-2 bg-teal  text-white rounded-md">Next</button>
             </div>
         </div>
-    </div>
-</template>
+</div></template>
