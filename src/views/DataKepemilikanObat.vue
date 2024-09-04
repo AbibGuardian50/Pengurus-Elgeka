@@ -119,14 +119,11 @@ export default {
 
             return filteredPatients;
         },
-
-
         // Method to fetch filtered medicine data based on category
         async fetchFilteredMedicineData() {
             // Call filterData to apply the selected category
             this.filterData();
         },
-
         // Methods to fetch data remain unchanged
         updateData(filteredData) {
             this.TotalPatientWithMedicine = this.calculateTotalPatientWithMedicine(filteredData);;
@@ -153,7 +150,6 @@ export default {
                         },
                         title: {
                             display: true,
-                            text: 'Jumlah',
                             font: {
                                 size: fontSize + 2,
                                 weight: 'bold'
@@ -237,7 +233,6 @@ export default {
                 }
             }
         },
-
         async fetchMedicineData(token) {
             const toast = useToast();
             const url = 'https://elgeka-mobile-production.up.railway.app/api/user/medicine/list/website';
@@ -435,5 +430,6 @@ export default {
                     </div>
                 </div>
             </div>
+        </div>
     </div>
-</div></template>
+</template>
