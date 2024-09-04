@@ -49,7 +49,7 @@ export default {
                 labels: DoctorData.map(label => this.trimLabel(label)),
                 datasets: [
                     {
-                        label: 'Jumlah Pasien',
+                        label: 'Pasien',
                         color: '#FF6384',
                         backgroundColor: '#0A6B77',
                         data: DoctorPatientData
@@ -88,7 +88,7 @@ export default {
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Jumlah Dokter',
+                        label: 'Dokter',
                         backgroundColor: '#0A6B77',
                         data: data
                     }
@@ -114,7 +114,7 @@ export default {
                 labels: labelspoli,
                 datasets: [
                     {
-                        label: 'Jumlah Dokter',
+                        label: 'Dokter',
                         backgroundColor: '#0A6B77',
                         data: datapoli
                     }

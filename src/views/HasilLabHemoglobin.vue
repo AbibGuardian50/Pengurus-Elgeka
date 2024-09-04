@@ -26,103 +26,60 @@ export default {
             allData: [], // Menyimpan semua data
             DataLabHemoglobinMale: null, // Data chart hemoglobin male
             DataLabHemoglobinFemale: null, // Data chart hemoglobin female
-            HasilLabHemoglobinOptionsMale: {
+            HasilLabHemoglobinOptions: {
                 scales: {
                     x: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 14  // Mengubah ukuran font pada sumbu X
-                            }
+                            color: '#222539',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                            })
                         },
                         title: {
                             display: true,
                             text: 'Nilai',
-                            font: {
-                                size: 16,
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
                                 weight: 'bold'
-                            }
+                            })
                         },
                     },
                     y: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu Y
-                            font: {
-                                size: 14  // Mengubah ukuran font pada sumbu Y
-                            }
+                            color: '#222539',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                            })
                         },
                         title: {
                             display: true,
                             text: 'Jumlah',
-                            font: {
-                                size: 16,
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
                                 weight: 'bold'
-                            }
+                            })
                         }
                     },
                 },
                 responsive: true,
                 plugins: {
                     tooltip: {
-                        titleFont: {
-                            size: 16,
-                        },
-                        bodyFont: {
-                            size: 14,
-                        }
+                        titleFont: (context) => ({
+                            size: Math.min(Math.max(context.chart.width / 30, 14), 22)
+                        }),
+                        bodyFont: (context) => ({
+                            size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                        })
                     },
                     legend: {
-                        labels: false,
-                    }
-                }
-            },
-            HasilLabHemoglobinOptionsFemale: {
-                scales: {
-                    x: {
-                        ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu X
-                            font: {
-                                size: 14  // Mengubah ukuran font pada sumbu X
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Nilai',
-                            font: {
-                                size: 16,
-                                weight: 'bold'
-                            }
-                        },
-                    },
-                    y: {
-                        ticks: {
-                            color: '#222539',  // Mengubah warna font pada sumbu Y
-                            font: {
-                                size: 14  // Mengubah ukuran font pada sumbu Y
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Jumlah',
+                        labels: {
                             font: {
                                 size: 16,
                                 weight: 'bold'
                             }
                         }
-                    },
-                },
-                responsive: true,
-                plugins: {
-                    tooltip: {
-                        titleFont: {
-                            size: 16,
-                        },
-                        bodyFont: {
-                            size: 14,
-                        }
-                    },
-                    legend: {
-                        labels: false,
                     }
                 }
             },
@@ -214,38 +171,38 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data untuk male
             const DataLabHemoglobinCountsMale = {
-                '< 13': 0,
-                '13 - 17': 0,
-                '> 17': 0,
+                '< 13': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '13 - 17': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '> 17': { normal: 0, tidakNormal: 0, bahaya: 0 },
             };
             filteredDataMale.forEach(item => {
                 const DataLabHemoglobin = item.Data;
                 if (DataLabHemoglobin !== 0 && DataLabHemoglobin !== null) {
                     if (DataLabHemoglobin < 13) {
-                        DataLabHemoglobinCountsMale['< 13']++;
+                        DataLabHemoglobinCountsMale['< 13'].tidakNormal++;
                     } else if (DataLabHemoglobin <= 17) {
-                        DataLabHemoglobinCountsMale['13 - 17']++;
+                        DataLabHemoglobinCountsMale['13 - 17'].normal++;
                     } else if (DataLabHemoglobin > 17) {
-                        DataLabHemoglobinCountsMale['> 17']++;
+                        DataLabHemoglobinCountsMale['> 17'].bahaya++;
                     }
                 }
             });
 
             // Menghitung jumlah kemunculan setiap nilai Data untuk female
             const DataLabHemoglobinCountsFemale = {
-                '< 9': 0,
-                '9 - 15': 0,
-                '> 15': 0,
+                '< 9': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '9 - 15': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '> 15': { normal: 0, tidakNormal: 0, bahaya: 0 },
             };
             filteredDataFemale.forEach(item => {
                 const DataLabHemoglobin = item.Data;
                 if (DataLabHemoglobin !== 0 && DataLabHemoglobin !== null) {
                     if (DataLabHemoglobin < 9) {
-                        DataLabHemoglobinCountsFemale['< 9']++;
+                        DataLabHemoglobinCountsFemale['< 9'].tidakNormal++;
                     } else if (DataLabHemoglobin <= 15) {
-                        DataLabHemoglobinCountsFemale['12 - 15']++;
+                        DataLabHemoglobinCountsFemale['12 - 15'].normal++;
                     } else if (DataLabHemoglobin > 15) {
-                        DataLabHemoglobinCountsFemale['> 15']++;
+                        DataLabHemoglobinCountsFemale['> 15'].bahaya++;
                     }
                 }
             });
@@ -253,31 +210,51 @@ export default {
             // Persiapkan data untuk chart male
             const chartDataMale = {
                 labels: Object.keys(DataLabHemoglobinCountsMale),
-                datasets: [{
-                    label: 'Jumlah Pasien',
-                    backgroundColor: [
-                            '#FFD700', // Kuning
-                            '#008000', // Hijau
-                            '#FF0000', // Merah
-                        ],
-                    borderWidth: 1,
-                    data: Object.values(DataLabHemoglobinCountsMale),
-                }],
+                datasets: [
+                    {
+                        label: 'Normal',
+                        backgroundColor: '#008000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabHemoglobinCountsMale).map(counts => counts.normal),
+                    },
+                    {
+                        label: 'Tidak Normal',
+                        backgroundColor: '#FFD700',
+                        borderWidth: 1,
+                        data: Object.values(DataLabHemoglobinCountsMale).map(counts => counts.tidakNormal),
+                    },
+                    {
+                        label: 'Bahaya',
+                        backgroundColor: '#FF0000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabHemoglobinCountsMale).map(counts => counts.bahaya),
+                    },
+                ],
             };
 
             // Persiapkan data untuk chart female
             const chartDataFemale = {
                 labels: Object.keys(DataLabHemoglobinCountsFemale),
-                datasets: [{
-                    label: 'Jumlah Pasien',
-                    backgroundColor: [
-                            '#FFD700', // Kuning
-                            '#008000', // Hijau
-                            '#FF0000', // Merah
-                        ],
-                    borderWidth: 1,
-                    data: Object.values(DataLabHemoglobinCountsFemale),
-                }],
+                datasets: [
+                    {
+                        label: 'Normal',
+                        backgroundColor: '#008000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabHemoglobinCountsFemale).map(counts => counts.normal),
+                    },
+                    {
+                        label: 'Tidak Normal',
+                        backgroundColor: '#FFD700',
+                        borderWidth: 1,
+                        data: Object.values(DataLabHemoglobinCountsFemale).map(counts => counts.tidakNormal),
+                    },
+                    {
+                        label: 'Bahaya',
+                        backgroundColor: '#FF0000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabHemoglobinCountsFemale).map(counts => counts.bahaya),
+                    },
+                ],
             };
 
             this.DataLabHemoglobinMale = chartDataMale;
@@ -319,7 +296,7 @@ export default {
                         </button>
                     </div>
                     <div class="w-full h-auto">
-                        <Bar v-if="loaded" :data="DataLabHemoglobinMale" :options="HasilLabHemoglobinOptionsMale"
+                        <Bar v-if="loaded" :data="DataLabHemoglobinMale" :options="HasilLabHemoglobinOptions"
                                 class="w-full mb-8" />
                     </div>
                     
@@ -348,7 +325,7 @@ export default {
                         </div>
                         <div class="w-full h-auto">
                             
-                            <Bar v-if="loaded" :data="DataLabHemoglobinFemale" :options="HasilLabHemoglobinOptionsFemale"
+                            <Bar v-if="loaded" :data="DataLabHemoglobinFemale" :options="HasilLabHemoglobinOptions"
                                 class="w-full" />
                         </div>
                     </div>

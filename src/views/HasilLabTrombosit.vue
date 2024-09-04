@@ -26,6 +26,7 @@ export default {
             HasilLabTrombositOptions: {
                 scales: {
                     x: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
                             color: '#222539',
                             font: (context) => ({
@@ -42,6 +43,7 @@ export default {
                         },
                     },
                     y: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
                             color: '#222539',
                             font: (context) => ({
@@ -69,7 +71,12 @@ export default {
                         })
                     },
                     legend: {
-                        labels: false,
+                        labels: {
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
                     }
                 }
             },
@@ -135,25 +142,25 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data
             const DataLabTrombositCounts = {
-                '< 70.000': 0,
-                '70.000 - 150.000': 0,
-                '150.000 - 450.000': 0,
-                '450.000 - 800.000': 0,
-                '> 800.000': 0,
+                '< 70.000': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '70.000 - 150.000': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '150.000 - 450.000': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '450.000 - 800.000': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '> 800.000': { normal: 0, tidakNormal: 0, bahaya: 0 },
             };
             filteredData.forEach(item => {
                 const DataLabTrombosit = item.Data;
                 if (DataLabTrombosit !== 0 && DataLabTrombosit !== null) {
                     if (DataLabTrombosit > 800) {
-                        DataLabTrombositCounts['> 800.000']++;
+                        DataLabTrombositCounts['> 800.000'].bahaya++;
                     } else if (DataLabTrombosit >= 450) {
-                        DataLabTrombositCounts['450.000 - 800.000']++;
+                        DataLabTrombositCounts['450.000 - 800.000'].tidakNormal++;
                     } else if (DataLabTrombosit >= 150) {
-                        DataLabTrombositCounts['150.000 - 450.000']++;
+                        DataLabTrombositCounts['150.000 - 450.000'].normal++;
                     } else if (DataLabTrombosit >= 70) {
-                        DataLabTrombositCounts['70.000 - 150.000']++;
+                        DataLabTrombositCounts['70.000 - 150.000'].tidakNormal++;
                     } else if (DataLabTrombosit <= 70) {
-                        DataLabTrombositCounts['< 70.000']++;
+                        DataLabTrombositCounts['< 70.000'].bahaya++;
                     }
                 }
             });
@@ -162,18 +169,26 @@ export default {
             // Persiapkan data untuk chart
             const chartData = {
                 labels: Object.keys(DataLabTrombositCounts),
-                datasets: [{
-                    label: 'Jumlah Orang',
-                    backgroundColor: [
-                        '#FF0000',  // Merah
-                        '#FFD700',  // kuning
-                        '#008000', // hijau
-                        '#FFD700',  // kuning
-                        '#FF0000',  // Merah
-                    ],
-                    borderWidth: 1,
-                    data: Object.values(DataLabTrombositCounts),
-                }],
+                datasets: [
+                    {
+                        label: 'Normal',
+                        backgroundColor: '#008000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabTrombositCounts).map(counts => counts.normal),
+                    },
+                    {
+                        label: 'Tidak Normal',
+                        backgroundColor: '#FFD700',
+                        borderWidth: 1,
+                        data: Object.values(DataLabTrombositCounts).map(counts => counts.tidakNormal),
+                    },
+                    {
+                        label: 'Bahaya',
+                        backgroundColor: '#FF0000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabTrombositCounts).map(counts => counts.bahaya),
+                    },
+                ],
             };
 
             this.DataLabTrombosit = chartData;

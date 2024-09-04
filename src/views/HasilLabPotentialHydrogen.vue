@@ -26,50 +26,57 @@ export default {
             HasilLabPotentialHydrogenOptions: {
                 scales: {
                     x: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
-                            color: '#222539', // Change font color on x-axis
-                            font: {
-                                size: 14 // Change font size on x-axis
-                            }
+                            color: '#222539',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                            })
                         },
                         title: {
                             display: true,
                             text: 'Nilai',
-                            font: {
-                                size: 16,
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
                                 weight: 'bold'
-                            }
+                            })
                         },
                     },
                     y: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
-                            color: '#222539', // Change font color on y-axis
-                            font: {
-                                size: 14 // Change font size on y-axis
-                            }
+                            color: '#222539',
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                            })
                         },
                         title: {
                             display: true,
                             text: 'Jumlah',
-                            font: {
-                                size: 16,
+                            font: (context) => ({
+                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
                                 weight: 'bold'
-                            }
+                            })
                         }
                     },
                 },
                 responsive: true,
                 plugins: {
                     tooltip: {
-                        titleFont: {
-                            size: 16,
-                        },
-                        bodyFont: {
-                            size: 14,
-                        }
+                        titleFont: (context) => ({
+                            size: Math.min(Math.max(context.chart.width / 30, 14), 22)
+                        }),
+                        bodyFont: (context) => ({
+                            size: Math.min(Math.max(context.chart.width / 40, 12), 20)
+                        })
                     },
                     legend: {
-                        labels: false,
+                        labels: {
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
                     }
                 }
             },
@@ -138,19 +145,19 @@ export default {
 
             // Count occurrences of each Data value
             const DataLabPotentialHydrogenCounts = {
-                '< 7.35': 0,
-                '7.35 - 7.45': 0,
-                '> 7.45': 0,
+                '< 7.35': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '7.35 - 7.45': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '> 7.45': { normal: 0, tidakNormal: 0, bahaya: 0 },
             };
             filteredData.forEach(item => {
                 const DataLabPotentialHydrogen = item.Data;
                 if (DataLabPotentialHydrogen !== 0 && DataLabPotentialHydrogen !== null) {
                     if (DataLabPotentialHydrogen < 7.35) {
-                        DataLabPotentialHydrogenCounts['< 7.35']++;
+                        DataLabPotentialHydrogenCounts['< 7.35'].tidakNormal++;
                     } else if (DataLabPotentialHydrogen <= 7.45) {
-                        DataLabPotentialHydrogenCounts['7.35 - 7.45']++;
+                        DataLabPotentialHydrogenCounts['7.35 - 7.45'].normal++;
                     } else if (DataLabPotentialHydrogen > 7.45) {
-                        DataLabPotentialHydrogenCounts['> 7.45']++;
+                        DataLabPotentialHydrogenCounts['> 7.45'].bahaya++;
                     }
                 }
             });
@@ -158,16 +165,26 @@ export default {
             // Prepare data for the chart
             const chartData = {
                 labels: Object.keys(DataLabPotentialHydrogenCounts),
-                datasets: [{
-                    label: 'Jumlah Orang',
-                    backgroundColor: [
-                        '#FFD700', 
-                        '#008000', 
-                        '#FF0000'
-                    ],
-                    borderWidth: 1,
-                    data: Object.values(DataLabPotentialHydrogenCounts),
-                }],
+                datasets: [
+                    {
+                        label: 'Normal',
+                        backgroundColor: '#008000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabPotentialHydrogenCounts).map(counts => counts.normal),
+                    },
+                    {
+                        label: 'Tidak Normal',
+                        backgroundColor: '#FFD700',
+                        borderWidth: 1,
+                        data: Object.values(DataLabPotentialHydrogenCounts).map(counts => counts.tidakNormal),
+                    },
+                    {
+                        label: 'Bahaya',
+                        backgroundColor: '#FF0000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabPotentialHydrogenCounts).map(counts => counts.bahaya),
+                    },
+                ],
             };
 
             this.DataLabPotentialHydrogen = chartData;

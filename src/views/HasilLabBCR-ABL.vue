@@ -10,7 +10,7 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 export default {
     async created() {
-        await this.fetchData(); // Memuat data pertama kali saat komponen dibuat
+        await this.fetchData();
     },
     components: {
         Sidebar,
@@ -21,11 +21,12 @@ export default {
             startDate: '',
             endDate: '',
             loaded: false,
-            allData: [], // Menyimpan semua data
-            DataLabBcrAbl: null, // Ganti menjadi null untuk menunjukkan bahwa data belum dimuat
+            allData: [],
+            DataLabBcrAbl: null,
             HasilLabBCRABLOptions: {
                 scales: {
                     x: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
                             color: '#222539',
                             font: (context) => ({
@@ -42,6 +43,7 @@ export default {
                         },
                     },
                     y: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
                             color: '#222539',
                             font: (context) => ({
@@ -69,7 +71,12 @@ export default {
                         })
                     },
                     legend: {
-                        labels: false,
+                        labels: {
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
                     }
                 }
             },
@@ -92,9 +99,8 @@ export default {
                     toast.success('Data Hasil Lab BCR ABL Berhasil Dimuat');
                 }
 
-                // Simpan semua data
                 this.allData = responseData;
-                this.filterData(); // Filter data berdasarkan tanggal
+                this.filterData();
 
             } catch (error) {
                 const toast = useToast();
@@ -107,7 +113,6 @@ export default {
             }
         },
         filterData() {
-            // Validasi tanggal
             const startDateObj = new Date(this.startDate);
             const endDateObj = new Date(this.endDate);
 
@@ -117,9 +122,8 @@ export default {
                 return;
             }
 
-            // Filter data berdasarkan tanggal
             const filteredData = this.allData.filter(item => {
-                const itemDate = new Date(item.Date); // Ganti dengan field tanggal yang sesuai
+                const itemDate = new Date(item.Date);
                 const start = this.startDate ? new Date(this.startDate) : null;
                 const end = this.endDate ? new Date(this.endDate) : null;
                 if (start && end) {
@@ -133,66 +137,66 @@ export default {
                 }
             });
 
-            // Menghitung jumlah kemunculan setiap nilai Data
-            // Menghitung jumlah kemunculan setiap nilai Data
             const DataLabBcrAblCounts = {
-                '< 0.00032': 0,
-                '0.00032 - 0.001': 0,
-                '0.001 - 0.01': 0,
-                '0.01 - 0.1': 0,
-                '0.1 - 1': 0,
-                '1 - 10': 0,
-                '> 10': 0,
+                '< 0.00032': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '0.00032 - 0.001': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '0.001 - 0.1': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '0.1 - 1': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '1 - 10': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '> 10': { normal: 0, tidakNormal: 0, bahaya: 0 },
             };
 
             filteredData.forEach(item => {
                 const DataLabBCR = item.Data;
                 if (DataLabBCR !== null) {
                     if (DataLabBCR > 10) {
-                        DataLabBcrAblCounts['> 10']++;
+                        DataLabBcrAblCounts['> 10'].bahaya++;
                     } else if (DataLabBCR > 1) {
-                        DataLabBcrAblCounts['1 - 10']++;
+                        DataLabBcrAblCounts['1 - 10'].tidakNormal++;
                     } else if (DataLabBCR > 0.1) {
-                        DataLabBcrAblCounts['0.1 - 1']++;
-                    } else if (DataLabBCR > 0.01) {
-                        DataLabBcrAblCounts['0.01 - 0.1']++;
+                        DataLabBcrAblCounts['0.1 - 1'].tidakNormal++;
                     } else if (DataLabBCR > 0.001) {
-                        DataLabBcrAblCounts['0.001 - 0.01']++;
+                        DataLabBcrAblCounts['0.001 - 0.1'].normal++;
                     } else if (DataLabBCR > 0.00032) {
-                        DataLabBcrAblCounts['0.00032 - 0.001']++;
+                        DataLabBcrAblCounts['0.00032 - 0.001'].tidakNormal++;
                     } else {
-                        DataLabBcrAblCounts['< 0.00032']++;
+                        DataLabBcrAblCounts['< 0.00032'].bahaya++;
                     }
                 }
             });
 
-
-            // Persiapkan data untuk chart
             const chartData = {
                 labels: Object.keys(DataLabBcrAblCounts),
-                datasets: [{
-                    label: 'Jumlah Orang',
-                    backgroundColor: [
-                        '#008000', // Hijau
-                        '#FF0000', // Merah
-                        '#FFD700', // Kuning
-                        '#FFD700', // Kuning
-                        '#FFD700', // Kuning
-                        '#FFD700', // Kuning
-                        '#FF0000'  // Merah
-                    ],
-                    borderWidth: 1,
-                    data: Object.values(DataLabBcrAblCounts),
-                }],
+                datasets: [
+                    {
+                        label: 'Normal',
+                        backgroundColor: '#008000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabBcrAblCounts).map(counts => counts.normal),
+                    },
+                    {
+                        label: 'Tidak Normal',
+                        backgroundColor: '#FFD700',
+                        borderWidth: 1,
+                        data: Object.values(DataLabBcrAblCounts).map(counts => counts.tidakNormal),
+                    },
+                    {
+                        label: 'Bahaya',
+                        backgroundColor: '#FF0000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabBcrAblCounts).map(counts => counts.bahaya),
+                    },
+                ],
             };
 
             this.DataLabBcrAbl = chartData;
-            this.loaded = true; // Setelah data dimuat berhasil
+            this.loaded = true;
         }
     },
     name: 'BarChart',
 }
 </script>
+
 
 <template>
     <div class="flex bg-offwhite min-h-screen">

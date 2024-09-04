@@ -26,9 +26,10 @@ export default {
             allData: [], // Menyimpan semua data
             DataLabLeukocytesMale: null,
             DataLabLeukocytesFemale: null,
-            HasilLabLeukocytesMaleOptions: {
+            HasilLabLeukocytesOptions: {
                 scales: {
                     x: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
                             color: '#222539',
                             font: (context) => ({
@@ -45,6 +46,7 @@ export default {
                         },
                     },
                     y: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
                             color: '#222539',
                             font: (context) => ({
@@ -72,57 +74,12 @@ export default {
                         })
                     },
                     legend: {
-                        labels: false,
-                    }
-                }
-            },
-            HasilLabLeukocytesFemaleOptions: {
-                scales: {
-                    x: {
-                        ticks: {
-                            color: '#222539',
-                            font: (context) => ({
-                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
-                            })
-                        },
-                        title: {
-                            display: true,
-                            text: 'Nilai',
-                            font: (context) => ({
-                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
+                        labels: {
+                            font: {
+                                size: 16,
                                 weight: 'bold'
-                            })
-                        },
-                    },
-                    y: {
-                        ticks: {
-                            color: '#222539',
-                            font: (context) => ({
-                                size: Math.min(Math.max(context.chart.width / 40, 12), 20)
-                            })
-                        },
-                        title: {
-                            display: true,
-                            text: 'Jumlah',
-                            font: (context) => ({
-                                size: Math.min(Math.max(context.chart.width / 30, 14), 22),
-                                weight: 'bold'
-                            })
+                            }
                         }
-                    },
-                },
-                responsive: true,
-                plugins: {
-                    tooltip: {
-                        titleFont: (context) => ({
-                            size: Math.min(Math.max(context.chart.width / 30, 14), 22)
-                        }),
-                        bodyFont: (context) => ({
-                            size: Math.min(Math.max(context.chart.width / 40, 12), 20)
-                        })
-                    },
-                    legend: {
-                        labels: false,
                     }
                 }
             },
@@ -216,25 +173,25 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data untuk male
             const DataLabLeukocytesCountsMale = {
-                '< 2000': 0,
-                '2000 - 3500': 0,
-                '3.500 - 12.000': 0,
-                '12.000 - 100.000': 0,
-                '> 100.000': 0,
+                '< 2000': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '2000 - 3500': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '3.500 - 12.000': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '12.000 - 100.000': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '> 100.000': { normal: 0, tidakNormal: 0, bahaya: 0 },
             };
             filteredDataMale.forEach(item => {
                 const DataLabLeukocytes = item.Data;
                 if (DataLabLeukocytes !== 0 && DataLabLeukocytes !== null) {
                     if (DataLabLeukocytes < 2000) {
-                        DataLabLeukocytesCountsMale['< 2000']++;
+                        DataLabLeukocytesCountsMale['< 2000'].bahaya++;
                     } else if (DataLabLeukocytes >= 2000 && DataLabLeukocytes <= 3500) {
-                        DataLabLeukocytesCountsMale['2000 - 3500']++;
+                        DataLabLeukocytesCountsMale['2000 - 3500'].tidakNormal++;
                     } else if (DataLabLeukocytes > 3500 && DataLabLeukocytes <= 10500) {
-                        DataLabLeukocytesCountsMale['3.500 - 12.000']++;
+                        DataLabLeukocytesCountsMale['3.500 - 12.000'].normal++;
                     } else if (DataLabLeukocytes > 10500 && DataLabLeukocytes <= 100000) {
-                        DataLabLeukocytesCountsMale['12.000 - 100.000']++;
+                        DataLabLeukocytesCountsMale['12.000 - 100.000'].tidakNormal++;
                     } else if (DataLabLeukocytes > 100000) {
-                        DataLabLeukocytesCountsMale['> 100.000']++;
+                        DataLabLeukocytesCountsMale['> 100.000'].bahaya++;
                     }
                 }
             });
@@ -242,25 +199,25 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data untuk female
             const DataLabLeukocytesCountsFemale = {
-                '< 2000': 0,
-                '2000 - 3500': 0,
-                '3.500 - 12.000': 0,
-                '12.000 - 100.000': 0,
-                '> 100.000': 0,
+                '< 2000': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '2000 - 3500': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '3.500 - 12.000': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '12.000 - 100.000': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '> 100.000': { normal: 0, tidakNormal: 0, bahaya: 0 },
             };
             filteredDataFemale.forEach(item => {
                 const DataLabLeukocytes = item.Data;
                 if (DataLabLeukocytes !== 0 && DataLabLeukocytes !== null) {
                     if (DataLabLeukocytes < 2000) {
-                        DataLabLeukocytesCountsFemale['< 2000']++;
+                        DataLabLeukocytesCountsFemale['< 2000'].bahaya++;
                     } else if (DataLabLeukocytes >= 2000 && DataLabLeukocytes <= 3500) {
-                        DataLabLeukocytesCountsFemale['2000 - 3500']++;
+                        DataLabLeukocytesCountsFemale['2000 - 3500'].tidakNormal++;
                     } else if (DataLabLeukocytes > 3500 && DataLabLeukocytes <= 10500) {
-                        DataLabLeukocytesCountsFemale['3.500 - 12.000']++;
+                        DataLabLeukocytesCountsFemale['3.500 - 12.000'].normal++;
                     } else if (DataLabLeukocytes > 10500 && DataLabLeukocytes <= 100000) {
-                        DataLabLeukocytesCountsFemale['12.000 - 100.000']++;
+                        DataLabLeukocytesCountsFemale['12.000 - 100.000'].tidakNormal++;
                     } else if (DataLabLeukocytes > 100000) {
-                        DataLabLeukocytesCountsFemale['> 100.000']++;
+                        DataLabLeukocytesCountsFemale['> 100.000'].bahaya++;
                     }
                 }
             });
@@ -268,34 +225,50 @@ export default {
             // Persiapkan data untuk chart
             const chartDataMale = {
                 labels: Object.keys(DataLabLeukocytesCountsMale),
-                datasets: [{
-                    label: 'Jumlah Pasien',
-                    backgroundColor: [
-                        '#FF0000', // merah
-                        '#FFD700', // kuning
-                        '#008000', // Hijau
-                        '#FFD700', // kuning
-                        '#FF0000' // Merah
-                    ],
-                    borderWidth: 1,
-                    data: Object.values(DataLabLeukocytesCountsMale),
-                }],
+                datasets: [
+                    {
+                        label: 'Normal',
+                        backgroundColor: '#008000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabLeukocytesCountsMale).map(counts => counts.normal),
+                    },
+                    {
+                        label: 'Tidak Normal',
+                        backgroundColor: '#FFD700',
+                        borderWidth: 1,
+                        data: Object.values(DataLabLeukocytesCountsMale).map(counts => counts.tidakNormal),
+                    },
+                    {
+                        label: 'Bahaya',
+                        backgroundColor: '#FF0000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabLeukocytesCountsMale).map(counts => counts.bahaya),
+                    },
+                ],
             };
 
             const chartDataFemale = {
                 labels: Object.keys(DataLabLeukocytesCountsFemale),
-                datasets: [{
-                    label: 'Jumlah Pasien',
-                    backgroundColor: [
-                        '#FF0000', // merah
-                        '#FFD700', // kuning
-                        '#008000', // Hijau
-                        '#FFD700', // kuning
-                        '#FF0000' // Merah
-                    ],
-                    borderWidth: 1,
-                    data: Object.values(DataLabLeukocytesCountsFemale),
-                }],
+                datasets: [
+                    {
+                        label: 'Normal',
+                        backgroundColor: '#008000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabLeukocytesCountsFemale).map(counts => counts.normal),
+                    },
+                    {
+                        label: 'Tidak Normal',
+                        backgroundColor: '#FFD700',
+                        borderWidth: 1,
+                        data: Object.values(DataLabLeukocytesCountsFemale).map(counts => counts.tidakNormal),
+                    },
+                    {
+                        label: 'Bahaya',
+                        backgroundColor: '#FF0000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabLeukocytesCountsFemale).map(counts => counts.bahaya),
+                    },
+                ],
             };
 
             this.DataLabLeukocytesMale = chartDataMale;
@@ -338,7 +311,7 @@ export default {
                             </button>
                         </div>
                         <Bar v-if="loaded && DataLabLeukocytesMale" :data="DataLabLeukocytesMale"
-                            :options="HasilLabLeukocytesMaleOptions" class="w-full" />
+                            :options="HasilLabLeukocytesOptions" class="w-full" />
                         <p
                             class="font-assistant text-[18px] leading-6 font-semibold text-midnightblue w-full py-4 pl-8 border-b border-[#3347E6] mt-4">
                             Data Leukosit Perempuan</p>
@@ -361,7 +334,7 @@ export default {
                             </button>
                         </div>
                         <Bar v-if="loaded && DataLabLeukocytesFemale" :data="DataLabLeukocytesFemale"
-                            :options="HasilLabLeukocytesFemaleOptions" class="w-full" />
+                            :options="HasilLabLeukocytesOptions" class="w-full" />
                     </div>
                 </div>
                 <div

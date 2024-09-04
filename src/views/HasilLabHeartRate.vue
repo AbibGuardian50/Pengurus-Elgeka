@@ -22,9 +22,10 @@ export default {
             endDate: '',   // End date for filtering
             loaded: false, // Flag to indicate if data is loaded
             DataLabHeartRate: null, // Chart data for Heart Rate
-            HasilLabHeartRateOptions: { // Chart options
+            HasilLabHeartRateOptions: {
                 scales: {
                     x: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
                             color: '#222539',
                             font: (context) => ({
@@ -41,6 +42,7 @@ export default {
                         },
                     },
                     y: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
                             color: '#222539',
                             font: (context) => ({
@@ -68,7 +70,12 @@ export default {
                         })
                     },
                     legend: {
-                        labels: false,
+                        labels: {
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
                     }
                 }
             },
@@ -135,19 +142,19 @@ export default {
 
             // Count occurrences of each Data value
             const DataLabHeartRateCounts = {
-                '< 60': 0,
-                '60 - 100': 0,
-                '> 100': 0,
+                '< 60': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '60 - 100': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '> 100': { normal: 0, tidakNormal: 0, bahaya: 0 },
             };
             filteredData.forEach(item => {
                 const DataLabHeartRate = item.Data;
                 if (DataLabHeartRate !== 0 && DataLabHeartRate !== null) {
                     if (DataLabHeartRate < 60) {
-                        DataLabHeartRateCounts['< 60']++;
+                        DataLabHeartRateCounts['< 60'].tidakNormal++;
                     } else if (DataLabHeartRate <= 100) {
-                        DataLabHeartRateCounts['60 - 100']++;
+                        DataLabHeartRateCounts['60 - 100'].normal++;
                     } else if (DataLabHeartRate > 100) {
-                        DataLabHeartRateCounts['> 100']++;
+                        DataLabHeartRateCounts['> 100'].bahaya++;
                     }
                 }
             });
@@ -155,16 +162,26 @@ export default {
             // Prepare data for chart
             const chartData = {
                 labels: Object.keys(DataLabHeartRateCounts),
-                datasets: [{
-                    label: 'Jumlah Orang',
-                    backgroundColor: [
-                        '#FFD700', 
-                        '#008000',
-                        '#FF0000'  
-                    ],
-                    borderWidth: 1,
-                    data: Object.values(DataLabHeartRateCounts),
-                }],
+                datasets: [
+                    {
+                        label: 'Normal',
+                        backgroundColor: '#008000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabHeartRateCounts).map(counts => counts.normal),
+                    },
+                    {
+                        label: 'Tidak Normal',
+                        backgroundColor: '#FFD700',
+                        borderWidth: 1,
+                        data: Object.values(DataLabHeartRateCounts).map(counts => counts.tidakNormal),
+                    },
+                    {
+                        label: 'Bahaya',
+                        backgroundColor: '#FF0000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabHeartRateCounts).map(counts => counts.bahaya),
+                    },
+                ],
             };
 
             this.DataLabHeartRate = chartData;

@@ -26,6 +26,7 @@ export default {
             HasilLabHematokritOptions: {
                 scales: {
                     x: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
                             color: '#222539',
                             font: (context) => ({
@@ -42,6 +43,7 @@ export default {
                         },
                     },
                     y: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
                             color: '#222539',
                             font: (context) => ({
@@ -69,7 +71,12 @@ export default {
                         })
                     },
                     legend: {
-                        labels: false,
+                        labels: {
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
                     }
                 }
             },
@@ -135,19 +142,19 @@ export default {
 
             // Menghitung jumlah kemunculan setiap nilai Data
             const DataLabHematokritCounts = {
-                '< 34.9%': 0,
-                '34.9% - 50%': 0,
-                '> 50%': 0,
+                '< 34.9%': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '34.9% - 50%': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '> 50%': { normal: 0, tidakNormal: 0, bahaya: 0 },
             };
             filteredData.forEach(item => {
                 const DataLabHematokrit = item.Data;
                 if (DataLabHematokrit !== 0 && DataLabHematokrit !== null) {
                     if (DataLabHematokrit > 50) {
-                        DataLabHematokritCounts['> 50%']++;
+                        DataLabHematokritCounts['> 50%'].tidakNormal++;
                     } else if (DataLabHematokrit >34.9) {
-                        DataLabHematokritCounts['34.9% - 50%']++;
+                        DataLabHematokritCounts['34.9% - 50%'].normal++;
                     } else if (DataLabHematokrit <= 34.9) {
-                        DataLabHematokritCounts['< 34.9%']++;
+                        DataLabHematokritCounts['< 34.9%'].bahaya++;
                     }
                 }
             });
@@ -155,16 +162,26 @@ export default {
             // Persiapkan data untuk chart
             const chartData = {
                 labels: Object.keys(DataLabHematokritCounts),
-                datasets: [{
-                    label: 'Jumlah Orang',
-                    backgroundColor: [
-                        '#FFD700', 
-                        '#008000',
-                        '#FF0000'  
-                    ],
-                    borderWidth: 1,
-                    data: Object.values(DataLabHematokritCounts),
-                }],
+                datasets: [
+                    {
+                        label: 'Normal',
+                        backgroundColor: '#008000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabHematokritCounts).map(counts => counts.normal),
+                    },
+                    {
+                        label: 'Tidak Normal',
+                        backgroundColor: '#FFD700',
+                        borderWidth: 1,
+                        data: Object.values(DataLabHematokritCounts).map(counts => counts.tidakNormal),
+                    },
+                    {
+                        label: 'Bahaya',
+                        backgroundColor: '#FF0000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabHematokritCounts).map(counts => counts.bahaya),
+                    },
+                ],
             };
 
             this.DataLabHematokrit = chartData;

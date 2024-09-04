@@ -22,6 +22,7 @@ export default {
             HasilLabBloodPressureOptions: {
                 scales: {
                     x: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
                             color: '#222539',
                             font: (context) => ({
@@ -38,6 +39,7 @@ export default {
                         },
                     },
                     y: {
+                        stacked: true, // Aktifkan stacked bars
                         ticks: {
                             color: '#222539',
                             font: (context) => ({
@@ -65,7 +67,12 @@ export default {
                         })
                     },
                     legend: {
-                        labels: false,
+                        labels: {
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
                     }
                 }
             },
@@ -131,37 +138,6 @@ export default {
                 }
             });
 
-            const DataLabSystoleCounts = {
-                '< 90': 0,
-                '90 - 120': 0,
-                '> 120': 0
-            };
-
-            filteredDataSystole.forEach(item => {
-                if (item.DataSys < 90) {
-                    DataLabSystoleCounts['< 90']++;
-                } else if (item.DataSys <= 120) {
-                    DataLabSystoleCounts['90 - 120']++;
-                } else {
-                    DataLabSystoleCounts['> 120']++;
-                }
-            });
-
-            const chartDataSys = {
-                labels: Object.keys(DataLabSystoleCounts),
-                datasets: [{
-                    label: 'Systole',
-                    backgroundColor: [
-                        '#FFD700', // yellow for < 90
-                        '#008000', // green for 90 - 120
-                        '#FF0000'  // red for > 120
-                    ],
-                    borderWidth: 1,
-                    data: Object.values(DataLabSystoleCounts),
-                }],
-            };
-            this.DataLabSystole = chartDataSys;
-
             // Filter for DataLabDiastole
             const filteredDataDiastole = this.allData.filter(item => {
                 const itemDate = new Date(item.Date); // Replace with the correct date field
@@ -180,38 +156,95 @@ export default {
             });
 
             const DataLabDiastoleCounts = {
-                '< 60': 0,
-                '60 - 80': 0,
-                '> 80': 0
+                '< 60': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '60 - 80': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '> 80': { normal: 0, tidakNormal: 0, bahaya: 0 },
             };
 
             filteredDataDiastole.forEach(item => {
-                if (item.DataDia < 60) {
-                    DataLabDiastoleCounts['< 60']++;
-                } else if (item.DataDia <= 80) {
-                    DataLabDiastoleCounts['60 - 80']++;
-                } else if (item.DataDia > 80) {
-                    DataLabDiastoleCounts['> 80']++;
+                const DataDiastole = item.DataDia;
+                if (DataDiastole !== null) {
+                    if (DataDiastole < 60) {
+                        DataLabDiastoleCounts['< 60'].tidakNormal++;
+                    } else if (DataDiastole <= 80) {
+                        DataLabDiastoleCounts['60 - 80'].normal++;
+                    } else if (DataDiastole > 80) {
+                        DataLabDiastoleCounts['> 80'].bahaya++;
+                    }
                 }
             });
 
             const chartDataDia = {
                 labels: Object.keys(DataLabDiastoleCounts),
-                datasets: [{
-                    label: 'Diastole',
-                    backgroundColor: [
-                        '#FFD700', // yellow for < 60
-                        '#008000', // green for 60 - 80
-                        '#FF0000'  // red for > 80
-                    ],
-                    borderWidth: 1,
-                    data: Object.values(DataLabDiastoleCounts),
-                }],
+                datasets: [
+                    {
+                        label: 'Normal',
+                        backgroundColor: '#008000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabDiastoleCounts).map(counts => counts.normal),
+                    },
+                    {
+                        label: 'Tidak Normal',
+                        backgroundColor: '#FFD700',
+                        borderWidth: 1,
+                        data: Object.values(DataLabDiastoleCounts).map(counts => counts.tidakNormal),
+                    },
+                    {
+                        label: 'Bahaya',
+                        backgroundColor: '#FF0000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabDiastoleCounts).map(counts => counts.bahaya),
+                    },
+                ],
             };
+
             this.DataLabDiastole = chartDataDia;
 
+            const DataLabSystoleCounts = {
+                '< 90': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '90 - 120': { normal: 0, tidakNormal: 0, bahaya: 0 },
+                '> 120': { normal: 0, tidakNormal: 0, bahaya: 0 },
+            };
+
+            filteredDataSystole.forEach(item => {
+                const DataSystole = item.DataSys;
+                if (DataSystole !== null) {
+                    if (DataSystole < 90) {
+                        DataLabSystoleCounts['< 90'].tidakNormal++;
+                    } else if (DataSystole <= 120) {
+                        DataLabSystoleCounts['90 - 120'].normal++;
+                    } else if (DataSystole > 120) {
+                        DataLabSystoleCounts['> 120'].bahaya++;
+                    }
+                }
+            });
+
+            const chartDataSys = {
+                labels: Object.keys(DataLabSystoleCounts),
+                datasets: [
+                    {
+                        label: 'Normal',
+                        backgroundColor: '#008000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabSystoleCounts).map(counts => counts.normal),
+                    },
+                    {
+                        label: 'Tidak Normal',
+                        backgroundColor: '#FFD700',
+                        borderWidth: 1,
+                        data: Object.values(DataLabSystoleCounts).map(counts => counts.tidakNormal),
+                    },
+                    {
+                        label: 'Bahaya',
+                        backgroundColor: '#FF0000',
+                        borderWidth: 1,
+                        data: Object.values(DataLabSystoleCounts).map(counts => counts.bahaya),
+                    },
+                ],
+            };
+
+            this.DataLabSystole = chartDataSys;
             this.loaded = true;
-            this.updateChartFontSize();
         },
         getChartOptions() {
             return {
@@ -259,9 +292,9 @@ export default {
                             size: this.getFontSize()
                         }
                     },
-                    legend: {
-                        labels: false,
-                    }
+                    // legend: {
+                    //     labels: false,
+                    // }
                 }
             };
         },
