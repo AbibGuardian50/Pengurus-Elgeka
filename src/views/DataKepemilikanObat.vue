@@ -150,6 +150,7 @@ export default {
                         },
                         title: {
                             display: true,
+                            text: 'Jumlah',
                             font: {
                                 size: fontSize + 2,
                                 weight: 'bold'
@@ -184,13 +185,7 @@ export default {
                         }
                     },
                     legend: {
-                        labels: {
-                            color: "#222539",
-                            font: {
-                                size: fontSize + 2,
-                                weight: 'bold'
-                            }
-                        }
+                            display: false 
                     }
                 }
             }
