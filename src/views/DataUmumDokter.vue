@@ -162,7 +162,7 @@ export default {
                         },
                         title: {
                             display: true,
-                            text: 'Nama',
+                            text: 'Nama Dokter',
                             font: (context) => ({
                                 size: Math.min(Math.max(context.chart.width / 25, 14), 22),
                                 weight: 'bold'
@@ -197,13 +197,7 @@ export default {
                         })
                     },
                     legend: {
-                        labels: {
-                            color: "#222539",
-                            font: (context) => ({
-                                size: Math.min(Math.max(context.chart.width / 30, 12), 20),
-                                weight: 'bold'
-                            })
-                        }
+                        display: false,
                     }
                 }
             },
@@ -218,7 +212,7 @@ export default {
                         },
                         title: {
                             display: true,
-                            text: 'Nama',
+                            text: 'Nama RS',
                             font: (context) => ({
                                 size: Math.min(Math.max(context.chart.width / 25, 14), 22),
                                 weight: 'bold'
@@ -244,22 +238,8 @@ export default {
                 },
                 responsive: true,
                 plugins: {
-                    tooltip: {
-                        titleFont: (context) => ({
-                            size: Math.min(Math.max(context.chart.width / 25, 14), 22)
-                        }),
-                        bodyFont: (context) => ({
-                            size: Math.min(Math.max(context.chart.width / 30, 12), 20)
-                        })
-                    },
                     legend: {
-                        labels: {
-                            color: "#222539",
-                            font: (context) => ({
-                                size: Math.min(Math.max(context.chart.width / 30, 12), 20),
-                                weight: 'bold'
-                            })
-                        }
+                        display: false,
                     }
                 }
             },
@@ -274,7 +254,7 @@ export default {
                         },
                         title: {
                             display: true,
-                            text: 'Nama',
+                            text: 'Nama Spesialis',
                             font: (context) => ({
                                 size: Math.min(Math.max(context.chart.width / 25, 14), 22),
                                 weight: 'bold'
@@ -309,13 +289,7 @@ export default {
                         })
                     },
                     legend: {
-                        labels: {
-                            color: "#222539",
-                            font: (context) => ({
-                                size: Math.min(Math.max(context.chart.width / 30, 12), 20),
-                                weight: 'bold'
-                            })
-                        }
+                        display: false,
                     }
                 }
             }

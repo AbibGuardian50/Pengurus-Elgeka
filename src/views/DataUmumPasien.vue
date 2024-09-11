@@ -290,13 +290,7 @@ export default {
                         }
                     },
                     legend: {
-                        labels: {
-                            color: "#222539",
-                            font: {
-                                size: fontSize + 1,
-                                weight: 'bold'
-                            }
-                        }
+                        display: false 
                     }
                 }
             };
