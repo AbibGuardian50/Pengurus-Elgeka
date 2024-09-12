@@ -112,6 +112,37 @@ export default {
                 }
             }
         },
+        async ActivateDoctor(id) {
+            const toast = useToast();
+            if (confirm('Apakah kamu yakin untuk mengubah status dokter ini menjadi Aktif?')) {
+                try {
+                    const tokenlogin = VueCookies.get('TokenAuthorization');
+                    console.log('Token:', tokenlogin); // Log token untuk debugging
+                    if (!tokenlogin) {
+                        toast.error('Token tidak ditemukan, mohon login kembali');
+                        return;
+                    }
+                    const url = `https://elgeka-mobile-production.up.railway.app/api/doctor/activate/account/website/${id}`;
+                    const response = await axios.post(url, null, {
+                        headers: {
+                            Authorization: `Bearer ${tokenlogin}`
+                        }
+                    });
+                    console.log(response);
+                    if (response.data.Message === "Success to Activate Doctor Account") {
+                        toast.success('Dokter berhasil diaktifkan');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        toast.error('Gagal mengaktifkan dokter, coba lagi nanti');
+                    }
+                } catch (error) {
+                    toast.error('Terdapat kesalahan, mohon coba lagi');
+                    console.error(error);
+                }
+            }
+        },
         applyFilters() {
             // Filter berdasarkan rumah sakit
             let filteredData = this.originalInfoPatient.filter(item => {
@@ -344,13 +375,14 @@ export default {
                                     </div>
 
 
-                                    <button v-else-if="data.status === 'nonaktif'"
-                                        class="flex max-lg:gap-0 cursor-default max-lg:px-0 gap-2 bg-teal items-center justify-between py-2 px-1 rounded-md">
-                                        <span class="flex gap-2">
+                                    <button v-else-if="data.status === 'nonaktif'" @click="ActivateDoctor(data.ID)"
+                                        class="flex cursor-pointer max-lg:gap-0 cursor-default max-lg:px-0 gap-2 bg-teal items-center justify-between py-2 px-1 rounded-md">
+                                        <span class="flex gap-1 items-center">
                                             <span
                                                 class="w-full focus:bg-teal px-4 focus:text-black text-white font-semibold font-poppins">
                                                 Non-aktif
                                             </span>
+                                            <img src="../assets/arrow-down.svg" class="w-4 h-4 mr-4">
                                         </span>
                                     </button>
                                 </div>
