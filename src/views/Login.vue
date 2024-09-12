@@ -22,22 +22,21 @@ export default {
     methods: {
         async login() {
             try {
-                // axios.defaults.withCredentials = true;
                 const toast = useToast();
                 const url = 'https://elgeka-web-api-production.up.railway.app/api/v1/pengurus/login';
                 const response = await axios.post(url, {
                     username: this.username,
                     password: this.password
                 });
-
                 if (response.data.message === "Login Success") {
                     VueCookies.set('TokenAuthorization', response.data.result.token);
                     VueCookies.set('superAdmin', response.data.result.user.superUser);
                     VueCookies.set('id_user', response.data.result.user.id);
                     VueCookies.set('status_akun', response.data.result.user.is_active)
-                    console.log(response)
                     toast.success('Login Berhasil!');
-
+                    setTimeout(() => {
+                        this.$router.push('/dataumumpasien');
+                    }, 1000);
                     if (this.rememberMe) {
                         localStorage.setItem('rememberedUsername', this.username);
                         const encryptedPassword = CryptoJS.AES.encrypt(this.password, ENCRYPTION_KEY).toString();
@@ -46,10 +45,6 @@ export default {
                         localStorage.removeItem('rememberedUsername');
                         localStorage.removeItem('rememberedPassword');
                     }
-
-                    setTimeout(() => {
-                        this.$router.push('/dataumumpasien');
-                    }, 1000);
                 } else if (response.data.message === "Error Login: Pengurus not found") {
                     toast.error('Login Gagal, coba lagi');
                 } else if (response.data.message === "Error Login: Invalid password credentials") {
